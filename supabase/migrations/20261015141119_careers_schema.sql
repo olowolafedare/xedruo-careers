@@ -35,7 +35,6 @@ CREATE TABLE jobs (
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'closed', 'expired')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    -- Enforces: Job owned by an individual recruiter OR a company, never both or neither
     CONSTRAINT job_owner_check CHECK (
         (company_id IS NOT NULL AND recruiter_id IS NULL) OR 
         (company_id IS NULL AND recruiter_id IS NOT NULL)
@@ -59,7 +58,6 @@ CREATE TABLE job_questions (
     options JSONB,
     is_required BOOLEAN DEFAULT true NOT NULL,
     sort_order INT DEFAULT 0 NOT NULL,
-    -- A composite unique constraint enabling matching logic for application validation down the chain
     UNIQUE (id, job_id)
 );
 
@@ -70,7 +68,6 @@ CREATE TABLE applications (
     status TEXT NOT NULL DEFAULT 'applied' CHECK (status IN ('applied', 'screening', 'interview', 'offered', 'rejected', 'withdrawn')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    -- A composite unique constraint used to validate child answers safely
     UNIQUE (id, job_id)
 );
 
@@ -85,10 +82,8 @@ CREATE TABLE application_answers (
     job_id UUID NOT NULL,
     job_question_id UUID NOT NULL,
     answer_text TEXT,
-    -- Foreign keys mapping cleanly to the shared job context
     CONSTRAINT fk_application FOREIGN KEY (application_id, job_id) REFERENCES applications(id, job_id) ON DELETE CASCADE,
     CONSTRAINT fk_job_question FOREIGN KEY (job_question_id, job_id) REFERENCES job_questions(id, job_id) ON DELETE CASCADE,
-    -- Enforces: Answer must reference a question belonging to the same job as the application
     UNIQUE (application_id, job_question_id)
 );
 
