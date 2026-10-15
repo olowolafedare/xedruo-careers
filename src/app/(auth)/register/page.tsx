@@ -1,9 +1,8 @@
-
 "use client";
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client.tsx";
+import { createClient } from "@/src/lib/supabase/client";
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
