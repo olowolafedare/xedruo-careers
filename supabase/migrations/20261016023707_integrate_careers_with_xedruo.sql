@@ -63,7 +63,7 @@ CREATE TABLE careers_applications (
     UNIQUE (id, job_id)
 );
 
-CREATE UNIQUE INDEX unique_active_application_per_candidate_job 
+CREATE UNIQUE INDEX careers_unique_active_application_per_candidate_job 
 ON careers_applications (candidate_id, job_id) 
 WHERE (status NOT IN ('rejected', 'withdrawn'));
 
@@ -99,9 +99,9 @@ CREATE TABLE careers_application_events (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
-CREATE INDEX idx_jobs_status_published ON careers_jobs(status) WHERE status = 'published';
-CREATE INDEX idx_applications_candidate ON careers_applications(candidate_id);
-CREATE INDEX idx_applications_job ON careers_applications(job_id);
+CREATE INDEX careers_careers_idx_jobs_status_published ON careers_jobs(status) WHERE status = 'published';
+CREATE INDEX careers_careers_idx_applications_candidate ON careers_applications(candidate_id);
+CREATE INDEX careers_careers_idx_applications_job ON careers_applications(job_id);
 
 
 CREATE OR REPLACE FUNCTION careers_verify_job_status_before_application()
@@ -199,7 +199,7 @@ ALTER TABLE public.careers_application_answers
 ALTER TABLE public.careers_applications
   ADD COLUMN IF NOT EXISTS questionnaire_snapshot JSONB;
 
-CREATE INDEX IF NOT EXISTS idx_job_questions_job_order
+CREATE INDEX IF NOT EXISTS careers_careers_idx_job_questions_job_order
   ON public.careers_job_questions (job_id, sort_order);
 
 -- 3. Enable RLS on Careers tables
@@ -503,6 +503,9 @@ USING (
       )
   )
 );
+
+
+
 
 
 
