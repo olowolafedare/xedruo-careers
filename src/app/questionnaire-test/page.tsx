@@ -1,4 +1,3 @@
-
 import { QuestionnaireEditor } from "@/src/features/questionnaires/components/questionnaire-editor";
 
 export default function QuestionnaireTestPage() {
