@@ -1,9 +1,18 @@
-﻿
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+﻿import Link from 'next/link';
+import { Suspense } from 'react';
 import { requireUser } from '@/src/lib/auth/require-user';
 
-export default async function RecruiterDashboard() {
+export default function RecruiterDashboard() {
+  return (
+    <main>
+      <Suspense fallback={<p>Loading recruiter dashboard...</p>}>
+        <RecruiterDashboardContent />
+      </Suspense>
+    </main>
+  );
+}
+
+async function RecruiterDashboardContent() {
   const { supabase, user } = await requireUser();
 
   const { data: memberships, error } = await supabase
@@ -25,19 +34,19 @@ export default async function RecruiterDashboard() {
 
   if (!memberships?.length) {
     return (
-      <main>
+      <>
         <h1>Recruiter access</h1>
         <p>
           You are signed in, but you do not yet have recruiter
           permissions for a company.
         </p>
         <Link href="/">Return to Careers</Link>
-      </main>
+      </>
     );
   }
 
   return (
-    <main>
+    <>
       <h1>Recruiter Dashboard</h1>
       <p>Manage hiring for your companies.</p>
 
@@ -47,8 +56,8 @@ export default async function RecruiterDashboard() {
         <ul>
           {memberships.map((membership) => {
             const company = Array.isArray(membership.company)
-            ? membership.company[0]
-            : membership.company;
+              ? membership.company[0]
+              : membership.company;
 
             if (!company) return null;
 
@@ -56,15 +65,12 @@ export default async function RecruiterDashboard() {
               <li key={company.id}>
                 <h3>{company.name}</h3>
                 <p>Role: {membership.role}</p>
-
-                <Link href="/recruiter/jobs">
-                  Manage jobs
-                </Link>
+                <Link href="/recruiter/jobs">Manage jobs</Link>
               </li>
             );
           })}
         </ul>
       </section>
-    </main>
+    </>
   );
 }
