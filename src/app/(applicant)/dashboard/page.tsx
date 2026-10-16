@@ -1,5 +1,6 @@
 ﻿import { requireUser } from '@/src/lib/auth/require-user';
 
+export const dynamic = 'force-dynamic';
 export default async function Page() {
   const { user } = await requireUser();
 

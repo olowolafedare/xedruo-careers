@@ -46,7 +46,9 @@ export default async function RecruiterDashboard() {
 
         <ul>
           {memberships.map((membership) => {
-            const company = membership.company;
+            const company = Array.isArray(membership.company)
+            ? membership.company[0]
+            : membership.company;
 
             if (!company) return null;
 
