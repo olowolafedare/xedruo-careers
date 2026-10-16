@@ -1,7 +1,7 @@
-
 "use client";
 
 import type { QuestionType } from "../types";
+
 
 const QUESTION_TYPE_OPTIONS: {
   value: QuestionType;
@@ -17,6 +17,7 @@ const QUESTION_TYPE_OPTIONS: {
   { value: "date", label: "Date" },
   { value: "file", label: "File upload" },
 ];
+
 
 type Props = {
   value: QuestionType;
@@ -46,4 +47,7 @@ export function QuestionTypeSelector({
       </select>
     </label>
   );
+  
+
+
 }

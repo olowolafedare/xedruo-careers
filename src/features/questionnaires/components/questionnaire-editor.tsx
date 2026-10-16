@@ -2,13 +2,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  questionnaireSchema,
-} from "../schemas/question-schema";
-import type {
-  QuestionnaireQuestion,
-} from "../types";
+import { questionnaireSchema } from "../schemas/question-schema";
+import type { QuestionnaireQuestion } from "../types";
 import { QuestionCard } from "./question-card";
+import { QuestionPreview } from "./question-preview";
 
 type Props = {
   jobId: string;
@@ -32,6 +29,7 @@ export function QuestionnaireEditor({ jobId }: Props) {
     QuestionnaireQuestion[]
   >([]);
   const [message, setMessage] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
 
   function updateQuestion(
     updatedQuestion: QuestionnaireQuestion
@@ -107,19 +105,31 @@ export function QuestionnaireEditor({ jobId }: Props) {
         />
       ))}
 
-      <button
-        type="button"
-        onClick={addQuestion}
-        disabled={questions.length >= 100}
-        className="w-full rounded-lg border border-dashed border-gray-400 px-4 py-3 font-medium hover:bg-gray-50 disabled:opacity-40"
-      >
-        + Add question
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={addQuestion}
+          disabled={questions.length >= 100}
+          className="rounded-lg border border-dashed border-gray-400 px-4 py-3 font-medium hover:bg-gray-50 disabled:opacity-40"
+        >
+          + Add question
+        </button>
 
-      {message && (
-        <p role="status" className="text-sm text-gray-700">
-          {message}
-        </p>
+        <button
+          type="button"
+          onClick={() => setShowPreview((current) => !current)}
+          className="rounded-lg border border-gray-300 px-5 py-3 font-medium"
+        >
+          {showPreview ? "Back to editor" : "Preview application"}
+        </button>
+      </div>
+
+      {showPreview && (
+        <QuestionPreview
+          questions={questions}
+          title="Job application"
+          description="Preview the questions candidates will see."
+        />
       )}
 
       <button
@@ -129,6 +139,12 @@ export function QuestionnaireEditor({ jobId }: Props) {
       >
         Validate questionnaire
       </button>
+
+      {message && (
+        <p role="status" className="text-sm text-gray-700">
+          {message}
+        </p>
+      )}
     </div>
   );
 }
