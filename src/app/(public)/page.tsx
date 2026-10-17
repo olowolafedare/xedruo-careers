@@ -4,19 +4,19 @@ const highlights = [
   {
     title: "Discover opportunities",
     description:
-      "Explore roles that match your skills, experience, and career ambitions.",
+      "Explore roles that match your skills, experience, and career ambitions",
     icon: "01",
   },
   {
     title: "Showcase your talent",
     description:
-      "Build your professional profile and give employers a clearer picture of what you bring.",
+      "Build your professional profile and give employers a clearer picture of what you bring",
     icon: "02",
   },
   {
     title: "Hire with confidence",
     description:
-      "Help your organisation connect with qualified candidates and manage applications.",
+      "Help your organisation connect with qualified candidates and manage applications",
     icon: "03",
   },
 ];
@@ -58,16 +58,16 @@ export default function HomePage() {
             </span>
 
             <h1 className="mt-7 max-w-2xl text-5xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-              Your talent.
+              Your talent
               <br />
-              Your future.
+              Your future
               <br />
-              <span className="text-blue-400">Your next move.</span>
+              <span className="text-blue-400">Your next move</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
               Discover opportunities, connect with employers, and take the
-              next step in your career with Xedruo Careers.
+              next step in your career with Xedruo Careers
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4">
@@ -81,7 +81,7 @@ export default function HomePage() {
                 href="/recruiter"
                 className="rounded-xl border border-white/20 px-6 py-3.5 font-semibold text-white transition hover:bg-white/10"
               >
-               I'm hiring
+               I&apos;m hiring
               </Link>
             </div>
 
@@ -90,7 +90,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="rounded-3xl border border-white/10 bg-white/6 p-6 shadow-2xl backdrop-blur sm:p-8">
             <div className="flex items-center justify-between border-b border-white/10 pb-5">
               <div>
                 <p className="text-sm text-slate-400">Career discovery</p>
@@ -109,7 +109,7 @@ export default function HomePage() {
                 <h3 className="mt-2 font-semibold">Find your next role</h3>
                 <p className="mt-1 text-sm leading-6 text-slate-400">
                   Explore job listings and identify opportunities worth
-                  pursuing.
+                  pursuing
                 </p>
               </div>
 
@@ -119,7 +119,7 @@ export default function HomePage() {
                   Put your experience forward
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-slate-400">
-                  Present your skills and make your application count.
+                  Present your skills and make your application count
                 </p>
               </div>
 
@@ -128,7 +128,7 @@ export default function HomePage() {
                 <h3 className="mt-2 font-semibold">Move your career forward</h3>
                 <p className="mt-1 text-sm leading-6 text-slate-400">
                   Keep track of your journey as you pursue your next
-                  opportunity.
+                  opportunity
                 </p>
               </div>
             </div>
@@ -142,11 +142,11 @@ export default function HomePage() {
             One platform, more possibilities
           </p>
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            A better starting point for your next chapter.
+            A better starting point for your next chapter
           </h2>
           <p className="mt-4 leading-7 text-slate-600">
             Whether you are building your career or growing a team, Xedruo
-            Careers brings the essential steps into one place.
+            Careers brings the essential steps into one place
           </p>
         </div>
 
@@ -175,7 +175,7 @@ export default function HomePage() {
               Ready to take the next step?
             </h2>
             <p className="mt-2 leading-7 text-slate-600">
-              Start exploring opportunities or prepare to build your team.
+              Start exploring opportunities or prepare to build your team
             </p>
           </div>
           <Link
@@ -190,7 +190,7 @@ export default function HomePage() {
       <footer className="border-t border-slate-200">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-7 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <p>© 2026 Xedruo Careers</p>
-          <p>Connecting talent with opportunity.</p>
+          <p>Connecting talent with opportunity</p>
         </div>
       </footer>
     </main>
