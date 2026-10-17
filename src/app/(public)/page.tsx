@@ -27,7 +27,7 @@ export default function HomePage() {
       <header className="border-b border-slate-200">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link href="/" className="text-2xl font-extrabold tracking-tight">
-           Careers <span className="text-blue-600"></span>
+           HIREUO <span className="text-blue-600"></span>
           </Link>
 
           <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export default function HomePage() {
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
               Discover opportunities, connect with employers, and take the
-              next step in your career with Xedruo Careers
+              next step in your career with HIREUO 
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4">
@@ -145,8 +145,7 @@ export default function HomePage() {
             A better starting point for your next chapter
           </h2>
           <p className="mt-4 leading-7 text-slate-600">
-            Whether you are building your career or growing a team, Xedruo
-            Careers brings the essential steps into one place
+            Whether you are building your career or growing a team, HIREUO brings the essential steps into one place
           </p>
         </div>
 
@@ -189,7 +188,7 @@ export default function HomePage() {
 
       <footer className="border-t border-slate-200">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-7 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <p>© 2026 Xedruo Careers</p>
+          <p>© 2026 HIREUO</p>
           <p>Connecting talent with opportunity</p>
         </div>
       </footer>
