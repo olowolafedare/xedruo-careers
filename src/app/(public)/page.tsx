@@ -27,10 +27,7 @@ export default function HomePage() {
       <header className="border-b border-slate-200">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link href="/" className="text-2xl font-extrabold tracking-tight">
-            xedruo<span className="text-blue-600">.</span>
-            <span className="ml-2 text-base font-medium text-slate-500">
-              Careers
-            </span>
+           Careers <span className="text-blue-600"></span>
           </Link>
 
           <div className="flex items-center gap-3">
