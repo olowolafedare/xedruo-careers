@@ -400,7 +400,6 @@ export default function HomePage() {
           <Link href="/" className="font-extrabold tracking-tight text-slate-900">
             HIREUO<span className="text-indigo-600"> </span>
           </Link>
-          <p>Connecting talent with opportunity</p>
           <p>©<FooterYear /> HIREUO</p>
           
         </div>
