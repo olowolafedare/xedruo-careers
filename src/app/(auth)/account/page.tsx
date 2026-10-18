@@ -53,7 +53,6 @@ export default function AccountPage() {
     <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
       <Link href="/" className="text-sm font-bold tracking-wide text-indigo-600">HIREUO · XEDRUO</Link>
       <h1 className="mt-5 text-3xl font-bold text-slate-950">{mode === "sign-up" ? "Create your Xedruo account" : "Sign in to Xedruo"}</h1>
-      <p className="mt-2 text-sm leading-6 text-slate-600">Use your shared Xedruo account to continue to HIREUO and other Xedruo services.</p>
       <form onSubmit={submit} className="mt-7 space-y-4">
         {mode === "sign-up" && <label className="block text-sm font-medium">Full name<input required autoComplete="name" value={name} onChange={e => setName(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" /></label>}
         <label className="block text-sm font-medium">Email<input required type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" /></label>
@@ -61,7 +60,7 @@ export default function AccountPage() {
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}{message && <p role="status" className="text-sm text-emerald-700">{message}</p>}
         <button disabled={busy} className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white disabled:opacity-60">{busy ? "Please wait…" : mode === "sign-up" ? "Create account" : "Sign in"}</button>
       </form>
-      <button onClick={() => { setMode(mode === "sign-in" ? "sign-up" : "sign-in"); setError(""); setMessage(""); }} className="mt-5 text-sm font-medium text-indigo-600">{mode === "sign-up" ? "Already have an account? Sign in" : "New to Xedruo? Create an account"}</button>
+      <button onClick={() => { setMode(mode === "sign-in" ? "sign-up" : "sign-in"); setError(""); setMessage(""); }} className="mt-5 text-sm font-medium text-indigo-600">{mode === "sign-up" ? "Sign in" : " Create an account"}</button>
     </section>
   </main>;
 }
