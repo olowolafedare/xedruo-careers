@@ -15,8 +15,8 @@ export default async function StartPage() {
   if (candidate?.onboarding_completed) redirect("/candidate/dashboard");
   if (member) redirect("/recruiter/dashboard");
   const options = [
-    { href: "/onboarding/applicant", title: "I’m looking for a job", description: "Build your candidate profile, set your preferences, and start applying." },
-    { href: "/onboarding/recruiter", title: "I’m hiring", description: "Set up your employer profile and open your recruiter workspace." },
+    { href: "/onboarding/applicant", title: "I am looking for a job", description: "Build your candidate profile, set your preferences, and start applying" },
+    { href: "/onboarding/recruiter", title: "I am hiring", description: "Set up your employer profile and open your recruiter workspace" },
   ];
-  return <main className="mx-auto min-h-screen max-w-4xl px-5 py-16"><p className="text-sm font-bold text-indigo-600">HIREUO · XEDRUO CAREERS</p><h1 className="mt-4 text-3xl font-bold">How will you use HIREUO?</h1><p className="mt-3 text-slate-600">Choose a path to set up your workspace. You can use the same Xedruo account across services.</p><div className="mt-9 grid gap-5 sm:grid-cols-2">{options.map(option => <Link key={option.href} href={option.href} className="rounded-2xl border border-slate-200 bg-white p-7 transition hover:border-indigo-300 hover:shadow-lg"><h2 className="text-xl font-semibold">{option.title}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{option.description}</p><span className="mt-6 inline-block font-semibold text-indigo-600">Continue →</span></Link>)}</div></main>;
+  return <main className="mx-auto min-h-screen max-w-4xl px-5 py-16"><p className="text-sm font-bold text-indigo-600">HIREUO</p><h1 className="mt-4 text-3xl font-bold">How will you use HIREUO?</h1><div className="mt-9 grid gap-5 sm:grid-cols-2">{options.map(option => <Link key={option.href} href={option.href} className="rounded-2xl border border-slate-200 bg-white p-7 transition hover:border-indigo-300 hover:shadow-lg"><h2 className="text-xl font-semibold">{option.title}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{option.description}</p><span className="mt-6 inline-block font-semibold text-indigo-600">Continue →</span></Link>)}</div></main>;
 }

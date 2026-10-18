@@ -16,22 +16,16 @@ const features = [
   {
     number: "01",
     title: "Discover opportunities",
-    description:
-      "Find relevant roles, explore companies, and discover opportunities that fit your ambitions",
     icon: Search,
   },
   {
     number: "02",
     title: "Showcase your talent",
-    description:
-      "Build your professional profile and present your experience to employers with confidence",
     icon: FileText,
   },
   {
     number: "03",
     title: "Recruit with confidence",
-    description:
-      "Publish roles, evaluate applicants, and manage your hiring process in one place",
     icon: Users,
   },
 ];
@@ -345,9 +339,6 @@ export default function HomePage() {
                 <h3 className="mt-6 text-xl font-bold tracking-tight">
                   {feature.title}
                 </h3>
-                <p className="mt-3 leading-7 text-slate-600">
-                  {feature.description}
-                </p>
               </article>
             );
           })}
