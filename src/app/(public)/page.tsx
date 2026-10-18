@@ -32,9 +32,9 @@ const features = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-slate-900">
+    <main className="min-h-screen overflow-hidden bg-rosybrown text-slate-900">
       {/* Navigation */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50bg-rosybrown/90 backdrop-blur-xl">
         <nav
           aria-label="Main navigation"
           className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8"
@@ -44,31 +44,31 @@ export default function HomePage() {
             aria-label="HIREUO home"
             className="flex items-center gap-2.5"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-600/20">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-600 text-lg font-black text-white shadow-lg shadow-gold-600/20">
               H
             </span>
             <span className="text-xl font-extrabold tracking-tight">
               HIREUO
-              <span className="text-indigo-600"> </span>
+              <span className="text-gold-600"> </span>
             </span>
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
             <Link
               href="/jobs"
-              className="text-sm font-medium text-slate-600 transition hover:text-indigo-600"
+              className="text-sm font-medium text-slate-600 transition hover:text-gold-600"
             >
               Find jobs
             </Link>
             <a
               href="#how-it-works"
-              className="text-sm font-medium text-slate-600 transition hover:text-indigo-600"
+              className="text-sm font-medium text-slate-600 transition hover:text-gold-600"
             >
               How it works
             </a>
             <a
               href="#for-employers"
-              className="text-sm font-medium text-slate-600 transition hover:text-indigo-600"
+              className="text-sm font-medium text-slate-600 transition hover:text-gold-600"
             >
               For employers
             </a>
@@ -83,7 +83,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/account"
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/15 transition hover:bg-indigo-700"
+              className="inline-flex items-center gap-2 rounded-xl bg-gold-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-gold-600/15 transition hover:bg-gold-700"
             >
               Get started
               <ArrowRight size={16} />
@@ -98,42 +98,36 @@ export default function HomePage() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
         >
-          <div className="absolute -right-32 -top-20 h-96 w-96 rounded-full bg-indigo-100/70 blur-3xl" />
+          <div className="absolute -right-32 -top-20 h-96 w-96 rounded-full bg-gold-100/70 blur-3xl" />
           <div className="absolute -left-32 top-64 h-80 w-80 rounded-full bg-sky-100/60 blur-3xl" />
         </div>
 
         <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-32">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-3.5 py-2 text-sm font-semibold text-indigo-700 shadow-sm">
+            <div className="inline-flex items-center gap-2 rounded-full  -gold-100 bg-white/80 px-3.5 py-2 text-sm font-semibold text-gold-700 shadow-sm">
               <Sparkles size={15} />
               Your next chapter starts here
             </div>
 
             <h1 className="mt-7 max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
               Great opportunities
-              <span className="block text-indigo-600">
+              <span className="block text-gold-600">
                 Exceptional talent
               </span>
               <span className="block">One platform</span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
-              Whether you are searching for your next role or building an
-              exceptional team, HIREUO helps you move forward with clarity and
-              confidence
-            </p>
-
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/jobs"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-4 font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-600 px-6 py-4 font-semibold text-white shadow-lg shadow-gold-600/20 transition hover:-translate-y-0.5 hover:bg-gold-700"
               >
                 Explore opportunities
                 <ArrowRight size={18} />
               </Link>
               <Link
                 href="/account"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-4 font-semibold text-slate-800 transition hover:border-indigo-200 hover:bg-indigo-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl  -slate-200 bg-white px-6 py-4 font-semibold text-slate-800 transition hover:-gold-200 hover:bg-gold-50"
               >
                 I&apos;m hiring
                 <ArrowUpRight size={18} />
@@ -142,11 +136,11 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500">
               <span className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-indigo-600" />
+                <CheckCircle2 size={16} className="text-gold-600" />
                 A clearer hiring journey
               </span>
               <span className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-indigo-600" />
+                <CheckCircle2 size={16} className="text-gold-600" />
                 Built for talent and teams
               </span>
             </div>
@@ -154,12 +148,12 @@ export default function HomePage() {
 
           {/* Product preview */}
           <div className="relative mx-auto w-full max-w-xl">
-            <div className="absolute -inset-5 rounded-4xl bg-linear-to-br from-indigo-100 via-white to-sky-100 blur-2xl" />
+            <div className="absolute -inset-5 rounded-4xl bg-linear-to-br from-gold-100 blur-2xl" />
 
-            <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xl shadow-slate-900/10 sm:p-7">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-5">
+            <div className=" --Bright Emmanuel Emeka ">
+              <div className="flex items-center justify-between -b -slate-100 pb-5">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-600">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-600">
                     Career workspace
                   </p>
                   <h2 className="mt-2 text-xl font-bold tracking-tight">
@@ -169,15 +163,15 @@ export default function HomePage() {
                     Opportunities worth exploring.
                   </p>
                 </div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold-50 text-gold-600">
                   <BriefcaseBusiness size={23} />
                 </span>
               </div>
 
-              <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+              <div className="mt-5 rounded-2xl  -slate-100 bg-slate-50/50 p-4 hover:bg-amber-200">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-gold-600 shadow-sm">
                       <Search size={20} />
                     </span>
                     <div>
@@ -191,7 +185,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-3 rounded-2xl border border-slate-100 bg-white p-4">
+              <div className="mt-3 rounded-2xl  -slate-100 bg-slate-50/50 p-4">
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
                     <FileText size={20} />
@@ -205,7 +199,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-3 rounded-2xl border border-slate-100 bg-white p-4">
+              <div className="mt-3 rounded-2xl  -slate-100 bg-slate-50/50 p-4">
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                     <ShieldCheck size={20} />
@@ -219,29 +213,25 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-between rounded-2xl bg-indigo-600 p-4 text-white">
+              <div className="mt-5 flex items-center justify-between rounded-2xl bg-gold-600 p-4 text-white">
                 <div>
                   <p className="text-sm font-semibold">Your next chapter</p>
-                  <p className="mt-1 text-xs text-indigo-100">
+                  <p className="mt-1 text-xs text-gold-100">
                     Starts with one step
                   </p>
                 </div>
                 <ArrowRight size={21} />
               </div>
-
-              <p className="mt-4 text-center text-xs text-slate-400">
-                A shared destination for candidates and recruiters
-              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Audience selection */}
-      <section className="border-y border-slate-100 bg-slate-50/70">
+      <section className="-y -slate-100 bg-slate-50/70">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-indigo-600">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-gold-600">
               One platform Two journeys
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -253,8 +243,8 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
-            <article className="group rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-950/5 sm:p-9">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+            <article className="group rounded-3xl  -slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:-amber-400 hover:shadow-xl hover:shadow-amber-950/5 sm:p-9 hover:bg-amber-400">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-50 text-gold-600">
                 <Search size={24} />
               </span>
               <h3 className="mt-6 text-2xl font-bold tracking-tight">
@@ -266,7 +256,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/account"
-                className="mt-7 inline-flex items-center gap-2 font-semibold text-indigo-600 transition group-hover:gap-3"
+                className="mt-7 inline-flex items-center gap-2 font-semibold text-gold-600 transition group-hover:gap-3 "
               >
                 Continue as a candidate
                 <ArrowRight size={18} />
@@ -275,7 +265,7 @@ export default function HomePage() {
 
             <article
               id="for-employers"
-              className="group rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-950/5 sm:p-9"
+              className="group rounded-3xl  -slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:-amber-400 hover:shadow-xl hover:shadow-amber-950/5 sm:p-9 hover:bg-amber-400"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
                 <Users size={24} />
@@ -289,7 +279,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/account"
-                className="mt-7 inline-flex items-center gap-2 font-semibold text-indigo-600 transition group-hover:gap-3"
+                className="mt-7 inline-flex items-center gap-2 font-semibold text-gold-600 transition group-hover:gap-3"
               >
                 Continue as a recruiter
                 <ArrowRight size={18} />
@@ -306,17 +296,13 @@ export default function HomePage() {
       >
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-indigo-600">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-gold-600">
               Designed for progress
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
               Everything starts with the right connection
             </h2>
           </div>
-          <p className="max-w-md leading-7 text-slate-600">
-            From discovering a role to finding the right candidate, keep the
-            important steps in one organised place
-          </p>
         </div>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -326,10 +312,10 @@ export default function HomePage() {
             return (
               <article
                 key={feature.number}
-                className="rounded-2xl border border-slate-200 bg-white p-7 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/5"
+                className="rounded-2xl  -slate-200 bg-white p-7 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-50 text-gold-600">
                     <Icon size={22} />
                   </span>
                   <span className="text-sm font-bold tracking-widest text-slate-300">
@@ -350,33 +336,28 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-slate-950 px-7 py-12 text-white sm:px-12 sm:py-16">
           <div
             aria-hidden="true"
-            className="absolute -right-16 -top-32 h-80 w-80 rounded-full bg-indigo-600/30 blur-3xl"
+            className="absolute -right-16 -top-32 h-80 w-80 rounded-full bg-gold-600/30 blur-3xl"
           />
           <div className="relative flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold text-indigo-300">
+              <p className="text-sm font-semibold text-gold-300">
                 YOUR NEXT CHAPTER STARTS HERE
               </p>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
                 Ready to make your next move?
               </h2>
-              <p className="mt-4 leading-7 text-slate-300">
-                Take the next step in your career or start building your team
-                with HIREUO
-              </p>
             </div>
 
             <div className="relative flex shrink-0 flex-col gap-3 sm:flex-row">
               <Link
                 href="/jobs"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 font-semibold text-slate-950 transition hover:bg-indigo-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-3.5 font-semibold text-slate-950 transition hover:bg-rose-50"
               >
                 Browse jobs
-                <ArrowRight size={17} />
               </Link>
               <Link
                 href="/account"
-                className="inline-flex items-center justify-center rounded-xl border border-white/20 px-5 py-3.5 font-semibold text-white transition hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-xl  -white/20 px-5 py-3.5 font-semibold text-rose-50 transition hover:bg-rose-50"
               >
                 Start hiring
               </Link>
@@ -386,10 +367,10 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200">
+      <footer className="-t -slate-200">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-500 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Link href="/" className="font-extrabold tracking-tight text-slate-900">
-            HIREUO<span className="text-indigo-600"> </span>
+            HIREUO<span className="text-gold-600"> </span>
           </Link>
           <p>©<FooterYear /> HIREUO</p>
           

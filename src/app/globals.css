@@ -2,11 +2,11 @@
 
 :root {
   color-scheme: light;
-  --background: #e2ca60;
-  --foreground: #111827;
-  --muted: #64748b;
-  --accent: #4f46e5;
-  --border: #e5e7eb;
+  --background: rosybrown;
+  --foreground: gray;
+  --muted: lemonchiffon;
+  --accent: gold;
+  --border: greenyellow;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: Arial, Helvetica, sans-serif;
@@ -31,8 +31,8 @@ body {
 }
 
 ::selection {
-  background: #e0e7ff;
-  color: #312e81;
+  background: var(--accent);
+  color: var(--foreground);
 }
 
 :focus-visible {
