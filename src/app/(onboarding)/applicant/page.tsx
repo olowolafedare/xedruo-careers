@@ -76,6 +76,10 @@ export default function ApplicantOnboardingPage() {
       setUserId(user.id);
       setEmail(user.email ?? "");
 
+      if (typeof user.user_metadata?.full_name === "string") {
+        setFullName(user.user_metadata.full_name);
+      }
+
       const [{ data: profile, error: profileError }, { data: candidate, error: candidateError }] =
         await Promise.all([
           supabase
@@ -107,6 +111,10 @@ export default function ApplicantOnboardingPage() {
 
       if (candidate) {
         const saved = candidate as CandidateProfile;
+        if (saved.onboarding_completed) {
+          router.replace("/candidate/dashboard");
+          return;
+        }
         setPhone(saved.phone_number ?? profile?.phone_number ?? "");
         setCountry(saved.country ?? "Nigeria");
         setState(saved.state ?? "");
@@ -124,7 +132,7 @@ export default function ApplicantOnboardingPage() {
     return () => {
       active = false;
     };
-  }, [supabase]);
+  }, [router, supabase]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

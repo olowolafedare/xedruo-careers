@@ -88,7 +88,7 @@ export default function HomePage() {
               Browse jobs
             </Link>
             <Link
-              href="/onboarding/applicant"
+              href="/account"
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/15 transition hover:bg-indigo-700"
             >
               Get started
@@ -138,7 +138,7 @@ export default function HomePage() {
                 <ArrowRight size={18} />
               </Link>
               <Link
-                href="/onboarding/recruiter"
+                href="/account"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-4 font-semibold text-slate-800 transition hover:border-indigo-200 hover:bg-indigo-50"
               >
                 I&apos;m hiring
@@ -271,7 +271,7 @@ export default function HomePage() {
                 manage applications, and prepare for interviews
               </p>
               <Link
-                href="/onboarding/applicant"
+                href="/account"
                 className="mt-7 inline-flex items-center gap-2 font-semibold text-indigo-600 transition group-hover:gap-3"
               >
                 Continue as a candidate
@@ -294,7 +294,7 @@ export default function HomePage() {
                 interviews, and manage your recruitment pipeline
               </p>
               <Link
-                href="/onboarding/recruiter"
+                href="/account"
                 className="mt-7 inline-flex items-center gap-2 font-semibold text-indigo-600 transition group-hover:gap-3"
               >
                 Continue as a recruiter
@@ -384,7 +384,7 @@ export default function HomePage() {
                 <ArrowRight size={17} />
               </Link>
               <Link
-                href="/onboarding/recruiter"
+                href="/account"
                 className="inline-flex items-center justify-center rounded-xl border border-white/20 px-5 py-3.5 font-semibold text-white transition hover:bg-white/10"
               >
                 Start hiring

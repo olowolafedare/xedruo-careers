@@ -7,7 +7,7 @@ export async function requireUser() {
     error,
   } = await supabase.auth.getUser();
   if (error || !user) {
-    redirect('/?auth_required=1');
+    redirect('/account');
   }
   return { supabase, user };
 }
