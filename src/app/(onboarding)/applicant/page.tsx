@@ -1,10 +1,505 @@
-﻿export default function Page() {
+﻿"use client";
+
+import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/src/lib/supabase/client";
+
+const SEARCH_TIMINGS = [
+  { value: "immediately", label: "Immediately" },
+  { value: "within_2_weeks", label: "Within 2 weeks" },
+  { value: "within_1_month", label: "Within 1 month" },
+  { value: "within_3_months", label: "Within 3 months" },
+  { value: "exploring", label: "Just exploring" },
+];
+
+const WORK_PREFERENCES = [
+  { value: "remote", label: "Remote" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "onsite", label: "On-site" },
+  { value: "any", label: "Open to any" },
+];
+
+const inputClass =
+  "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100";
+
+type CandidateProfile = {
+  phone_number: string | null;
+  country: string | null;
+  state: string | null;
+  years_of_experience: number | null;
+  job_search_timing: string | null;
+  work_preference: string | null;
+  resume_path: string | null;
+  onboarding_completed: boolean;
+};
+
+export default function ApplicantOnboardingPage() {
+  const supabase = createClient();
+  const router = useRouter();
+
+  const [userId, setUserId] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("Nigeria");
+  const [state, setState] = useState("");
+  const [experience, setExperience] = useState("0");
+  const [searchTiming, setSearchTiming] = useState("immediately");
+  const [workPreference, setWorkPreference] = useState("any");
+  const [resume, setResume] = useState<File | null>(null);
+  const [existingResume, setExistingResume] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProfile() {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (!active) return;
+
+      if (authError || !user) {
+        setError(
+          "Please sign in with your Xedruo account before completing your profile."
+        );
+        setLoading(false);
+        return;
+      }
+
+      setUserId(user.id);
+      setEmail(user.email ?? "");
+
+      const [{ data: profile, error: profileError }, { data: candidate, error: candidateError }] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select("full_name, phone_number")
+            .eq("id", user.id)
+            .maybeSingle(),
+          supabase
+            .from("careers_candidate_profiles")
+            .select("*")
+            .eq("profile_id", user.id)
+            .maybeSingle(),
+        ]);
+
+      if (!active) return;
+
+      if (profileError || candidateError) {
+        setError(
+          "We couldn't load your profile. Please refresh the page and try again."
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (profile) {
+        setFullName(profile.full_name ?? "");
+        setPhone(profile.phone_number ?? "");
+      }
+
+      if (candidate) {
+        const saved = candidate as CandidateProfile;
+        setPhone(saved.phone_number ?? profile?.phone_number ?? "");
+        setCountry(saved.country ?? "Nigeria");
+        setState(saved.state ?? "");
+        setExperience(String(saved.years_of_experience ?? 0));
+        setSearchTiming(saved.job_search_timing ?? "immediately");
+        setWorkPreference(saved.work_preference ?? "any");
+        setExistingResume(saved.resume_path ?? "");
+      }
+
+      setLoading(false);
+    }
+
+    void loadProfile();
+
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setNotice("");
+
+    if (!userId) {
+      setError("Please sign in with Xedruo before continuing.");
+      return;
+    }
+
+    if (!fullName.trim() || !country.trim() || !state.trim()) {
+      setError("Please complete your name and location.");
+      return;
+    }
+
+    const years = Number(experience);
+
+    if (!Number.isFinite(years) || years < 0 || years > 100) {
+      setError("Enter a valid number of years of experience.");
+      return;
+    }
+
+    if (resume) {
+      const allowedTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+
+      if (!allowedTypes.includes(resume.type)) {
+        setError("Your resume must be a PDF, DOC, or DOCX file.");
+        return;
+      }
+
+      if (resume.size > 5 * 1024 * 1024) {
+        setError("Your resume must be no larger than 5 MB.");
+        return;
+      }
+    }
+
+    setSaving(true);
+
+    try {
+      let resumePath = existingResume || null;
+
+      if (resume) {
+        const extension = resume.name.split(".").pop()?.toLowerCase();
+
+        if (!extension || !["pdf", "doc", "docx"].includes(extension)) {
+          throw new Error("The selected resume has an invalid file extension.");
+        }
+
+        resumePath = `${userId}/resume.${extension}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("careers-resumes")
+          .upload(resumePath, resume, {
+            upsert: true,
+            contentType: resume.type,
+          });
+
+        if (uploadError) throw uploadError;
+      }
+
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: fullName.trim(),
+          phone_number: phone.trim() || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId);
+
+      if (profileError) throw profileError;
+
+      const { error: candidateError } = await supabase
+        .from("careers_candidate_profiles")
+        .upsert(
+          {
+            profile_id: userId,
+            phone_number: phone.trim() || null,
+            country: country.trim(),
+            state: state.trim(),
+            years_of_experience: years,
+            job_search_timing: searchTiming,
+            work_preference: workPreference,
+            resume_path: resumePath,
+            onboarding_completed: true,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "profile_id" }
+        );
+
+      if (candidateError) throw candidateError;
+
+      setNotice("Your candidate profile has been saved.");
+      router.push("/candidate/dashboard");
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong while saving your profile."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-slate-50 px-6">
+        <p className="text-sm text-slate-500">Loading your Xedruo profile…</p>
+      </main>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-slate-50 px-6 py-12">
+        <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <p className="text-sm font-semibold text-indigo-600">XEDRUO CAREERS</p>
+          <h1 className="mt-4 text-2xl font-semibold text-slate-950">
+            Sign in to continue
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Sign in using your existing Xedruo account, then return here to
+            complete your candidate profile.
+          </p>
+          {error && (
+            <p role="alert" className="mt-4 text-sm text-red-600">
+              {error}
+            </p>
+          )}
+          <Link
+            href="/"
+            className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Return to Xedruo Careers
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-2xl font-semibold">Coming soon</h1>
-      <p className="mt-3 text-slate-600">
-        This section of Xedruo Careers is under development.
-      </p>
+    <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:py-16">
+      <div className="mx-auto max-w-3xl">
+        <Link
+          href="/"
+          className="text-sm font-semibold tracking-wide text-indigo-600"
+        >
+          XEDRUO CAREERS
+        </Link>
+
+        <div className="mt-8">
+          <p className="text-sm font-medium text-indigo-600">
+            CANDIDATE ONBOARDING
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+            Let&apos;s build your professional profile.
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+            Give employers a clearer picture of your experience, preferences,
+            and the opportunities you&apos;re looking for.
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"
+        >
+          <section>
+            <h2 className="text-lg font-semibold text-slate-950">
+              Personal information
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              These details belong to your shared Xedruo account.
+            </p>
+
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <label className="block text-sm font-medium text-slate-700">
+                Full name *
+                <input
+                  className={inputClass}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  autoComplete="name"
+                  required
+                  maxLength={120}
+                  placeholder="Your full name"
+                />
+              </label>
+
+              <label className="block text-sm font-medium text-slate-700">
+                Email address
+                <input
+                  className={`${inputClass} bg-slate-50`}
+                  value={email}
+                  readOnly
+                  type="email"
+                />
+                <span className="mt-1 block text-xs text-slate-500">
+                  Managed by Xedruo authentication
+                </span>
+              </label>
+
+              <label className="block text-sm font-medium text-slate-700">
+                Phone number
+                <input
+                  className={inputClass}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  autoComplete="tel"
+                  type="tel"
+                  maxLength={30}
+                  placeholder="+234..."
+                />
+              </label>
+
+              <label className="block text-sm font-medium text-slate-700">
+                Country *
+                <input
+                  className={inputClass}
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  required
+                  maxLength={100}
+                  autoComplete="country-name"
+                />
+              </label>
+
+              <label className="block text-sm font-medium text-slate-700 sm:col-span-2">
+                State, province, or region *
+                <input
+                  className={inputClass}
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  required
+                  maxLength={100}
+                  placeholder="e.g. Lagos"
+                  autoComplete="address-level1"
+                />
+              </label>
+            </div>
+          </section>
+
+          <div className="border-t border-slate-100" />
+
+          <section>
+            <h2 className="text-lg font-semibold text-slate-950">
+              Career preferences
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Help us understand the roles that may suit you.
+            </p>
+
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <label className="block text-sm font-medium text-slate-700">
+                Years of experience *
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                  required
+                />
+                <span className="mt-1 block text-xs text-slate-500">
+                  Include relevant professional experience.
+                </span>
+              </label>
+
+              <label className="block text-sm font-medium text-slate-700">
+                When are you looking to start? *
+                <select
+                  className={inputClass}
+                  value={searchTiming}
+                  onChange={(e) => setSearchTiming(e.target.value)}
+                  required
+                >
+                  {SEARCH_TIMINGS.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block text-sm font-medium text-slate-700 sm:col-span-2">
+                Preferred work arrangement *
+                <select
+                  className={inputClass}
+                  value={workPreference}
+                  onChange={(e) => setWorkPreference(e.target.value)}
+                  required
+                >
+                  {WORK_PREFERENCES.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <div className="border-t border-slate-100" />
+
+          <section>
+            <h2 className="text-lg font-semibold text-slate-950">
+              Resume
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              Upload a PDF, DOC, or DOCX file. Your resume will be stored in
+              private storage, not a public URL.
+            </p>
+
+            <label className="mt-5 block rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5">
+              <span className="block text-sm font-medium text-slate-800">
+                {resume ? resume.name : "Choose your resume"}
+              </span>
+              <span className="mt-1 block text-xs text-slate-500">
+                Maximum file size: 5 MB
+              </span>
+              <input
+                className="mt-4 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:font-medium file:text-indigo-700 hover:file:bg-indigo-100"
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(e) => setResume(e.target.files?.[0] ?? null)}
+              />
+            </label>
+
+            {existingResume && !resume && (
+              <p className="mt-3 text-sm text-emerald-700">
+                You already have a saved resume. Choose another file to replace it.
+              </p>
+            )}
+          </section>
+
+          {error && (
+            <p
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            >
+              {error}
+            </p>
+          )}
+
+          {notice && (
+            <p
+              role="status"
+              className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"
+            >
+              {notice}
+            </p>
+          )}
+
+          <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs leading-5 text-slate-500">
+              Your information is associated with your existing Xedruo account.
+            </p>
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving ? "Saving profile..." : "Save and continue"}
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
   );
 }
