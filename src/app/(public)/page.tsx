@@ -10,27 +10,28 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import FooterYear from '@/src/components/FooterYear';
 
 const features = [
   {
     number: "01",
     title: "Discover opportunities",
     description:
-      "Find relevant roles, explore companies, and discover opportunities that fit your ambitions.",
+      "Find relevant roles, explore companies, and discover opportunities that fit your ambitions",
     icon: Search,
   },
   {
     number: "02",
     title: "Showcase your talent",
     description:
-      "Build your professional profile and present your experience to employers with confidence.",
+      "Build your professional profile and present your experience to employers with confidence",
     icon: FileText,
   },
   {
     number: "03",
     title: "Recruit with confidence",
     description:
-      "Publish roles, evaluate applicants, and manage your hiring process in one place.",
+      "Publish roles, evaluate applicants, and manage your hiring process in one place",
     icon: Users,
   },
 ];
@@ -54,7 +55,7 @@ export default function HomePage() {
             </span>
             <span className="text-xl font-extrabold tracking-tight">
               HIREUO
-              <span className="text-indigo-600">.</span>
+              <span className="text-indigo-600"> </span>
             </span>
           </Link>
 
@@ -115,17 +116,17 @@ export default function HomePage() {
             </div>
 
             <h1 className="mt-7 max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
-              Great opportunities.
+              Great opportunities
               <span className="block text-indigo-600">
-                Exceptional talent.
+                Exceptional talent
               </span>
-              <span className="block">One platform.</span>
+              <span className="block">One platform</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
               Whether you are searching for your next role or building an
               exceptional team, HIREUO helps you move forward with clarity and
-              confidence.
+              confidence
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -159,7 +160,7 @@ export default function HomePage() {
 
           {/* Product preview */}
           <div className="relative mx-auto w-full max-w-xl">
-            <div className="absolute -inset-5 rounded-[2rem] bg-gradient-to-br from-indigo-100 via-white to-sky-100 blur-2xl" />
+            <div className="absolute -inset-5 rounded-4xl bg-linear-to-br from-indigo-100 via-white to-sky-100 blur-2xl" />
 
             <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xl shadow-slate-900/10 sm:p-7">
               <div className="flex items-center justify-between border-b border-slate-100 pb-5">
@@ -228,7 +229,7 @@ export default function HomePage() {
                 <div>
                   <p className="text-sm font-semibold">Your next chapter</p>
                   <p className="mt-1 text-xs text-indigo-100">
-                    Starts with one step.
+                    Starts with one step
                   </p>
                 </div>
                 <ArrowRight size={21} />
@@ -247,13 +248,13 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-indigo-600">
-              One platform. Two journeys.
+              One platform Two journeys
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
               Where would you like to begin?
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Choose your path. We will help you take the next step.
+              Choose your path We will help you take the next step
             </p>
           </div>
 
@@ -267,7 +268,7 @@ export default function HomePage() {
               </h3>
               <p className="mt-3 max-w-lg leading-7 text-slate-600">
                 Discover relevant opportunities, showcase your experience,
-                manage applications, and prepare for interviews.
+                manage applications, and prepare for interviews
               </p>
               <Link
                 href="/onboarding/applicant"
@@ -290,7 +291,7 @@ export default function HomePage() {
               </h3>
               <p className="mt-3 max-w-lg leading-7 text-slate-600">
                 Publish job opportunities, review candidates, organise
-                interviews, and manage your recruitment pipeline.
+                interviews, and manage your recruitment pipeline
               </p>
               <Link
                 href="/onboarding/recruiter"
@@ -315,12 +316,12 @@ export default function HomePage() {
               Designed for progress
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Everything starts with the right connection.
+              Everything starts with the right connection
             </h2>
           </div>
           <p className="max-w-md leading-7 text-slate-600">
             From discovering a role to finding the right candidate, keep the
-            important steps in one organised place.
+            important steps in one organised place
           </p>
         </div>
 
@@ -370,7 +371,7 @@ export default function HomePage() {
               </h2>
               <p className="mt-4 leading-7 text-slate-300">
                 Take the next step in your career or start building your team
-                with HIREUO.
+                with HIREUO
               </p>
             </div>
 
@@ -397,10 +398,11 @@ export default function HomePage() {
       <footer className="border-t border-slate-200">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-500 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Link href="/" className="font-extrabold tracking-tight text-slate-900">
-            HIREUO<span className="text-indigo-600">.</span>
+            HIREUO<span className="text-indigo-600"> </span>
           </Link>
-          <p>Connecting talent with opportunity.</p>
-          <p>© {new Date().getFullYear()} HIREUO. All rights reserved.</p>
+          <p>Connecting talent with opportunity</p>
+          <p>©<FooterYear /> HIREUO</p>
+          
         </div>
       </footer>
     </main>
