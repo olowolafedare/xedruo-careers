@@ -194,7 +194,6 @@ export default function ApplicantOnboardingPage() {
 
         const { error: uploadError } = await supabase.storage
           .from("careers-resumes")
-        
           .upload(resumePath, resume, {
             upsert: true,
             contentType: resume.type,
