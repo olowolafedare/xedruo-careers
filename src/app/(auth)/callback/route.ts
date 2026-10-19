@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const requestedDestination = url.searchParams.get('next');
-  const destination = requestedDestination === '/onboarding/applicant' || requestedDestination === '/onboarding/recruiter'
+  const destination = requestedDestination === '/applicant' || requestedDestination === '/recruiter'
     ? requestedDestination
     : '/start';
 

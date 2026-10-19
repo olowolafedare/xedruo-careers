@@ -7,8 +7,8 @@ import { createClient } from "@/src/lib/supabase/client";
 
 const ALLOWED_DESTINATIONS = new Set([
   "/start",
-  "/onboarding/applicant",
-  "/onboarding/recruiter",
+  "/applicant",
+  "/recruiter",
 ]);
 
 function safeDestination(value: string | null) {

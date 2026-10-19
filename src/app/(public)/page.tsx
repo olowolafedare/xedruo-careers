@@ -126,7 +126,7 @@ export default function HomePage() {
                 <ArrowRight size={18} />
               </Link>
               <Link
-                href="/account?next=%2Fonboarding%2Frecruiter"
+                href="/account?next=%2Frecruiter"
                 className="inline-flex items-center justify-center gap-2 rounded-xl  -slate-200 bg-white px-6 py-4 font-semibold text-slate-800 transition hover:-gold-200 hover:bg-gold-50"
               >
                 I&apos;m hiring
@@ -255,7 +255,7 @@ export default function HomePage() {
                 manage applications, and prepare for interviews
               </p>
               <Link
-                href="/account?next=%2Fonboarding%2Fapplicant"
+                href="/account?next=%2Fapplicant"
                 className="mt-7 inline-flex items-center gap-2 font-semibold text-gold-600 transition group-hover:gap-3 "
               >
                 Continue as a candidate
@@ -278,7 +278,7 @@ export default function HomePage() {
                 interviews, and manage your recruitment pipeline
               </p>
               <Link
-                href="/account?next=%2Fonboarding%2Frecruiter"
+                href="/account?next=%2Frecruiter"
                 className="mt-7 inline-flex items-center gap-2 font-semibold text-gold-600 transition group-hover:gap-3"
               >
                 Continue as a recruiter

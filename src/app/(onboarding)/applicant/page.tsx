@@ -116,7 +116,7 @@ export default function ApplicantOnboardingPage() {
           return;
         }
         setPhone(saved.phone_number ?? profile?.phone_number ?? "");
-        setCountry(saved.country ?? "Nigeria");
+        setCountry(saved.country ?? "Country");
         setState(saved.state ?? "");
         setExperience(String(saved.years_of_experience ?? 0));
         setSearchTiming(saved.job_search_timing ?? "immediately");
@@ -286,7 +286,7 @@ export default function ApplicantOnboardingPage() {
           href="/"
           className="text-sm font-semibold tracking-wide text-indigo-600"
         >
-          XEDRUO CAREERS
+          HIREUO
         </Link>
 
         <div className="mt-8">
@@ -296,10 +296,6 @@ export default function ApplicantOnboardingPage() {
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
             Let&apos;s build your professional profile.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-            Give employers a clearer picture of your experience, preferences,
-            and the opportunities you&apos;re looking for.
-          </p>
         </div>
 
         <form
@@ -310,9 +306,6 @@ export default function ApplicantOnboardingPage() {
             <h2 className="text-lg font-semibold text-slate-950">
               Personal information
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              These details belong to your shared Xedruo account.
-            </p>
 
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
@@ -336,9 +329,6 @@ export default function ApplicantOnboardingPage() {
                   readOnly
                   type="email"
                 />
-                <span className="mt-1 block text-xs text-slate-500">
-                  Managed by Xedruo authentication
-                </span>
               </label>
 
               <label className="block text-sm font-medium text-slate-700">
@@ -385,11 +375,8 @@ export default function ApplicantOnboardingPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-slate-950">
-              Career preferences
+              Preferences
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Help us understand the roles that may suit you.
-            </p>
 
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
@@ -404,9 +391,6 @@ export default function ApplicantOnboardingPage() {
                   onChange={(e) => setExperience(e.target.value)}
                   required
                 />
-                <span className="mt-1 block text-xs text-slate-500">
-                  Include relevant professional experience.
-                </span>
               </label>
 
               <label className="block text-sm font-medium text-slate-700">
@@ -450,8 +434,7 @@ export default function ApplicantOnboardingPage() {
               Resume
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              Upload a PDF, DOC, or DOCX file. Your resume will be stored in
-              private storage, not a public URL.
+              Upload a PDF, DOC, or DOCX file
             </p>
 
             <label className="mt-5 block rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5">
@@ -471,7 +454,7 @@ export default function ApplicantOnboardingPage() {
 
             {existingResume && !resume && (
               <p className="mt-3 text-sm text-emerald-700">
-                You already have a saved resume. Choose another file to replace it.
+                You already have a saved resume, choose another file to replace it.
               </p>
             )}
           </section>
@@ -495,9 +478,6 @@ export default function ApplicantOnboardingPage() {
           )}
 
           <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs leading-5 text-slate-500">
-              Your information is associated with your existing Xedruo account.
-            </p>
             <button
               type="submit"
               disabled={saving}
