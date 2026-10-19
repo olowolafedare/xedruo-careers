@@ -107,7 +107,6 @@ export default function ApplicantOnboardingPage() {
 
       if (profile) {
         setFullName(profile.full_name ?? "");
-        setPhone(profile.phone_number ?? "");
       }
 
       if (candidate) {
@@ -116,7 +115,7 @@ export default function ApplicantOnboardingPage() {
           router.replace("/candidate/dashboard");
           return;
         }
-        setPhone(saved.phone_number ?? profile?.phone_number ?? "");
+        setPhone(saved.phone_number ?? "");
         setCountry(saved.country ?? "Country");
         setState(saved.state ?? "");
         setExperience(String(saved.years_of_experience ?? 0));
