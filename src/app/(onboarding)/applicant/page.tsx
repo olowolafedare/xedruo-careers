@@ -34,8 +34,9 @@ type CandidateProfile = {
   onboarding_completed: boolean;
 };
 
+const supabase = createClient();
+
 export default function ApplicantOnboardingPage() {
-  const supabase = createClient();
   const router = useRouter();
 
   const [userId, setUserId] = useState("");
@@ -67,7 +68,7 @@ export default function ApplicantOnboardingPage() {
 
       if (authError || !user) {
         setError(
-          "Please sign in with your Xedruo account before completing your profile."
+          "Please sign in with your HIREUO account before completing your profile."
         );
         setLoading(false);
         return;
@@ -84,7 +85,7 @@ export default function ApplicantOnboardingPage() {
         await Promise.all([
           supabase
             .from("profiles")
-            .select("full_name, phone_number")
+            .select("full_name")
             .eq("id", user.id)
             .maybeSingle(),
           supabase
@@ -140,7 +141,7 @@ export default function ApplicantOnboardingPage() {
     setNotice("");
 
     if (!userId) {
-      setError("Please sign in with Xedruo before continuing.");
+      setError("Please sign in with HIREUO before continuing.");
       return;
     }
 
@@ -176,10 +177,14 @@ export default function ApplicantOnboardingPage() {
 
     setSaving(true);
 
+    let currentStep = "Preparing onboarding";
+
     try {
       let resumePath = existingResume || null;
 
       if (resume) {
+        currentStep = "Uploading resume";
+
         const extension = resume.name.split(".").pop()?.toLowerCase();
 
         if (!extension || !["pdf", "doc", "docx"].includes(extension)) {
@@ -189,7 +194,7 @@ export default function ApplicantOnboardingPage() {
         resumePath = `${userId}/resume.${extension}`;
 
         const { error: uploadError } = await supabase.storage
-          .from("careers-resumes")
+          .from("-resumes")
           .upload(resumePath, resume, {
             upsert: true,
             contentType: resume.type,
@@ -198,16 +203,23 @@ export default function ApplicantOnboardingPage() {
         if (uploadError) throw uploadError;
       }
 
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          full_name: fullName.trim(),
-          phone_number: phone.trim() || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", userId);
+      currentStep = "Updating HIREUO profile";
 
-      if (profileError) throw profileError;
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      full_name: fullName.trim(),
+      updated_at: new Date().toISOString(),
+      })
+    .eq("id", userId);
+
+  if (profileError) {
+    console.error("HIREUO profile update failed:", profileError);
+    throw new Error(
+      `HIREUO profile update failed: ${profileError.message} (code: ${profileError.code})`
+    );
+  }
+      currentStep = "Saving candidate profile";
 
       const { error: candidateError } = await supabase
         .from("careers_candidate_profiles")
@@ -233,11 +245,13 @@ export default function ApplicantOnboardingPage() {
       router.push("/candidate/dashboard");
       router.refresh();
     } catch (err) {
-      setError(
+      const message =
         err instanceof Error
           ? err.message
-          : "Something went wrong while saving your profile."
-      );
+          : "Something went wrong while saving your profile.";
+
+      console.error(`HIREUO onboarding failed at: ${currentStep}`, err);
+      setError(`${currentStep}: ${message}`);
     } finally {
       setSaving(false);
     }
@@ -246,7 +260,7 @@ export default function ApplicantOnboardingPage() {
   if (loading) {
     return (
       <main className="grid min-h-screen place-items-center bg-slate-50 px-6">
-        <p className="text-sm text-slate-500">Loading your Xedruo profile…</p>
+        <p className="text-sm text-slate-500">Loading your HIREUO profile…</p>
       </main>
     );
   }
@@ -255,12 +269,12 @@ export default function ApplicantOnboardingPage() {
     return (
       <main className="grid min-h-screen place-items-center bg-slate-50 px-6 py-12">
         <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-sm font-semibold text-indigo-600">XEDRUO CAREERS</p>
+          <p className="text-sm font-semibold text-indigo-600">HIREUO </p>
           <h1 className="mt-4 text-2xl font-semibold text-slate-950">
             Sign in to continue
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Sign in using your existing Xedruo account, then return here to
+            Sign in using your existing HIREUO account, then return here to
             complete your candidate profile.
           </p>
           {error && (
@@ -272,7 +286,7 @@ export default function ApplicantOnboardingPage() {
             href="/"
             className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700"
           >
-            Return to Xedruo Careers
+            Return to HIREUO 
           </Link>
         </section>
       </main>
