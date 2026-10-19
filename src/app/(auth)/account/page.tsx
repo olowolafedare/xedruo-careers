@@ -2,12 +2,23 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/client";
+
+const ALLOWED_DESTINATIONS = new Set([
+  "/start",
+  "/onboarding/applicant",
+  "/onboarding/recruiter",
+]);
+
+function safeDestination(value: string | null) {
+  return value && ALLOWED_DESTINATIONS.has(value) ? value : "/start";
+}
 
 export default function AccountPage() {
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,6 +26,7 @@ export default function AccountPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const destination = safeDestination(searchParams.get("next"));
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,7 +39,7 @@ export default function AccountPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/callback`,
+            emailRedirectTo: `${window.location.origin}/callback?next=${encodeURIComponent(destination)}`,
             data: { full_name: name.trim() },
           },
         });
@@ -40,7 +52,7 @@ export default function AccountPage() {
         const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
         if (authError) throw authError;
       }
-      router.push("/start");
+      router.push(destination);
       router.refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "We couldn't complete your request.");
