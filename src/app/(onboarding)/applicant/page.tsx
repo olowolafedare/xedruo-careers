@@ -98,7 +98,7 @@ export default function ApplicantOnboardingPage() {
 
       if (profileError || candidateError) {
         setError(
-          "We couldn't load your profile. Please refresh the page and try again."
+          "Complete onboarding to show profile"
         );
         setLoading(false);
         return;
