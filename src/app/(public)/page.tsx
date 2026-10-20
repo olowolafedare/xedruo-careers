@@ -14,17 +14,15 @@ import FooterYear from '@/src/components/FooterYear';
 
 const features = [
   {
-    number: "01",
     title: "Discover opportunities",
     icon: Search,
   },
   {
-    number: "02",
     title: "Showcase your talent",
     icon: FileText,
   },
   {
-    number: "03",
+
     title: "Recruit with confidence",
     icon: Users,
   },
@@ -370,7 +368,7 @@ export default function HomePage() {
           <Link href="/" className="font-extrabold tracking-tight text-slate-900">
             HIREUO<span className="text-Emeka-600"> </span>
           </Link>
-          <p>©<FooterYear /> HIREUO</p>
+          <p>©<FooterYear /> </p>
           
         </div>
       </footer>
