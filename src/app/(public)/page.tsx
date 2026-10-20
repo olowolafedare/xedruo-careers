@@ -44,31 +44,31 @@ export default function HomePage() {
             aria-label="HIREUO home"
             className="flex items-center gap-2.5"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-600 text-lg font-black text-white shadow-lg shadow-gold-600/20">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-Emeka-600 text-lg font-black text-white shadow-lg shadow-Emeka-600/20">
               H
             </span>
             <span className="text-xl font-extrabold tracking-tight">
               HIREUO
-              <span className="text-gold-600"> </span>
+              <span className="text-Emeka-600"> </span>
             </span>
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
             <Link
               href="/jobs"
-              className="text-sm font-medium text-slate-600 transition hover:text-gold-600"
+              className="text-sm font-medium text-slate-600 transition hover:text-Emeka-600"
             >
               Find jobs
             </Link>
             <a
               href="#how-it-works"
-              className="text-sm font-medium text-slate-600 transition hover:text-gold-600"
+              className="text-sm font-medium text-slate-600 transition hover:text-Emeka-600"
             >
               How it works
             </a>
             <a
               href="#for-employers"
-              className="text-sm font-medium text-slate-600 transition hover:text-gold-600"
+              className="text-sm font-medium text-slate-600 transition hover:text-Emeka-600"
             >
               For employers
             </a>
@@ -83,7 +83,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/account"
-              className="inline-flex items-center gap-2 rounded-xl bg-gold-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-gold-600/15 transition hover:bg-gold-700"
+              className="inline-flex items-center gap-2 rounded-xl bg-Emeka-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-Emeka-600/15 transition hover:bg-Emeka-700"
             >
               Get started
               <ArrowRight size={16} />
@@ -98,20 +98,20 @@ export default function HomePage() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
         >
-          <div className="absolute -right-32 -top-20 h-96 w-96 rounded-full bg-gold-100/70 blur-3xl" />
+          <div className="absolute -right-32 -top-20 h-96 w-96 rounded-full bg-Emeka-100/70 blur-3xl" />
           <div className="absolute -left-32 top-64 h-80 w-80 rounded-full bg-sky-100/60 blur-3xl" />
         </div>
 
         <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-32">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full  -gold-100 bg-white/80 px-3.5 py-2 text-sm font-semibold text-gold-700 shadow-sm">
+            <div className="inline-flex items-center gap-2 rounded-full  -Emeka-100 bg-white/80 px-3.5 py-2 text-sm font-semibold text-Emeka-700 shadow-sm">
               <Sparkles size={15} />
               Your next chapter starts here
             </div>
 
             <h1 className="mt-7 max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
               Great opportunities
-              <span className="block text-gold-600">
+              <span className="block text-Emeka-600">
                 Exceptional talent
               </span>
               <span className="block">One platform</span>
@@ -120,14 +120,14 @@ export default function HomePage() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/jobs"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-600 px-6 py-4 font-semibold text-white shadow-lg shadow-gold-600/20 transition hover:-translate-y-0.5 hover:bg-gold-700"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-Emeka-600 px-6 py-4 font-semibold text-white shadow-lg shadow-Emeka-600/20 transition hover:-translate-y-0.5 hover:bg-Emeka-700"
               >
                 Explore opportunities
                 <ArrowRight size={18} />
               </Link>
               <Link
                 href="/account?next=%2Frecruiter"
-                className="inline-flex items-center justify-center gap-2 rounded-xl  -slate-200 bg-white px-6 py-4 font-semibold text-slate-800 transition hover:-gold-200 hover:bg-gold-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl  -slate-200 bg-white px-6 py-4 font-semibold text-slate-800 transition hover:-Emeka-200 hover:bg-Emeka-50"
               >
                 I&apos;m hiring
                 <ArrowUpRight size={18} />
@@ -136,11 +136,11 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500">
               <span className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-gold-600" />
+                <CheckCircle2 size={16} className="text-Emeka-600" />
                 A clearer hiring journey
               </span>
               <span className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-gold-600" />
+                <CheckCircle2 size={16} className="text-Emeka-600" />
                 Built for talent and teams
               </span>
             </div>
@@ -148,12 +148,12 @@ export default function HomePage() {
 
           {/* Product preview */}
           <div className="relative mx-auto w-full max-w-xl">
-            <div className="absolute -inset-5 rounded-4xl bg-linear-to-br from-gold-100 blur-2xl" />
+            <div className="absolute -inset-5 rounded-4xl bg-linear-to-br from-Emeka-100 blur-2xl" />
 
             <div className=" --Bright Emmanuel Emeka ">
               <div className="flex items-center justify-between -b -slate-100 pb-5">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-600">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-Emeka-600">
                     Career workspace
                   </p>
                   <h2 className="mt-2 text-xl font-bold tracking-tight">
@@ -163,7 +163,7 @@ export default function HomePage() {
                     Opportunities worth exploring.
                   </p>
                 </div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold-50 text-gold-600">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-Emeka-50 text-Emeka-600">
                   <BriefcaseBusiness size={23} />
                 </span>
               </div>
@@ -171,7 +171,7 @@ export default function HomePage() {
               <div className="mt-5 rounded-2xl  -slate-100 bg-slate-50/50 p-4 hover:bg-amber-200">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-gold-600 shadow-sm">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-Emeka-600 shadow-sm">
                       <Search size={20} />
                     </span>
                     <div>
@@ -181,7 +181,6 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-                  <ArrowUpRight size={18} className="shrink-0 text-slate-400" />
                 </div>
               </div>
 
@@ -213,14 +212,13 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-between rounded-2xl bg-gold-600 p-4 text-white">
+              <div className="mt-5 flex items-center justify-between rounded-2xl bg-Emeka-600 p-4 text-white">
                 <div>
                   <p className="text-sm font-semibold">Your next chapter</p>
-                  <p className="mt-1 text-xs text-gold-100">
+                  <p className="mt-1 text-xs text-Emeka-100">
                     Starts with one step
                   </p>
                 </div>
-                <ArrowRight size={21} />
               </div>
             </div>
           </div>
@@ -231,7 +229,7 @@ export default function HomePage() {
       <section className="-y -slate-100 bg-slate-50/70">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-gold-600">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-Emeka-600">
               One platform Two journeys
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -244,7 +242,7 @@ export default function HomePage() {
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             <article className="group rounded-3xl  -slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:-amber-400 hover:shadow-xl hover:shadow-amber-950/5 sm:p-9 hover:bg-amber-400">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-50 text-gold-600">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-Emeka-50 text-Emeka-600">
                 <Search size={24} />
               </span>
               <h3 className="mt-6 text-2xl font-bold tracking-tight">
@@ -256,7 +254,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/account?next=%2Fapplicant"
-                className="mt-7 inline-flex items-center gap-2 font-semibold text-gold-600 transition group-hover:gap-3 "
+                className="mt-7 inline-flex items-center gap-2 font-semibold text-Emeka-600 transition group-hover:gap-3 "
               >
                 Continue as a candidate
                 <ArrowRight size={18} />
@@ -279,7 +277,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/account?next=%2Frecruiter"
-                className="mt-7 inline-flex items-center gap-2 font-semibold text-gold-600 transition group-hover:gap-3"
+                className="mt-7 inline-flex items-center gap-2 font-semibold text-Emeka-600 transition group-hover:gap-3"
               >
                 Continue as a recruiter
                 <ArrowRight size={18} />
@@ -296,7 +294,7 @@ export default function HomePage() {
       >
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-gold-600">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-Emeka-600">
               Designed for progress
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -315,7 +313,7 @@ export default function HomePage() {
                 className="rounded-2xl  -slate-200 bg-white p-7 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-50 text-gold-600">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-Emeka-50 text-Emeka-600">
                     <Icon size={22} />
                   </span>
                   <span className="text-sm font-bold tracking-widest text-slate-300">
@@ -336,11 +334,11 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-slate-950 px-7 py-12 text-white sm:px-12 sm:py-16">
           <div
             aria-hidden="true"
-            className="absolute -right-16 -top-32 h-80 w-80 rounded-full bg-gold-600/30 blur-3xl"
+            className="absolute -right-16 -top-32 h-80 w-80 rounded-full bg-Emeka-600/30 blur-3xl"
           />
           <div className="relative flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold text-gold-300">
+              <p className="text-sm font-semibold text-Emeka-300">
                 YOUR NEXT CHAPTER STARTS HERE
               </p>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -370,7 +368,7 @@ export default function HomePage() {
       <footer className="-t -slate-200">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-500 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Link href="/" className="font-extrabold tracking-tight text-slate-900">
-            HIREUO<span className="text-gold-600"> </span>
+            HIREUO<span className="text-Emeka-600"> </span>
           </Link>
           <p>©<FooterYear /> HIREUO</p>
           
