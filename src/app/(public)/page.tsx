@@ -14,15 +14,17 @@ import FooterYear from '@/src/components/FooterYear';
 
 const features = [
   {
+    number: "01",
     title: "Discover opportunities",
     icon: Search,
   },
   {
+    number: "02",
     title: "Showcase your talent",
     icon: FileText,
   },
   {
-
+    number: "03",
     title: "Recruit with confidence",
     icon: Users,
   },
@@ -224,7 +226,7 @@ export default function HomePage() {
       </section>
 
       {/* Audience selection */}
-      <section className="-y -slate-100 bg-slate-50/70">
+      <section className="-y -slate-100 bg-amber-100">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-Emeka-600">
