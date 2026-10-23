@@ -44,7 +44,7 @@ export default function HomePage() {
             aria-label="HIREUO home"
             className="flex items-center gap-2.5"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-Emeka-600 text-lg font-black text-white shadow-lg shadow-Emeka-600/20">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-900 text-lg font-black text-white shadow-lg shadow-Emeka-600/20">
               H
             </span>
             <span className="text-xl font-extrabold tracking-tight">

@@ -13,9 +13,9 @@ export default function CandidateDashboardPage() {
     <div className="space-y-8">
       <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold text-amber-600">CANDIDATE WORKSPACE</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Your career, in one place</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">Keep your search organised, stay on top of next steps, and make your next move with confidence</p>
+          <p className="text-sm font-semibold text-amber-600"> </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Your career in one place</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500"> </p>
         </div>
         <Link href="/jobs" className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-700 sm:self-auto">Explore jobs <ArrowRight size={16} /></Link>
       </section>
