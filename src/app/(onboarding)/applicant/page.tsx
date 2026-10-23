@@ -111,10 +111,6 @@ export default function ApplicantOnboardingPage() {
 
       if (candidate) {
         const saved = candidate as CandidateProfile;
-        if (saved.onboarding_completed) {
-          router.replace("/candidate/dashboard");
-          return;
-        }
         setPhone(saved.phone_number ?? "");
         setCountry(saved.country ?? "Country");
         setState(saved.state ?? "");
