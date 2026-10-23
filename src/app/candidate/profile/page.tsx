@@ -91,33 +91,33 @@ export default function CandidateProfilePage() {
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-indigo-600">YOUR PROFESSIONAL DETAILS</p>
+        <p className="text-sm font-semibold text-amber-600">YOUR PROFESSIONAL DETAILS</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">My profile</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">Your candidate information from onboarding.</p>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Your candidate information from onboarding</p>
       </header>
 
       <div className="flex justify-end">
-        <Link href="/applicant" className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700">Update profile <ArrowRight size={15} /></Link>
+        <Link href="/applicant" className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-700">Update profile <ArrowRight size={15} /></Link>
       </div>
 
-      {loading ? <p className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500">Loading your profile…</p> : null}
-      {error ? <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
+      {loading ? <p className="rounded-2xl  -slate-200 bg-white p-6 text-sm text-slate-500">Loading your profile…</p> : null}
+      {error ? <p role="alert" className="rounded-xl  -red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
       {!loading && !error && !candidate?.onboarding_completed ? (
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="rounded-2xl  -slate-200 bg-white p-6">
           <h2 className="font-semibold">Complete your candidate profile</h2>
           <p className="mt-2 text-sm text-slate-500">Fill in your onboarding information to see it here</p>
-          <Link href="/applicant" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-indigo-600">Continue onboarding<ArrowRight size={15} /></Link>
+          <Link href="/applicant" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-amber-600">Continue onboarding<ArrowRight size={15} /></Link>
         </section>
       ) : null}
       {!loading && !error && candidate?.onboarding_completed ? <>
-        {details.map(({ icon: Icon, title, rows }) => <section key={title} className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-          <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600"><Icon size={18} /></span><h2 className="font-semibold">{title}</h2></div>
+        {details.map(({ icon: Icon, title, rows }) => <section key={title} className="rounded-2xl  -slate-200 bg-white p-6 sm:p-8">
+          <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-amber-50 text-amber-600"><Icon size={18} /></span><h2 className="font-semibold">{title}</h2></div>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2">{rows.map(([label, value]) => <div key={label}><dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</dt><dd className="mt-1 text-sm text-slate-900">{value || "Not provided"}</dd></div>)}</dl>
         </section>)}
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-          <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600"><FileText size={18} /></span><h2 className="font-semibold">Resume</h2></div>
+        <section className="rounded-2xl  -slate-200 bg-white p-6 sm:p-8">
+          <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-amber-50 text-amber-600"><FileText size={18} /></span><h2 className="font-semibold">Resume</h2></div>
           <p className="mt-4 text-sm text-slate-600">{candidate.resume_path ? "A resume is saved to your profile." : "No resume uploaded."}</p>
-          {resumeUrl ? <a href={resumeUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-indigo-600 hover:text-indigo-700">View resume <ArrowRight size={15} className="ml-2" /></a> : null}
+          {resumeUrl ? <a href={resumeUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-amber-600 hover:text-amber-700">View resume <ArrowRight size={15} className="ml-2" /></a> : null}
         </section>
       </> : null}
     </div>
