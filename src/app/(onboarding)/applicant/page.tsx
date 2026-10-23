@@ -259,7 +259,7 @@ export default function ApplicantOnboardingPage() {
   if (loading) {
     return (
       <main className="grid min-h-screen place-items-center bg-slate-50 px-6">
-        <p className="text-sm text-slate-500">Loading your HIREUO profile…</p>
+        <p className="text-sm text-slate-500">Loading your HIREUO profileâ€¦</p>
       </main>
     );
   }
