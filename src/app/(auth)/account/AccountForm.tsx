@@ -47,7 +47,7 @@ export default function AccountForm() {
 
         if (authError) throw authError;
         if (!data.session) {
-          setMessage("Check your email to confirm your Xedruo account, then sign in here.");
+          setMessage("Check your email to confirm your Xedruo account, then sign in here");
           return;
         }
       } else {
@@ -58,7 +58,7 @@ export default function AccountForm() {
       router.push(destination);
       router.refresh();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "We couldn't complete your request.");
+      setError(cause instanceof Error ? cause.message : "We couldn't complete your request");
     } finally {
       setBusy(false);
     }

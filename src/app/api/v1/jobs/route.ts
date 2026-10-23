@@ -23,7 +23,7 @@ export async function GET() {
 
   if (error) {
     return NextResponse.json(
-      { error: 'Unable to fetch jobs.' },
+      { error: 'Unable to fetch jobs' },
       { status: 500 },
     );
   }
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
   if (authError || !user) {
     return NextResponse.json(
-      { error: 'Authentication required.' },
+      { error: 'Authentication required' },
       { status: 401 },
     );
   }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
   } catch {
     return NextResponse.json(
-      { error: 'Invalid request body.' },
+      { error: 'Invalid request body' },
       { status: 400 },
     );
   }
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     !allowedTypes.includes(String(type))
   ) {
     return NextResponse.json(
-      { error: 'Please provide valid job details.' },
+      { error: 'Please provide valid job details' },
       { status: 400 },
     );
   }
@@ -106,14 +106,14 @@ export async function POST(request: NextRequest) {
 
   if (membershipError) {
     return NextResponse.json(
-      { error: 'Unable to verify company permissions.' },
+      { error: 'Unable to verify company permissions' },
       { status: 500 },
     );
   }
 
   if (!membership) {
     return NextResponse.json(
-      { error: 'You cannot create jobs for this company.' },
+      { error: 'You cannot create jobs for this company' },
       { status: 403 },
     );
   }
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
 
   if (insertError) {
     return NextResponse.json(
-      { error: 'Unable to create job.' },
+      { error: 'Unable to create job' },
       { status: 500 },
     );
   }

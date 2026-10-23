@@ -38,7 +38,7 @@ export default function RecruiterOnboardingPage() {
       if (memberError) throw memberError;
       router.push("/recruiter/dashboard"); router.refresh();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "We couldn't save your employer profile.");
+      setError(cause instanceof Error ? cause.message : "We couldn't save your employer profile");
     } finally { setSaving(false); }
   }
 

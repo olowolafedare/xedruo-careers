@@ -11,7 +11,7 @@ type Props = {
 export function QuestionPreview({
   questions,
   title = "Job application",
-  description = "Please answer the following questions.",
+  description = "Please answer the following questions",
 }: Props) {
   return (
     <div className="mx-auto max-w-2xl space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

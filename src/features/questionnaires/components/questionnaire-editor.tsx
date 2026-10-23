@@ -80,7 +80,7 @@ export function QuestionnaireEditor({ jobId }: Props) {
     }
 
     setMessage(
-      "Validation successful. Database saving will be added next."
+      "Validation successful. Database saving will be added next"
     );
   }
 
@@ -128,7 +128,7 @@ export function QuestionnaireEditor({ jobId }: Props) {
         <QuestionPreview
           questions={questions}
           title="Job application"
-          description="Preview the questions candidates will see."
+          description="Preview the questions candidates will see"
         />
       )}
 

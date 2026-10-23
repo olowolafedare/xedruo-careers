@@ -30,7 +30,7 @@ export function JobComposer({ companyId }: { companyId: string }) {
 
     if (!response?.ok) {
       const payload = await response?.json().catch(() => null);
-      setError(payload?.error ?? "We could not save this role. Please try again.");
+      setError(payload?.error ?? "We could not save this role. Please try again");
       setSaving(false);
       return;
     }
@@ -44,9 +44,9 @@ export function JobComposer({ companyId }: { companyId: string }) {
         <label className="text-sm font-medium sm:col-span-2">Job title *<input name="title" className={fieldClass} maxLength={200} required placeholder="e.g. Product Designer" /></label>
         <label className="text-sm font-medium">Employment type *<select name="type" className={fieldClass} required defaultValue="Full-time"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option><option>Remote</option></select></label>
         <label className="text-sm font-medium">Location<input name="location" className={fieldClass} maxLength={160} placeholder="e.g. Lagos or Remote" /></label>
-        <label className="text-sm font-medium sm:col-span-2">Role description *<textarea name="description" className={`${fieldClass} min-h-48 resize-y leading-6`} required placeholder="Describe the role, responsibilities, and experience you are looking for." /></label>
+        <label className="text-sm font-medium sm:col-span-2">Role description *<textarea name="description" className={`${fieldClass} min-h-48 resize-y leading-6`} required placeholder="Describe the role, responsibilities, and experience you are looking for" /></label>
       </div>
-      <p className="text-xs leading-5 text-slate-500">New roles are saved as drafts. You can review them in your jobs list.</p>
+      <p className="text-xs leading-5 text-slate-500">New roles are saved as drafts. You can review them in your jobs list</p>
       {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end"><Link href="/recruiter/jobs" className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</Link><button disabled={saving} className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60">{saving ? "Saving…" : "Save draft"}</button></div>
     </form>

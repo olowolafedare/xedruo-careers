@@ -37,7 +37,7 @@ export const questionSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["options"],
-        message: "Add at least two options for this question type.",
+        message: "Add at least two options for this question type",
       });
     }
 
@@ -49,7 +49,7 @@ export const questionSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["options"],
-        message: "Options must not contain duplicate labels.",
+        message: "Options must not contain duplicate labels",
       });
     }
 
@@ -57,7 +57,7 @@ export const questionSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["options"],
-        message: "This question type does not use answer options.",
+        message: "This question type does not use answer options",
       });
     }
   });

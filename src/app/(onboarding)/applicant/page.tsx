@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -68,7 +68,7 @@ export default function ApplicantOnboardingPage() {
 
       if (authError || !user) {
         setError(
-          "Please sign in with your HIREUO account before completing your profile."
+          "Please sign in with your HIREUO account before completing your profile"
         );
         setLoading(false);
         return;
@@ -140,19 +140,19 @@ export default function ApplicantOnboardingPage() {
     setNotice("");
 
     if (!userId) {
-      setError("Please sign in with HIREUO before continuing.");
+      setError("Please sign in with HIREUO before continuing");
       return;
     }
 
     if (!fullName.trim() || !country.trim() || !state.trim()) {
-      setError("Please complete your name and location.");
+      setError("Please complete your name and location");
       return;
     }
 
     const years = Number(experience);
 
     if (!Number.isFinite(years) || years < 0 || years > 100) {
-      setError("Enter a valid number of years of experience.");
+      setError("Enter a valid number of years of experience");
       return;
     }
 
@@ -164,12 +164,12 @@ export default function ApplicantOnboardingPage() {
       ];
 
       if (!allowedTypes.includes(resume.type)) {
-        setError("Your resume must be a PDF, DOC, or DOCX file.");
+        setError("Your resume must be a PDF, DOC, or DOCX file");
         return;
       }
 
       if (resume.size > 5 * 1024 * 1024) {
-        setError("Your resume must be no larger than 5 MB.");
+        setError("Your resume must be no larger than 5 MB");
         return;
       }
     }
@@ -187,7 +187,7 @@ export default function ApplicantOnboardingPage() {
         const extension = resume.name.split(".").pop()?.toLowerCase();
 
         if (!extension || !["pdf", "doc", "docx"].includes(extension)) {
-          throw new Error("The selected resume has an invalid file extension.");
+          throw new Error("The selected resume has an invalid file extension");
         }
 
         resumePath = `${userId}/resume.${extension}`;
@@ -240,14 +240,14 @@ export default function ApplicantOnboardingPage() {
 
       if (candidateError) throw candidateError;
 
-      setNotice("Your candidate profile has been saved.");
+      setNotice("Your candidate profile has been saved");
       router.push("/candidate/dashboard");
       router.refresh();
     } catch (err) {
       const message =
         err instanceof Error
           ? err.message
-          : "Something went wrong while saving your profile.";
+          : "Something went wrong while saving your profile";
 
       console.error(`HIREUO onboarding failed at: ${currentStep}`, err);
       setError(`${currentStep}: ${message}`);
@@ -259,7 +259,7 @@ export default function ApplicantOnboardingPage() {
   if (loading) {
     return (
       <main className="grid min-h-screen place-items-center bg-slate-50 px-6">
-        <p className="text-sm text-slate-500">Loading your HIREUO profile…</p>
+        <p className="text-sm text-slate-500">Loading your HIREUO profile�</p>
       </main>
     );
   }

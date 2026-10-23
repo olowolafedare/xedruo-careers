@@ -36,7 +36,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
         </nav>
         <div className="mt-auto rounded-2xl bg-slate-50 p-4">
           <p className="text-sm font-semibold">Your next step starts here</p>
-          <p className="mt-1 text-xs leading-5 text-slate-500">Explore open roles and find a good fit for your skills.</p>
+          <p className="mt-1 text-xs leading-5 text-slate-500">Explore open roles and find a good fit for your skills</p>
           <Link href="/jobs" className="mt-3 inline-flex text-sm font-semibold text-indigo-600 hover:text-indigo-700">Browse jobs <span aria-hidden="true">→</span></Link>
         </div>
       </aside>
