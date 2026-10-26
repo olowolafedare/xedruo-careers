@@ -46,9 +46,9 @@ AS $$
     ),
     COALESCE(
       (
-        SELECT jsonb_object_agg(status_counts.status, status_counts.count)
+        SELECT jsonb_object_agg(status_counts.status, status_counts.application_count)
         FROM (
-          SELECT applications.status, count(*) AS count
+          SELECT applications.status, count(*) AS application_count
           FROM public.careers_applications AS applications
           INNER JOIN public.careers_jobs AS jobs
             ON jobs.id = applications.job_id

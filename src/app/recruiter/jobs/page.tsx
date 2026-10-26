@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, BriefcaseBusiness, Plus } from "lucide-react";
 import { requireRecruiter } from "../_lib/context";
+import { parseRecruiterJobCounts } from "../_lib/job-counts";
 import { JobStatus } from "./job-status";
 import { getPageRange, getTotalPages, parsePage, DEFAULT_PAGE_SIZE } from "@/src/lib/pagination";
 import { Pagination } from "../_components/pagination";
@@ -38,9 +39,10 @@ export default async function RecruiterJobsPage({
   if (countsError) {
     throw new Error(`Unable to load job counts: ${countsError.message}`);
   }
+  const jobCounts = parseRecruiterJobCounts(counts);
 
   const applicationCounts = new Map<string, number>();
-  counts?.forEach(({ job_id, application_count }) =>
+  jobCounts.forEach(({ job_id, application_count }) =>
     applicationCounts.set(job_id, Number(application_count)),
   );
 

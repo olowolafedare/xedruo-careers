@@ -4,6 +4,7 @@ import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { getPageRange, getTotalPages, parsePage, DEFAULT_PAGE_SIZE } from "@/src/lib/pagination";
 import { requireRecruiter } from "../_lib/context";
 import { Pagination } from "../_components/pagination";
+import { parseRecruiterJobCounts } from "../_lib/job-counts";
 
 export default async function RecruiterAssessmentsPage({
   searchParams,
@@ -39,9 +40,10 @@ export default async function RecruiterAssessmentsPage({
   if (countsError) {
     throw new Error(`Unable to load assessment counts: ${countsError.message}`);
   }
+  const jobCounts = parseRecruiterJobCounts(counts);
 
   const questionCounts = new Map<string, number>();
-  counts?.forEach(({ job_id, question_count }) =>
+  jobCounts.forEach(({ job_id, question_count }) =>
     questionCounts.set(job_id, Number(question_count)),
   );
 
