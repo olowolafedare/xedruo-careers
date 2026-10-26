@@ -1,10 +1,42 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/src/lib/supabase/server';
+import {
+  getPageRange,
+  getTotalPages,
+  MAX_PAGE_NUMBER,
+  MAX_PAGE_SIZE,
+  parsePage,
+  parsePageSize,
+} from '@/src/lib/pagination';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const requestedPage = request.nextUrl.searchParams.get('page') ?? undefined;
+  const requestedPageSize = request.nextUrl.searchParams.get('pageSize') ?? undefined;
+
+  if (
+    (requestedPage !== undefined &&
+      (!/^\d+$/.test(requestedPage) ||
+        Number(requestedPage) < 1 ||
+        Number(requestedPage) > MAX_PAGE_NUMBER)) ||
+    (requestedPageSize !== undefined &&
+      (!/^\d+$/.test(requestedPageSize) ||
+        Number(requestedPageSize) < 1 ||
+        Number(requestedPageSize) > MAX_PAGE_SIZE))
+  ) {
+    return NextResponse.json(
+      {
+        error: `page must be between 1 and ${MAX_PAGE_NUMBER}, and pageSize must be between 1 and ${MAX_PAGE_SIZE}`,
+      },
+      { status: 400 },
+    );
+  }
+
+  const page = parsePage(requestedPage);
+  const pageSize = parsePageSize(requestedPageSize);
+  const { from, to } = getPageRange(page, pageSize);
   const supabase = await createClient();
 
-  const { data: jobs, error } = await supabase
+  const { data: jobs, error, count } = await supabase
     .from('careers_jobs')
     .select(`
       id,
@@ -17,9 +49,10 @@ export async function GET() {
         name,
         logo_url
       )
-    `)
+    `, { count: 'exact' })
     .eq('status', 'published')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) {
     return NextResponse.json(
@@ -28,7 +61,16 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({ jobs });
+  const total = count ?? 0;
+  return NextResponse.json({
+    jobs,
+    pagination: {
+      page,
+      pageSize,
+      total,
+      totalPages: getTotalPages(total, pageSize),
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {

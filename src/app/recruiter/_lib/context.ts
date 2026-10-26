@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/src/lib/auth/require-user";
 
-export async function requireRecruiter() {
+export const requireRecruiter = cache(async function requireRecruiter() {
   const { supabase, user } = await requireUser();
   const { data: membership, error } = await supabase
     .from("careers_company_members")
@@ -17,4 +18,4 @@ export async function requireRecruiter() {
 
   if (!company) redirect("/start");
   return { supabase, user, membership, company };
-}
+});
