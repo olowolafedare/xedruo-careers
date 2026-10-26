@@ -34,7 +34,11 @@ export default async function RecruiterPipelinePage({
   const totalPages = getTotalPages(total, DEFAULT_PAGE_SIZE);
   if (total > 0 && page > totalPages) redirect(`/recruiter/pipeline?page=${totalPages}`);
 
-  const stageApplications = new Map(columns.map((stage) => [stage, [] as typeof applications]));
+  const stageApplications = new Map<
+    string,
+    NonNullable<typeof applications>[number][]
+  >();
+  for (const stage of columns) stageApplications.set(stage, []);
   for (const application of applications ?? []) {
     stageApplications.get(application.status)?.push(application);
   }
