@@ -11,6 +11,6 @@ export const requireStaff = cache(async function requireStaff() {
     .eq("is_active", true)
     .maybeSingle();
 
-  if (error || !staff) redirect("/");
+  if (error || !staff) redirect("/admin-access");
   return { user, staff };
 });
