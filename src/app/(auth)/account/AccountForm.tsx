@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/client";
 
 const ALLOWED_DESTINATIONS = new Set([
+  "/admin",
   "/start",
   "/applicant",
   "/recruiter",
@@ -27,6 +28,7 @@ export default function AccountForm() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const destination = safeDestination(searchParams.get("next"));
+  const isAdminLogin = destination === "/admin";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,7 +49,7 @@ export default function AccountForm() {
 
         if (authError) throw authError;
         if (!data.session) {
-          setMessage("Check your email to confirm your Xedruo account, then sign in here");
+          setMessage("Check your email to confirm your Hireuo account, then sign in here");
           return;
         }
       } else {
@@ -67,10 +69,11 @@ export default function AccountForm() {
   return (
     <main className="grid min-h-screen place-items-center bg-slate-50 px-5 py-12">
       <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <Link href="/" className="text-sm font-bold tracking-wide text-indigo-600">HIREUO · XEDRUO</Link>
+        <Link href="/" className="text-sm font-bold tracking-wide text-indigo-600">{isAdminLogin ? "HIREUO STAFF" : "HIREUO"}</Link>
         <h1 className="mt-5 text-3xl font-bold text-slate-950">
-          {mode === "sign-up" ? "Create your Xedruo account" : "Sign in to Xedruo"}
+          {isAdminLogin ? "Staff sign in" : mode === "sign-up" ? "Create your Hireuo account" : "Sign in to Hireuo"}
         </h1>
+        {isAdminLogin && <p className="mt-2 text-sm leading-6 text-slate-500">Sign in with your authorized staff account to open the admin portal.</p>}
 
         <form onSubmit={submit} className="mt-7 space-y-4">
           {mode === "sign-up" && (
@@ -94,7 +97,7 @@ export default function AccountForm() {
           </button>
         </form>
 
-        <button
+        {!isAdminLogin && <button
           type="button"
           onClick={() => {
             setMode(mode === "sign-in" ? "sign-up" : "sign-in");
@@ -104,7 +107,7 @@ export default function AccountForm() {
           className="mt-5 text-sm font-medium text-indigo-600"
         >
           {mode === "sign-up" ? "Sign in" : "Create an account"}
-        </button>
+        </button>}
       </section>
     </main>
   );

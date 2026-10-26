@@ -76,6 +76,13 @@ export default function HomePage() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
+              href="/account?next=%2Fadmin"
+              className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              <ShieldCheck size={16} />
+              Admin login
+            </Link>
+            <Link
               href="/jobs"
               className="hidden rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 sm:inline-flex"
             >
