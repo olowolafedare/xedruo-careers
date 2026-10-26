@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import { ArrowRight, BriefcaseBusiness, Plus } from "lucide-react";
 import { requireRecruiter } from "../_lib/context";
 import { parseRecruiterJobCounts } from "../_lib/job-counts";
-import { JobStatus } from "./job-status";
+import { JobStatus } from "@/src/components/recruiter/job-status";
 import { getPageRange, getTotalPages, parsePage, DEFAULT_PAGE_SIZE } from "@/src/lib/pagination";
-import { Pagination } from "../_components/pagination";
+import { Pagination } from "@/src/components/recruiter/pagination";
 
 export default async function RecruiterJobsPage({
   searchParams,

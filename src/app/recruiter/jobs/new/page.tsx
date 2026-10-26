@@ -1,5 +1,5 @@
 import { requireRecruiter } from "../../_lib/context";
-import { JobComposer } from "./job-composer";
+import { JobComposer } from "@/src/components/recruiter/job-composer";
 import { redirect } from "next/navigation";
 
 export default async function NewRecruiterJobPage() {

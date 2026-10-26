@@ -10,7 +10,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import FooterYear from '@/src/components/FooterYear';
+import FooterYear from '@/src/components/shared/FooterYear';
 
 const features = [
   {

@@ -1,5 +1,5 @@
 import { Bookmark } from "lucide-react";
-import { EmptyState } from "../_components/empty-state";
+import { EmptyState } from "@/src/components/candidate/empty-state";
 
 export default function SavedJobsPage() {
   return (

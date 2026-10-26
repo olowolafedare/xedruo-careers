@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { Activity } from "lucide-react";
 import { getPageRange, getTotalPages, parsePage, DEFAULT_PAGE_SIZE } from "@/src/lib/pagination";
 import { requireRecruiter } from "../_lib/context";
-import { ApplicationStage } from "../_components/application-stage";
-import { Pagination } from "../_components/pagination";
+import { ApplicationStage } from "@/src/components/recruiter/application-stage";
+import { Pagination } from "@/src/components/recruiter/pagination";
 
 const columns = ["applied", "screening", "interview", "offered", "rejected", "withdrawn"];
 

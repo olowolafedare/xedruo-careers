@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { getPageRange, getTotalPages, parsePage, DEFAULT_PAGE_SIZE } from "@/src/lib/pagination";
 import { requireRecruiter } from "../_lib/context";
-import { Pagination } from "../_components/pagination";
+import { Pagination } from "@/src/components/recruiter/pagination";
 import { parseRecruiterJobCounts } from "../_lib/job-counts";
 
 export default async function RecruiterAssessmentsPage({
