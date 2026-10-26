@@ -19,7 +19,7 @@ export function Pagination({
       {page > 1 ? (
         <Link
           href={`${basePath}?page=${page - 1}`}
-          className="font-medium text-indigo-600 hover:text-indigo-700"
+          className="font-medium text-amber-600 hover:text-amber-700"
         >
           Previous
         </Link>
@@ -32,7 +32,7 @@ export function Pagination({
       {page < totalPages ? (
         <Link
           href={`${basePath}?page=${page + 1}`}
-          className="font-medium text-indigo-600 hover:text-indigo-700"
+          className="font-medium text-amber-600 hover:text-amber-700"
         >
           Next
         </Link>
