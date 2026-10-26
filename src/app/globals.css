@@ -2,11 +2,11 @@
 
 :root {
   color-scheme: light;
-  --background: rosybrown;
-  --foreground: gray;
-  --muted: lemonchiffon;
-  --accent: gold;
-  --border: greenyellow;
+  --color-rosybrown: #F5F2EB;
+  --background: #F5F2EB;
+  --foreground: #0f172a;
+  --muted: #f8fafc;
+  --accent: #F5F2EB;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: Arial, Helvetica, sans-serif;
