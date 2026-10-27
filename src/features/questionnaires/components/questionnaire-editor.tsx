@@ -9,6 +9,7 @@ import { QuestionPreview } from "./question-preview";
 
 type Props = {
   jobId: string;
+  initialQuestions?: QuestionnaireQuestion[];
 };
 
 function createQuestion(
@@ -24,10 +25,8 @@ function createQuestion(
   };
 }
 
-export function QuestionnaireEditor({ jobId }: Props) {
-  const [questions, setQuestions] = useState<
-    QuestionnaireQuestion[]
-  >([]);
+export function QuestionnaireEditor({ jobId, initialQuestions = [] }: Props) {
+  const [questions, setQuestions] = useState<QuestionnaireQuestion[]>(initialQuestions);
   const [message, setMessage] = useState("");
   const [showPreview, setShowPreview] = useState(false);
 
