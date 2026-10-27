@@ -30,6 +30,25 @@ export default function AccountForm() {
   const destination = safeDestination(searchParams.get("next"));
   const isAdminLogin = destination === "/admin";
 
+  async function continueWithGoogle() {
+    setBusy(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const { error: authError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/callback?next=${encodeURIComponent(destination)}`,
+        },
+      });
+      if (authError) throw authError;
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Google sign-in could not be started");
+      setBusy(false);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -75,7 +94,18 @@ export default function AccountForm() {
         </h1>
         {isAdminLogin && <p className="mt-2 text-sm leading-6 text-slate-500">Sign in with your authorized staff account to open the admin portal.</p>}
 
-        <form onSubmit={submit} className="mt-7 space-y-4">
+        {!isAdminLogin && (
+          <button
+            type="button"
+            onClick={continueWithGoogle}
+            disabled={busy}
+            className="mt-7 w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60"
+          >
+            {busy ? "Please wait…" : "Continue with Google"}
+          </button>
+        )}
+
+        <form onSubmit={submit} className={isAdminLogin ? "mt-7 space-y-4" : "mt-4 space-y-4"}>
           {mode === "sign-up" && (
             <label className="block text-sm font-medium">
               Full name
