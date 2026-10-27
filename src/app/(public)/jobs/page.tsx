@@ -3,6 +3,7 @@ import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/server";
 
 export const metadata = { title: "Find a job | HIREUO" };
+export const instant = false;
 
 export default async function JobsPage({ searchParams }: { searchParams: Promise<{ q?: string; location?: string; type?: string }> }) {
  const params = await searchParams;
