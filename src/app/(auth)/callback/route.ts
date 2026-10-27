@@ -17,6 +17,13 @@ export async function GET(request: NextRequest) {
   const code = url.searchParams.get("code");
   const destination = safeDestination(url.searchParams.get("next"));
 
+  if (url.searchParams.has("error") || url.searchParams.has("error_description")) {
+    const accountUrl = new URL("/account", url.origin);
+    accountUrl.searchParams.set("auth_error", "oauth_failed");
+    accountUrl.searchParams.set("next", destination);
+    return NextResponse.redirect(accountUrl);
+  }
+
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -26,5 +33,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(new URL("/?auth_error=confirmation_failed", url.origin));
+  const accountUrl = new URL("/account", url.origin);
+  accountUrl.searchParams.set("auth_error", "confirmation_failed");
+  accountUrl.searchParams.set("next", destination);
+  return NextResponse.redirect(accountUrl);
 }
