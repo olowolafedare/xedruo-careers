@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BriefcaseBusiness, Building2, Globe2, MapPin } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/server";
 
+export const instant = false;
+
 export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
  const { slug } = await params;
  const supabase = await createClient();
