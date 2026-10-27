@@ -5,6 +5,8 @@ import { createClient } from "@/src/lib/supabase/server";
 import ApplyButton from "./apply-button";
 import SaveButton from "./save-button";
 
+export const instant = false;
+
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
  const { slug } = await params;
  const supabase = await createClient();
