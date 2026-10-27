@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/client";
@@ -29,6 +29,19 @@ export default function AccountForm() {
   const [busy, setBusy] = useState(false);
   const destination = safeDestination(searchParams.get("next"));
   const isAdminLogin = destination === "/admin";
+
+  useEffect(() => {
+    const authError = searchParams.get("auth_error");
+    if (!authError) return;
+
+    if (authError === "oauth_failed") {
+      setError("Google sign-in could not be completed. Please try again.");
+    } else if (authError === "confirmation_failed") {
+      setError("The sign-in or confirmation link could not be verified. Please sign in again.");
+    } else {
+      setError("Authentication could not be completed. Please try again.");
+    }
+  }, [searchParams]);
 
   async function continueWithGoogle() {
     setBusy(true);
