@@ -52,7 +52,7 @@ export default function AccountForm() {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/callback?next=${encodeURIComponent(destination)}`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(destination)}`,
         },
       });
       if (authError) throw authError;
@@ -74,7 +74,7 @@ export default function AccountForm() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/callback?next=${encodeURIComponent(destination)}`,
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(destination)}`,
             data: { full_name: name.trim() },
           },
         });
