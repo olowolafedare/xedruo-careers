@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bookmark, BriefcaseBusiness, CalendarDays, ClipboardCheck, Search, UserRound } from "lucide-react";
+import { ArrowRight, Bookmark, BriefcaseBusiness, CalendarDays, ClipboardCheck, Search, Bell, UserRound } from "lucide-react";
 import { requireUser } from "@/src/lib/auth/require-user";
 
 const shortcuts = [
@@ -7,6 +7,12 @@ const shortcuts = [
  { title: "Saved jobs", detail: "Keep interesting opportunities close", href: "/candidate/saved-jobs", icon: Bookmark },
  { title: "Interviews", detail: "Prepare for upcoming conversations", href: "/candidate/interviews", icon: CalendarDays },
  { title: "Assessments", detail: "See skills tasks shared with you", href: "/candidate/assessments", icon: ClipboardCheck },
+ {
+  title: "Notifications",
+  detail: "Stay updated on your recruitment journey",
+  href: "/candidate/notifications",
+  icon: Bell,
+},
 ];
 
 export default async function CandidateDashboardPage() {
