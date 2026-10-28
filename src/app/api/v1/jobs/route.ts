@@ -37,18 +37,20 @@ export async function GET(request: NextRequest) {
  const supabase = await createClient();
 
  const { data: jobs, error, count } = await supabase
- .from('careers_jobs')
+ .from('hireuo_jobs')
  .select(`
  id,
+ slug,
  title,
  description,
- location,
- type,
- created_at,
- company:careers_companies (
- name,
- logo_url
- )
+ requirements,
+ responsibilities,
+ city,
+ state,
+ country,
+ employment_type,
+ workplace_type,
+ created_at
  `, { count: 'exact' })
  .eq('status', 'published')
  .order('created_at', { ascending: false })
@@ -63,7 +65,7 @@ export async function GET(request: NextRequest) {
 
  const total = count ?? 0;
  return NextResponse.json({
- jobs,
+ jobs: jobs?.map((job) => ({ ...job, company: null })),
  pagination: {
  page,
  pageSize,
@@ -113,24 +115,29 @@ export async function POST(request: NextRequest) {
  typeof body.description === 'string'
  ? body.description.trim()
  : '';
- const location =
- typeof body.location === 'string' ? body.location.trim() : '';
- const type = body.type;
+ const city =
+ typeof body.city === 'string' ? body.city.trim() : '';
+ const employmentType = body.employment_type;
+ const workplaceType = body.workplace_type;
 
- const allowedTypes = [
- 'Full-time',
- 'Part-time',
- 'Contract',
- 'Internship',
- 'Remote',
+ const allowedEmploymentTypes = [
+ 'full_time',
+ 'part_time',
+ 'contract',
+ 'internship',
+ 'temporary',
+ 'freelance',
  ];
+ const allowedWorkplaceTypes = ['onsite', 'remote', 'hybrid'];
 
  if (
  !companyId ||
  !title ||
  title.length > 200 ||
  !description ||
- !allowedTypes.includes(String(type))
+ city.length > 160 ||
+ !allowedEmploymentTypes.includes(String(employmentType)) ||
+ !allowedWorkplaceTypes.includes(String(workplaceType))
  ) {
  return NextResponse.json(
  { error: 'Please provide valid job details' },
@@ -161,14 +168,15 @@ export async function POST(request: NextRequest) {
  }
 
  const { data: job, error: insertError } = await supabase
- .from('careers_jobs')
+ .from('hireuo_jobs')
  .insert({
  company_id: membership.company_id,
- recruiter_id: null,
+ recruiter_id: user.id,
  title,
  description,
- location: location || null,
- type: String(type),
+ city: city || null,
+ employment_type: String(employmentType),
+ workplace_type: String(workplaceType),
  status: 'draft',
  })
  .select('id, title, status')
