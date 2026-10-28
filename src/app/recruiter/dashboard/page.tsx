@@ -5,30 +5,48 @@ import { requireRecruiter } from "../_lib/context";
 export default async function RecruiterDashboardPage() {
  const { supabase, company, membership } = await requireRecruiter();
  const [
- { data: metricRows, error: metricsError },
+ { count: totalJobs, error: totalJobsError },
+ { count: publishedJobs, error: publishedJobsError },
+ { count: totalApplications, error: totalApplicationsError },
+ { count: inProgressApplications, error: inProgressApplicationsError },
  { data: jobs, error: jobsError },
  ] = await Promise.all([
- supabase.rpc("careers_recruiter_metrics", { p_company_id: company.id }),
  supabase
- .from("careers_jobs")
+ .from("hireuo_jobs")
+ .select("id", { count: "exact", head: true })
+ .eq("company_id", company.id),
+ supabase
+ .from("hireuo_jobs")
+ .select("id", { count: "exact", head: true })
+ .eq("company_id", company.id)
+ .eq("status", "published"),
+ supabase
+ .from("hireuo_applications")
+ .select("id, hireuo_jobs!inner(company_id)", { count: "exact", head: true })
+ .eq("hireuo_jobs.company_id", company.id),
+ supabase
+ .from("hireuo_applications")
+ .select("id, hireuo_jobs!inner(company_id)", { count: "exact", head: true })
+ .eq("hireuo_jobs.company_id", company.id)
+ .in("status", ["reviewing", "interview"]),
+ supabase
+ .from("hireuo_jobs")
  .select("id, title, status, created_at")
  .eq("company_id", company.id)
  .order("created_at", { ascending: false })
  .limit(4),
  ]);
 
- if (metricsError) {
- throw new Error(`Unable to load recruiter metrics: ${metricsError.message}`);
- }
+ if (totalJobsError) throw new Error(`Unable to count recruiter jobs: ${totalJobsError.message}`);
+ if (publishedJobsError) throw new Error(`Unable to count published jobs: ${publishedJobsError.message}`);
+ if (totalApplicationsError) throw new Error(`Unable to count recruiter applications: ${totalApplicationsError.message}`);
+ if (inProgressApplicationsError) throw new Error(`Unable to count in-progress applications: ${inProgressApplicationsError.message}`);
  if (jobsError) throw new Error(`Unable to load recent jobs: ${jobsError.message}`);
 
- const summary = metricRows?.[0];
- if (!summary) throw new Error("Recruiter metrics were not returned for this company.");
- const applicationStages = summary.applications_by_status as Record<string, number>;
  const metrics = [
- { label: "Open roles", value: Number(summary.published_jobs), note: `${summary.total_jobs} total roles`, icon: BriefcaseBusiness },
- { label: "Applicants", value: Number(summary.total_applications), note: "Across your roles", icon: Users },
- { label: "In progress", value: Number(applicationStages.screening ?? 0) + Number(applicationStages.interview ?? 0), note: "Screening or interview", icon: UserRoundCheck },
+ { label: "Open roles", value: publishedJobs ?? 0, note: `${totalJobs ?? 0} total roles`, icon: BriefcaseBusiness },
+ { label: "Applicants", value: totalApplications ?? 0, note: "Across your roles", icon: Users },
+ { label: "In progress", value: inProgressApplications ?? 0, note: "Reviewing or interview", icon: UserRoundCheck },
  ];
 
  return (
