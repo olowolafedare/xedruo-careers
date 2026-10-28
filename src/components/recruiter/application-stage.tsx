@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/client";
 
-const stages = ["applied", "screening", "interview", "offered", "rejected", "withdrawn"];
+const stages = ["submitted", "reviewing", "shortlisted", "interview", "offered", "hired", "rejected", "withdrawn"];
 
 export function ApplicationStage({ id, status, canEdit = true }: { id: string; status: string; canEdit?: boolean }) {
  const router = useRouter();
@@ -15,7 +15,7 @@ export function ApplicationStage({ id, status, canEdit = true }: { id: string; s
  setSaving(true);
  setMessage("");
  const supabase = createClient();
- const { error } = await supabase.from("careers_applications").update({ status: nextStatus, updated_at: new Date().toISOString() }).eq("id", id);
+ const { error } = await supabase.from("hireuo_applications").update({ status: nextStatus, updated_at: new Date().toISOString() }).eq("id", id);
  if (error) setMessage("Could not update");
  else router.refresh();
  setSaving(false);
