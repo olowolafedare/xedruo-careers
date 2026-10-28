@@ -18,8 +18,8 @@ const shortcuts = [
 export default async function CandidateDashboardPage() {
  const { supabase, user } = await requireUser();
  const [applications, savedJobs, profile] = await Promise.all([
- supabase.from("careers_applications").select("id", { count: "exact", head: true }).eq("candidate_id", user.id),
- supabase.from("careers_saved_jobs").select("id", { count: "exact", head: true }).eq("candidate_id", user.id),
+ supabase.from("hireuo_applications").select("id", { count: "exact", head: true }).eq("candidate_id", user.id),
+ supabase.from("hireuo_saved_jobs").select("id", { count: "exact", head: true }).eq("candidate_id", user.id),
  supabase.from("careers_candidate_profiles").select("onboarding_completed").eq("profile_id", user.id).maybeSingle(),
  ]);
  const counts = [

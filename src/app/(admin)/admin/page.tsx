@@ -12,9 +12,9 @@ async function getCount(table: string) {
 export default async function AdminPage() {
  const [companies, jobs, applications, candidates] = await Promise.all([
  getCount("careers_companies"),
- getCount("careers_jobs"),
- getCount("careers_applications"),
- getCount("careers_candidate_profiles"),
+ getCount("hireuo_jobs"),
+ getCount("hireuo_applications"),
+ getCount("hireuo_candidate_profiles"),
  ]);
 
  const metrics = [
