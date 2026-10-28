@@ -11,8 +11,8 @@ AS $$
   SELECT _profile_id = (SELECT auth.uid())
     OR EXISTS (
       SELECT 1
-      FROM public.applications AS applications
-      INNER JOIN public.jobs AS jobs
+      FROM public.hireuo_applications AS applications
+      INNER JOIN public.hireuo_jobs AS jobs
         ON jobs.id = applications.job_id
       WHERE applications.candidate_id = _profile_id
         AND (
