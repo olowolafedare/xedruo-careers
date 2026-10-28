@@ -23,8 +23,9 @@ export function JobComposer({ companyId }: { companyId: string }) {
  company_id: companyId,
  title: form.get("title"),
  description: form.get("description"),
- location: form.get("location"),
- type: form.get("type"),
+ city: form.get("city"),
+ employment_type: form.get("employment_type"),
+ workplace_type: form.get("workplace_type"),
  }),
  }).catch(() => null);
 
@@ -42,8 +43,9 @@ export function JobComposer({ companyId }: { companyId: string }) {
  <form onSubmit={submit} className="space-y-6 rounded-2xl bg-rosybrown p-6 sm:p-8">
  <div className="grid gap-5 sm:grid-cols-2">
  <label className="text-sm font-medium sm:col-span-2">Job title *<input name="title" className={fieldClass} maxLength={200} required placeholder="e.g. Product Designer" /></label>
- <label className="text-sm font-medium">Employment type *<select name="type" className={fieldClass} required defaultValue="Full-time"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option><option>Remote</option></select></label>
- <label className="text-sm font-medium">Location<input name="location" className={fieldClass} maxLength={160} placeholder="e.g. Lagos or Remote" /></label>
+ <label className="text-sm font-medium">Employment type *<select name="employment_type" className={fieldClass} required defaultValue="full_time"><option value="full_time">Full-time</option><option value="part_time">Part-time</option><option value="contract">Contract</option><option value="internship">Internship</option><option value="temporary">Temporary</option><option value="freelance">Freelance</option></select></label>
+ <label className="text-sm font-medium">Workplace type *<select name="workplace_type" className={fieldClass} required defaultValue="onsite"><option value="onsite">On-site</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option></select></label>
+ <label className="text-sm font-medium">City<input name="city" className={fieldClass} maxLength={160} placeholder="e.g. Lagos" /></label>
  <label className="text-sm font-medium sm:col-span-2">Role description *<textarea name="description" className={`${fieldClass} min-h-48 resize-y leading-6`} required placeholder="Describe the role, responsibilities, and experience you are looking for" /></label>
  </div>
  <p className="text-xs leading-5 text-slate-500">New roles are saved as drafts You can review them in your jobs list</p>
