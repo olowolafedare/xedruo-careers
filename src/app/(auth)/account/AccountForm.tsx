@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/client";
 
@@ -24,6 +25,7 @@ export default function AccountForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -131,10 +133,32 @@ export default function AccountForm() {
             Email
             <input required type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" />
           </label>
-          <label className="block text-sm font-medium">
-            Password
-            <input required type="password" minLength={6} autoComplete={mode === "sign-up" ? "new-password" : "current-password"} value={password} onChange={event => setPassword(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" />
-          </label>
+          <div>
+            <label htmlFor="account-password" className="block text-sm font-medium">
+              Password
+            </label>
+            <div className="relative mt-2">
+              <input
+                id="account-password"
+                required
+                type={showPassword ? "text" : "password"}
+                minLength={6}
+                autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(visible => !visible)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                className="absolute inset-y-0 right-0 grid w-12 place-items-center rounded-r-xl text-slate-500 hover:text-slate-800 focus-visible:outline-indigo-600"
+              >
+                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+              </button>
+            </div>
+          </div>
           {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
           {message && <p role="status" className="text-sm text-emerald-700">{message}</p>}
           <button disabled={busy} className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white disabled:opacity-60">
