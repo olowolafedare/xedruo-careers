@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE OR REPLACE FUNCTION public.can_read_profile(_profile_id uuid)
 RETURNS boolean
 LANGUAGE sql
@@ -26,26 +28,6 @@ AS $$
               AND members.role IN ('admin', 'recruiter')
           )
         )
-    )
-    OR EXISTS (
-      SELECT 1
-      FROM public.careers_applications AS applications
-      INNER JOIN public.careers_jobs AS jobs
-        ON jobs.id = applications.job_id
-      WHERE applications.candidate_id = _profile_id
-        AND (
-          (
-            jobs.company_id IS NULL
-            AND jobs.recruiter_id = (SELECT auth.uid())
-          )
-          OR EXISTS (
-            SELECT 1
-            FROM public.careers_company_members AS members
-            WHERE members.company_id = jobs.company_id
-              AND members.profile_id = (SELECT auth.uid())
-              AND members.role IN ('admin', 'recruiter')
-          )
-        )
     );
 $$;
 
@@ -59,3 +41,5 @@ ON public.profiles
 FOR SELECT
 TO authenticated
 USING (public.can_read_profile(id));
+
+COMMIT;
