@@ -1,12 +1,12 @@
 import { BarChart3 } from "lucide-react";
 import { requireRecruiter } from "../_lib/context";
 
-const stages = ["applied", "screening", "interview", "offered", "rejected", "withdrawn"];
+const stages = ["submitted", "reviewing", "shortlisted", "interview", "offered", "hired", "rejected", "withdrawn"];
 
 export default async function RecruiterAnalyticsPage() {
  const { supabase, company } = await requireRecruiter();
  const { data: metricRows, error } = await supabase.rpc(
- "careers_recruiter_metrics",
+ "hireuo_recruiter_metrics",
  { p_company_id: company.id },
  );
  if (error) throw new Error(`Unable to load recruiter analytics: ${error.message}`);
