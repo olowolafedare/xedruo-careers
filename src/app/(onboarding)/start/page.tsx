@@ -9,8 +9,8 @@ export default async function StartPage() {
  await connection();
  const { supabase, user } = await requireUser();
  const [{ data: candidate }, { data: member }] = await Promise.all([
- supabase.from("careers_candidate_profiles").select("onboarding_completed").eq("profile_id", user.id).maybeSingle(),
- supabase.from("careers_company_members").select("id").eq("profile_id", user.id).limit(1).maybeSingle(),
+ supabase.from("hireuo_candidate_profiles").select("onboarding_completed").eq("user_id", user.id).maybeSingle(),
+ supabase.from("company_members").select("id").eq("profile_id", user.id).limit(1).maybeSingle(),
  ]);
  if (candidate?.onboarding_completed) redirect("/candidate/dashboard");
  if (member) redirect("/recruiter/dashboard");

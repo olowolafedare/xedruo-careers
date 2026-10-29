@@ -24,12 +24,13 @@ const inputClass =
  "mt-2 w-full rounded-xl bg-rosybrown px-4 py-3 text-sm text-slate-900 outline-none transition focus:ring-4 focus:ring-amber-100";
 
 type CandidateProfile = {
+ full_name: string | null;
  phone_number: string | null;
  country: string | null;
  state: string | null;
- years_of_experience: number | null;
+ years_experience: number | null;
  job_search_timing: string | null;
- work_preference: string | null;
+ preferred_workplace_type: string | null;
  resume_path: string | null;
  onboarding_completed: boolean;
 };
@@ -89,9 +90,9 @@ export default function ApplicantOnboardingPage() {
  .eq("id", user.id)
  .maybeSingle(),
  supabase
- .from("careers_candidate_profiles")
- .select("*")
- .eq("profile_id", user.id)
+ .from("hireuo_candidate_profiles")
+ .select("full_name,phone_number,country,state,years_experience,job_search_timing,preferred_workplace_type,resume_path,onboarding_completed")
+ .eq("user_id", user.id)
  .maybeSingle(),
  ]);
 
@@ -111,12 +112,13 @@ export default function ApplicantOnboardingPage() {
 
  if (candidate) {
  const saved = candidate as CandidateProfile;
+ setFullName(saved.full_name ?? "");
  setPhone(saved.phone_number ?? "");
  setCountry(saved.country ?? "Country");
  setState(saved.state ?? "");
- setExperience(String(saved.years_of_experience ?? 0));
+ setExperience(String(saved.years_experience ?? 0));
  setSearchTiming(saved.job_search_timing ?? "immediately");
- setWorkPreference(saved.work_preference ?? "any");
+ setWorkPreference(saved.preferred_workplace_type ?? "any");
  setExistingResume(saved.resume_path ?? "");
  }
 
@@ -128,7 +130,7 @@ export default function ApplicantOnboardingPage() {
  return () => {
  active = false;
  };
- }, [router, supabase]);
+ }, []);
 
  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
  event.preventDefault();
@@ -189,7 +191,7 @@ export default function ApplicantOnboardingPage() {
  resumePath = `${userId}/resume.${extension}`;
 
  const { error: uploadError } = await supabase.storage
- .from("careers-resumes")
+ .from("hireuo-resumes")
  .upload(resumePath, resume, {
  upsert: true,
  contentType: resume.type,
@@ -217,21 +219,22 @@ export default function ApplicantOnboardingPage() {
  currentStep = "Saving candidate profile";
 
  const { error: candidateError } = await supabase
- .from("careers_candidate_profiles")
+ .from("hireuo_candidate_profiles")
  .upsert(
  {
- profile_id: userId,
+ user_id: userId,
+ full_name: fullName.trim(),
  phone_number: phone.trim() || null,
  country: country.trim(),
  state: state.trim(),
- years_of_experience: years,
+ years_experience: years,
  job_search_timing: searchTiming,
- work_preference: workPreference,
+ preferred_workplace_type: workPreference,
  resume_path: resumePath,
  onboarding_completed: true,
  updated_at: new Date().toISOString(),
  },
- { onConflict: "profile_id" }
+ { onConflict: "user_id" }
  );
 
  if (candidateError) throw candidateError;
