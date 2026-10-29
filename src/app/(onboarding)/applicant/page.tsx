@@ -106,6 +106,11 @@ export default function ApplicantOnboardingPage() {
  return;
  }
 
+ if (candidate?.onboarding_completed) {
+ router.replace("/candidate/dashboard");
+ return;
+ }
+
  if (profile) {
  setFullName(profile.full_name ?? "");
  }
@@ -130,7 +135,7 @@ export default function ApplicantOnboardingPage() {
  return () => {
  active = false;
  };
- }, []);
+ }, [router]);
 
  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
  event.preventDefault();

@@ -51,10 +51,13 @@ export default function AccountForm() {
     setMessage("");
 
     try {
+      const callbackUrl = new URL("/callback", window.location.origin);
+      callbackUrl.searchParams.set("next", destination);
+
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/callback?next=${encodeURIComponent(destination)}`,
+          redirectTo: callbackUrl.toString(),
         },
       });
       if (authError) throw authError;
