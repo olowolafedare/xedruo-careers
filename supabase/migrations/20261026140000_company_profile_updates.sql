@@ -1,5 +1,5 @@
-CREATE POLICY "Company managers can update careers company profiles"
-ON public.careers_companies
+CREATE POLICY "Company managers can update company profiles"
+ON public.companies
 FOR UPDATE TO authenticated
-USING (public.careers_is_company_manager(id))
-WITH CHECK (public.careers_is_company_manager(id));
+USING (public.hireuo_is_company_manager(id))
+WITH CHECK (public.hireuo_is_company_manager(id));
