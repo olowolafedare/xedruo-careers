@@ -67,11 +67,16 @@ export default function ApplicantOnboardingPage() {
 
       if (!active) return;
 
-      if (authError || !user) {
+      if (authError) {
         setError(
-          "Please sign in with your HIREUO account before completing your profile",
+          "We couldn't verify your Xedruo account session. Please refresh and try again.",
         );
         setLoading(false);
+        return;
+      }
+
+      if (!user) {
+        router.replace("/account?next=%2Fapplicant");
         return;
       }
 
@@ -207,23 +212,7 @@ export default function ApplicantOnboardingPage() {
         if (uploadError) throw uploadError;
       }
 
-      currentStep = "Updating HIREUO profile";
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          full_name: fullName.trim(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", userId);
-
-      if (profileError) {
-        console.error("HIREUO profile update failed:", profileError);
-        throw new Error(
-          `HIREUO profile update failed: ${profileError.message} (code: ${profileError.code})`,
-        );
-      }
-      currentStep = "Saving candidate profile";
+      currentStep = "Saving HIREUO candidate profile";
 
       const { error: candidateError } = await supabase
         .from("hireuo_candidate_profiles")
