@@ -17,10 +17,17 @@ export default function RecruiterOnboardingPage() {
 
   useEffect(() => {
     let active = true;
-    void supabase.auth.getUser().then(async ({ data: { user } }) => {
+    void supabase.auth.getUser().then(async ({ data: { user }, error }) => {
       if (!active) return;
+      if (error) {
+        setError(
+          "We couldn't verify your Xedruo account session. Please refresh and try again.",
+        );
+        setLoading(false);
+        return;
+      }
       if (!user) {
-        router.replace("/account");
+        router.replace("/account?next=%2Frecruiter");
         return;
       }
       const { data: member } = await supabase
@@ -49,8 +56,11 @@ export default function RecruiterOnboardingPage() {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
-      if (authError || !user) {
-        router.replace("/account");
+      if (authError) {
+        throw authError;
+      }
+      if (!user) {
+        router.replace("/account?next=%2Frecruiter");
         return;
       }
       const { data: company, error: companyError } = await supabase
