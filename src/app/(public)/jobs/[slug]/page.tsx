@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BriefcaseBusiness, MapPin } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/server";
-import { formatEmploymentType, formatJobLocation, formatWorkplaceType } from "@/src/lib/hireuo-jobs";
+import {
+  formatEmploymentType,
+  formatJobLocation,
+  formatWorkplaceType,
+} from "@/src/lib/hireuo-jobs";
 import ApplyButton from "./apply-button";
 import SaveButton from "./save-button";
 
@@ -15,9 +19,10 @@ export default async function JobDetailPage({
 }) {
   const { slug } = await params;
   const supabase = await createClient();
-  const isId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    slug,
-  );
+  const isId =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      slug,
+    );
   const { data: job, error } = await supabase
     .from("hireuo_jobs")
     .select(
@@ -57,8 +62,15 @@ export default async function JobDetailPage({
     <main className="min-h-screen bg-rosybrown text-slate-900">
       <header className="bg-rosybrown">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="font-extrabold tracking-tight">HIREUO</Link>
-          <Link href="/account" className="text-sm font-semibold text-amber-600">Sign in</Link>
+          <Link href="/" className="font-extrabold tracking-tight">
+            HIREUO
+          </Link>
+          <Link
+            href="/account"
+            className="text-sm font-semibold text-amber-600"
+          >
+            Sign in
+          </Link>
         </div>
       </header>
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
@@ -76,8 +88,12 @@ export default async function JobDetailPage({
                 <BriefcaseBusiness size={21} />
               </span>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{job.title}</h1>
-                <p className="mt-2 font-medium text-slate-600">Employer details unavailable</p>
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  {job.title}
+                </h1>
+                <p className="mt-2 font-medium text-slate-600">
+                  Employer details unavailable
+                </p>
                 <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500">
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={15} />
@@ -125,7 +141,8 @@ export default async function JobDetailPage({
             <div>
               <h2 className="font-semibold">Interested in this role?</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Submit your application to let the hiring team know you&apos;re interested
+                Submit your application to let the hiring team know you&apos;re
+                interested
               </p>
             </div>
             <ApplyButton jobId={job.id} applied={applied} />

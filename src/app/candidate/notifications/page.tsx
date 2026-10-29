@@ -22,7 +22,7 @@ export default async function CandidateNotificationsPage() {
     if (
       typeof notificationId !== "string" ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        notificationId
+        notificationId,
       )
     ) {
       return;
@@ -46,7 +46,7 @@ export default async function CandidateNotificationsPage() {
   const { data: notifications, error } = await supabase
     .from("hireuo_notifications")
     .select(
-      "id, title, message, notification_type, action_url, is_read, created_at"
+      "id, title, message, notification_type, action_url, is_read, created_at",
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
@@ -158,7 +158,7 @@ export default async function CandidateNotificationsPage() {
                         {
                           dateStyle: "medium",
                           timeStyle: "short",
-                        }
+                        },
                       )}
                     </p>
 

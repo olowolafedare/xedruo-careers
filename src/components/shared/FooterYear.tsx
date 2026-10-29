@@ -1,3 +1,3 @@
 export default function FooterYear() {
- return <>2026</>;
+  return <>2026</>;
 }

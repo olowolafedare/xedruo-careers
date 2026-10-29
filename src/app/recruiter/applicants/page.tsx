@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { Users } from "lucide-react";
-import { getPageRange, getTotalPages, parsePage, DEFAULT_PAGE_SIZE } from "@/src/lib/pagination";
+import {
+  getPageRange,
+  getTotalPages,
+  parsePage,
+  DEFAULT_PAGE_SIZE,
+} from "@/src/lib/pagination";
 import { requireRecruiter } from "../_lib/context";
 import { ApplicationStage } from "@/src/components/recruiter/application-stage";
 import { Pagination } from "@/src/components/recruiter/pagination";
@@ -10,13 +15,15 @@ export default async function RecruiterApplicantsPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const [{ page: pageParam }, { supabase, company, membership }] = await Promise.all([
-    searchParams,
-    requireRecruiter(),
-  ]);
+  const [{ page: pageParam }, { supabase, company, membership }] =
+    await Promise.all([searchParams, requireRecruiter()]);
   const page = parsePage(pageParam);
   const { from, to } = getPageRange(page, DEFAULT_PAGE_SIZE);
-  const { data: applications, error, count } = await supabase
+  const {
+    data: applications,
+    error,
+    count,
+  } = await supabase
     .from("hireuo_applications")
     .select(
       "id,candidate_id,status,applied_at,hireuo_jobs!hireuo_applications_job_id_fkey!inner(title,company_id)",
@@ -30,9 +37,12 @@ export default async function RecruiterApplicantsPage({
 
   const total = count ?? 0;
   const totalPages = getTotalPages(total, DEFAULT_PAGE_SIZE);
-  if (total > 0 && page > totalPages) redirect(`/recruiter/applicants?page=${totalPages}`);
+  if (total > 0 && page > totalPages)
+    redirect(`/recruiter/applicants?page=${totalPages}`);
 
-  const candidateIds = [...new Set((applications ?? []).map(({ candidate_id }) => candidate_id))];
+  const candidateIds = [
+    ...new Set((applications ?? []).map(({ candidate_id }) => candidate_id)),
+  ];
   const { data: profiles, error: profilesError } = candidateIds.length
     ? await supabase
         .from("hireuo_candidate_profiles")
@@ -58,7 +68,10 @@ export default async function RecruiterApplicantsPage({
       {applications?.length ? (
         <section className="overflow-hidden rounded-2xl bg-rosybrown">
           <div className="hidden grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr_0.8fr] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:grid">
-            <span>Candidate</span><span>Role</span><span>Applied</span><span>Stage</span>
+            <span>Candidate</span>
+            <span>Role</span>
+            <span>Applied</span>
+            <span>Stage</span>
           </div>
           {applications.map((application) => {
             const job = Array.isArray(application.hireuo_jobs)
@@ -76,11 +89,15 @@ export default async function RecruiterApplicantsPage({
                     {fullName?.charAt(0) || "C"}
                   </span>
                   <div>
-                    <p className="text-sm font-semibold">{fullName || "Candidate"}</p>
+                    <p className="text-sm font-semibold">
+                      {fullName || "Candidate"}
+                    </p>
                     <p className="text-xs text-slate-500">Candidate</p>
                   </div>
                 </div>
-                <p className="text-sm text-slate-600">{job?.title || "Job opening"}</p>
+                <p className="text-sm text-slate-600">
+                  {job?.title || "Job opening"}
+                </p>
                 <p className="text-xs text-slate-500">
                   {new Date(application.applied_at).toLocaleDateString("en", {
                     dateStyle: "medium",
@@ -89,12 +106,19 @@ export default async function RecruiterApplicantsPage({
                 <ApplicationStage
                   id={application.id}
                   status={application.status}
-                  canEdit={membership.role === "admin" || membership.role === "recruiter"}
+                  canEdit={
+                    membership.role === "admin" ||
+                    membership.role === "recruiter"
+                  }
                 />
               </article>
             );
           })}
-          <Pagination basePath="/recruiter/applicants" page={page} totalPages={totalPages} />
+          <Pagination
+            basePath="/recruiter/applicants"
+            page={page}
+            totalPages={totalPages}
+          />
         </section>
       ) : (
         <section className="grid min-h-80 place-items-center rounded-2xl bg-rosybrown px-6 py-12 text-center">

@@ -37,8 +37,12 @@ export default async function SavedJobsPage() {
                 className="flex flex-col justify-between gap-4 rounded-2xl bg-rosybrown p-5 sm:flex-row sm:items-center"
               >
                 <Link href={`/jobs/${job.id}`} className="min-w-0">
-                  <h2 className="font-semibold hover:text-amber-600">{job.title}</h2>
-                  <p className="mt-1 text-sm text-slate-500">Employer details unavailable</p>
+                  <h2 className="font-semibold hover:text-amber-600">
+                    {job.title}
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Employer details unavailable
+                  </p>
                   <p className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
                     <span className="inline-flex items-center gap-1">
                       <MapPin size={13} />
@@ -72,7 +76,8 @@ export default async function SavedJobsPage() {
             </span>
             <h2 className="mt-5 text-lg font-semibold">No saved jobs yet</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Save interesting roles while browsing and they&apos;ll be collected here
+              Save interesting roles while browsing and they&apos;ll be
+              collected here
             </p>
             <Link
               href="/jobs"

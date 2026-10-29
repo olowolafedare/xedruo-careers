@@ -39,7 +39,9 @@ export default function AccountForm() {
     if (authError === "oauth_failed") {
       setError("Google sign-in could not be completed. Please try again.");
     } else if (authError === "confirmation_failed") {
-      setError("The sign-in or confirmation link could not be verified. Please sign in again.");
+      setError(
+        "The sign-in or confirmation link could not be verified. Please sign in again.",
+      );
     } else {
       setError("Authentication could not be completed. Please try again.");
     }
@@ -62,7 +64,11 @@ export default function AccountForm() {
       });
       if (authError) throw authError;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Google sign-in could not be started");
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Google sign-in could not be started",
+      );
       setBusy(false);
     }
   }
@@ -86,18 +92,27 @@ export default function AccountForm() {
 
         if (authError) throw authError;
         if (!data.session) {
-          setMessage("Check your email to confirm your Hireuo account, then sign in here");
+          setMessage(
+            "Check your email to confirm your Hireuo account, then sign in here",
+          );
           return;
         }
       } else {
-        const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (authError) throw authError;
       }
 
       router.push(destination);
       router.refresh();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "We couldn't complete your request");
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "We couldn't complete your request",
+      );
     } finally {
       setBusy(false);
     }
@@ -106,13 +121,24 @@ export default function AccountForm() {
   return (
     <main className="grid min-h-screen place-items-center bg-rosybrown px-5 py-12">
       <section className="w-full max-w-md rounded-3xl bg-rosybrown p-8 shadow-sm">
-        <Link href="/" className="text-sm font-bold tracking-wide text-amber-600">
+        <Link
+          href="/"
+          className="text-sm font-bold tracking-wide text-amber-600"
+        >
           {isAdminLogin ? "HIREUO STAFF" : "HIREUO"}
         </Link>
         <h1 className="mt-5 text-3xl font-bold text-slate-950">
-          {isAdminLogin ? "Staff sign in" : mode === "sign-up" ? "Create your Hireuo account" : "Sign in to Hireuo"}
+          {isAdminLogin
+            ? "Staff sign in"
+            : mode === "sign-up"
+              ? "Create your Hireuo account"
+              : "Sign in to Hireuo"}
         </h1>
-        {isAdminLogin && <p className="mt-2 text-sm leading-6 text-slate-500">Sign in with your authorized staff account to open the admin portal</p>}
+        {isAdminLogin && (
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            Sign in with your authorized staff account to open the admin portal
+          </p>
+        )}
 
         {!isAdminLogin && (
           <button
@@ -125,19 +151,38 @@ export default function AccountForm() {
           </button>
         )}
 
-        <form onSubmit={submit} className={isAdminLogin ? "mt-7 space-y-4" : "mt-4 space-y-4"}>
+        <form
+          onSubmit={submit}
+          className={isAdminLogin ? "mt-7 space-y-4" : "mt-4 space-y-4"}
+        >
           {mode === "sign-up" && (
             <label className="block text-sm font-medium">
               Full name
-              <input required autoComplete="name" value={name} onChange={event => setName(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" />
+              <input
+                required
+                autoComplete="name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
+              />
             </label>
           )}
           <label className="block text-sm font-medium">
             Email
-            <input required type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" />
+            <input
+              required
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
+            />
           </label>
           <div>
-            <label htmlFor="account-password" className="block text-sm font-medium">
+            <label
+              htmlFor="account-password"
+              className="block text-sm font-medium"
+            >
               Password
             </label>
             <div className="relative mt-2">
@@ -146,26 +191,47 @@ export default function AccountForm() {
                 required
                 type={showPassword ? "text" : "password"}
                 minLength={6}
-                autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
+                autoComplete={
+                  mode === "sign-up" ? "new-password" : "current-password"
+                }
                 value={password}
-                onChange={event => setPassword(event.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-12"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(visible => !visible)}
+                onClick={() => setShowPassword((visible) => !visible)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 aria-pressed={showPassword}
                 className="absolute inset-y-0 right-0 grid w-12 place-items-center rounded-r-xl text-slate-500 hover:text-slate-800 focus-visible:outline-indigo-600"
               >
-                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+                {showPassword ? (
+                  <EyeOff size={18} aria-hidden="true" />
+                ) : (
+                  <Eye size={18} aria-hidden="true" />
+                )}
               </button>
             </div>
           </div>
-          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-          {message && <p role="status" className="text-sm text-emerald-700">{message}</p>}
-          <button disabled={busy} className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white disabled:opacity-60">
-            {busy ? "Please wait…" : mode === "sign-up" ? "Create account" : "Sign in"}
+          {error && (
+            <p role="alert" className="text-sm text-red-700">
+              {error}
+            </p>
+          )}
+          {message && (
+            <p role="status" className="text-sm text-emerald-700">
+              {message}
+            </p>
+          )}
+          <button
+            disabled={busy}
+            className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white disabled:opacity-60"
+          >
+            {busy
+              ? "Please wait…"
+              : mode === "sign-up"
+                ? "Create account"
+                : "Sign in"}
           </button>
         </form>
 

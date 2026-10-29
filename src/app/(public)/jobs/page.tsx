@@ -40,7 +40,9 @@ export default async function JobsPage({
     jobsQuery = jobsQuery.ilike("title", `%${query.replace(/[%_]/g, "\\$&")}%`);
   }
   if (location) {
-    const safeLocation = location.replace(/[,%()"]/g, " ").replace(/[%_]/g, "\\$&");
+    const safeLocation = location
+      .replace(/[,%()"]/g, " ")
+      .replace(/[%_]/g, "\\$&");
     const pattern = `*${safeLocation}*`;
     jobsQuery = jobsQuery.or(
       `city.ilike.${pattern},state.ilike.${pattern},country.ilike.${pattern}`,
@@ -58,7 +60,9 @@ export default async function JobsPage({
     <main className="min-h-screen bg-rosybrown text-slate-900">
       <header className="bg-rosybrown">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="font-extrabold tracking-tight">HIREUO</Link>
+          <Link href="/" className="font-extrabold tracking-tight">
+            HIREUO
+          </Link>
           <Link
             href="/account?next=%2Fapplicant"
             className="text-sm font-semibold text-amber-600 hover:text-amber-700"
@@ -86,7 +90,10 @@ export default async function JobsPage({
         >
           <label className="relative">
             <span className="sr-only">Job title</span>
-            <Search className="absolute left-3 top-3.5 text-slate-400" size={18} />
+            <Search
+              className="absolute left-3 top-3.5 text-slate-400"
+              size={18}
+            />
             <input
               name="q"
               defaultValue={query}
@@ -96,7 +103,10 @@ export default async function JobsPage({
           </label>
           <label className="relative">
             <span className="sr-only">Location</span>
-            <MapPin className="absolute left-3 top-3.5 text-slate-400" size={18} />
+            <MapPin
+              className="absolute left-3 top-3.5 text-slate-400"
+              size={18}
+            />
             <input
               name="location"
               defaultValue={location}
@@ -125,7 +135,10 @@ export default async function JobsPage({
         </form>
 
         {error ? (
-          <p role="alert" className="mt-8 rounded-xl bg-rosybrown p-4 text-sm text-red-700">
+          <p
+            role="alert"
+            className="mt-8 rounded-xl bg-rosybrown p-4 text-sm text-red-700"
+          >
             Jobs are temporarily unavailable. Please try again later.
           </p>
         ) : jobs?.length ? (
@@ -144,7 +157,9 @@ export default async function JobsPage({
                     <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
                       <div>
                         <h2 className="text-lg font-semibold">{job.title}</h2>
-                        <p className="mt-1 text-sm text-slate-600">Employer details unavailable</p>
+                        <p className="mt-1 text-sm text-slate-600">
+                          Employer details unavailable
+                        </p>
                       </div>
                       <span className="w-fit rounded-full bg-rosybrown px-3 py-1 text-xs font-semibold text-amber-700">
                         {formatEmploymentType(job.employment_type)}
@@ -172,13 +187,18 @@ export default async function JobsPage({
             <span className="mx-auto grid size-12 place-items-center rounded-xl bg-rosybrown text-slate-500">
               <BriefcaseBusiness size={22} />
             </span>
-            <h2 className="mt-4 text-lg font-semibold">No matching roles found</h2>
+            <h2 className="mt-4 text-lg font-semibold">
+              No matching roles found
+            </h2>
             <p className="mt-2 text-sm text-slate-500">
-              Try a different title or location, or check back soon for new opportunities
+              Try a different title or location, or check back soon for new
+              opportunities
             </p>
           </section>
         )}
-        <p className="mt-5 text-xs text-slate-500">Showing up to 100 recent published roles</p>
+        <p className="mt-5 text-xs text-slate-500">
+          Showing up to 100 recent published roles
+        </p>
       </div>
     </main>
   );

@@ -24,7 +24,8 @@ export default async function ApplicationsPage() {
     .eq("candidate_id", user.id)
     .order("applied_at", { ascending: false });
 
-  if (error) throw new Error(`Unable to load your applications: ${error.message}`);
+  if (error)
+    throw new Error(`Unable to load your applications: ${error.message}`);
 
   return (
     <div className="space-y-7">
@@ -52,19 +53,28 @@ export default async function ApplicationsPage() {
                     <BriefcaseBusiness size={18} />
                   </span>
                   <div>
-                    <h2 className="font-semibold">{job?.title || "Job opening"}</h2>
-                    <p className="mt-1 text-sm text-slate-500">Employer details unavailable</p>
+                    <h2 className="font-semibold">
+                      {job?.title || "Job opening"}
+                    </h2>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Employer details unavailable
+                    </p>
                     <p className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
                       <span className="inline-flex items-center gap-1">
                         <MapPin size={13} />
-                        {job ? formatJobLocation(job) : "Location not specified"}
+                        {job
+                          ? formatJobLocation(job)
+                          : "Location not specified"}
                       </span>
                       <span>{formatEmploymentType(job?.employment_type)}</span>
                       <span>
                         Applied{" "}
-                        {new Date(application.applied_at).toLocaleDateString("en", {
-                          dateStyle: "medium",
-                        })}
+                        {new Date(application.applied_at).toLocaleDateString(
+                          "en",
+                          {
+                            dateStyle: "medium",
+                          },
+                        )}
                       </span>
                     </p>
                   </div>
