@@ -6,12 +6,13 @@ import { ArrowRight, BriefcaseBusiness, CircleUserRound, FileText, MapPin } from
 import { createClient } from "@/src/lib/supabase/client";
 
 type CandidateProfile = {
+ full_name: string | null;
  phone_number: string | null;
  country: string | null;
  state: string | null;
- years_of_experience: number | null;
+ years_experience: number | null;
  job_search_timing: string | null;
- work_preference: string | null;
+ preferred_workplace_type: string | null;
  resume_path: string | null;
  onboarding_completed: boolean;
 };
@@ -58,7 +59,7 @@ export default function CandidateProfilePage() {
 
  const [{ data: account, error: accountError }, { data: saved, error: candidateError }] = await Promise.all([
  supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
- supabase.from("careers_candidate_profiles").select("*").eq("profile_id", user.id).maybeSingle(),
+ supabase.from("hireuo_candidate_profiles").select("full_name,phone_number,country,state,years_experience,job_search_timing,preferred_workplace_type,resume_path,onboarding_completed").eq("user_id", user.id).maybeSingle(),
  ]);
 
  if (!active) return;
@@ -68,9 +69,10 @@ export default function CandidateProfilePage() {
  if (account?.full_name) setFullName(account.full_name);
  if (saved) {
  const profile = saved as CandidateProfile;
+ if (profile.full_name) setFullName(profile.full_name);
  setCandidate(profile);
  if (profile.resume_path) {
- const { data } = await supabase.storage.from("careers-resumes").createSignedUrl(profile.resume_path, 60 * 60);
+ const { data } = await supabase.storage.from("hireuo-resumes").createSignedUrl(profile.resume_path, 60 * 60);
  if (active && data?.signedUrl) setResumeUrl(data.signedUrl);
  }
  }
@@ -84,8 +86,8 @@ export default function CandidateProfilePage() {
 
  const details = [
  { icon: CircleUserRound, title: "Personal details", rows: [["Full name", fullName], ["Email address", email], ["Phone number", candidate?.phone_number]] },
- { icon: MapPin, title: "Location and preferences", rows: [["Location", [candidate?.state, candidate?.country].filter(Boolean).join(", ")], ["Preferred work arrangement", candidate?.work_preference ? workPreferenceLabels[candidate.work_preference] ?? candidate.work_preference : ""], ["Job search timing", candidate?.job_search_timing ? searchTimingLabels[candidate.job_search_timing] ?? candidate.job_search_timing : ""]] },
- { icon: BriefcaseBusiness, title: "Experience", rows: [["Years of experience", candidate?.years_of_experience == null ? "" : `${candidate.years_of_experience} years`]] },
+ { icon: MapPin, title: "Location and preferences", rows: [["Location", [candidate?.state, candidate?.country].filter(Boolean).join(", ")], ["Preferred work arrangement", candidate?.preferred_workplace_type ? workPreferenceLabels[candidate.preferred_workplace_type] ?? candidate.preferred_workplace_type : ""], ["Job search timing", candidate?.job_search_timing ? searchTimingLabels[candidate.job_search_timing] ?? candidate.job_search_timing : ""]] },
+ { icon: BriefcaseBusiness, title: "Experience", rows: [["Years of experience", candidate?.years_experience == null ? "" : `${candidate.years_experience} years`]] },
  ];
 
  return (
