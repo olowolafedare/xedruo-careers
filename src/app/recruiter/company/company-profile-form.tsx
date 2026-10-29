@@ -16,7 +16,7 @@ export default function CompanyProfileForm({ companyId, initialName, initialWebs
  async function save(event: FormEvent<HTMLFormElement>) {
  event.preventDefault(); setBusy(true); setError(""); setMessage("");
  const supabase = createClient();
- const { error: updateError } = await supabase.from("careers_companies").update({ name: name.trim(), website: website.trim() || null, description: description.trim() || null }).eq("id", companyId);
+ const { error: updateError } = await supabase.from("companies").update({ name: name.trim(), website: website.trim() || null, description: description.trim() || null }).eq("id", companyId);
  if (updateError) { setError("Unable to save company profile Check your access and try again"); setBusy(false); return; }
  setMessage("Company profile saved"); setBusy(false); router.refresh();
  }
