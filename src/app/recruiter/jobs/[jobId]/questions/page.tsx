@@ -9,9 +9,9 @@ export default async function JobQuestionsPage({ params }: { params: Promise<{ j
  const { jobId } = await params;
  const { supabase, company, membership } = await requireRecruiter();
  if (membership.role !== "admin" && membership.role !== "recruiter") redirect("/recruiter/jobs");
- const { data: job, error: jobError } = await supabase.from("careers_jobs").select("id,title").eq("id", jobId).eq("company_id", company.id).maybeSingle();
+ const { data: job, error: jobError } = await supabase.from("hireuo_jobs").select("id,title").eq("id", jobId).eq("company_id", company.id).maybeSingle();
  if (jobError || !job) notFound();
- const { data: rows, error } = await supabase.from("careers_job_questions").select("id,question_text,type,options,is_required,sort_order").eq("job_id", job.id).order("sort_order", { ascending: true });
+ const { data: rows, error } = await supabase.from("hireuo_job_questions").select("id,question_text,type,options,is_required,sort_order").eq("job_id", job.id).order("sort_order", { ascending: true });
  if (error) throw new Error(`Unable to load application questions: ${error.message}`);
  const initialQuestions: QuestionnaireQuestion[] = (rows ?? []).map((row) => ({
  id: row.id,
