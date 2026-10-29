@@ -211,7 +211,7 @@ export default function HomePage() {
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             <Link
               href="/applicant"
-              className="group rounded-3xl bg-rosybrown p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-amber-50 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-600 sm:p-9"
+              className="group rounded-3xl bg-rosybrown p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-amber-50 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-amber-600 sm:p-9"
             >
               <span className="grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
                 <Search size={24} />
@@ -228,7 +228,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/recruiter"
-              className="group rounded-3xl bg-rosybrown p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-amber-50 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-600 sm:p-9"
+              className="group rounded-3xl bg-rosybrown p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-amber-50 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-amber-600 sm:p-9"
             >
               <span className="grid size-12 place-items-center rounded-2xl bg-rosybrown text-sky-700">
                 <Users size={24} />
