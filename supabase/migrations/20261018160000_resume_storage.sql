@@ -6,8 +6,8 @@ INSERT INTO storage.buckets (
   allowed_mime_types
 )
 VALUES (
-  'careers-resumes',
-  'careers-resumes',
+  'hireuo-resumes',
+  'hireuo-resumes',
   FALSE,
   5242880,
   ARRAY[
@@ -38,7 +38,7 @@ ON storage.objects
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'careers-resumes'
+  bucket_id = 'hireuo-resumes'
   AND (storage.foldername(name))[1] = (SELECT auth.uid())::text
 );
 
@@ -47,7 +47,7 @@ ON storage.objects
 FOR SELECT
 TO authenticated
 USING (
-  bucket_id = 'careers-resumes'
+  bucket_id = 'hireuo-resumes'
   AND (storage.foldername(name))[1] = (SELECT auth.uid())::text
 );
 
@@ -56,11 +56,11 @@ ON storage.objects
 FOR UPDATE
 TO authenticated
 USING (
-  bucket_id = 'careers-resumes'
+  bucket_id = 'hireuo-resumes'
   AND (storage.foldername(name))[1] = (SELECT auth.uid())::text
 )
 WITH CHECK (
-  bucket_id = 'careers-resumes'
+  bucket_id = 'hireuo-resumes'
   AND (storage.foldername(name))[1] = (SELECT auth.uid())::text
 );
 
@@ -69,6 +69,6 @@ ON storage.objects
 FOR DELETE
 TO authenticated
 USING (
-  bucket_id = 'careers-resumes'
+  bucket_id = 'hireuo-resumes'
   AND (storage.foldername(name))[1] = (SELECT auth.uid())::text
 );
