@@ -1,4 +1,4 @@
-CREATE TABLE profiles (
+CREATE TABLE IF NOT EXISTS profiles (
     id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     full_name TEXT NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE profiles (
     phone_number TEXT
 );
 
-CREATE TABLE companies (
+CREATE TABLE IF NOT EXISTS companies (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     name TEXT NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE companies (
     description TEXT
 );
 
-CREATE TABLE company_members (
+CREATE TABLE IF NOT EXISTS company_members (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     company_id UUID REFERENCES companies(id) ON DELETE CASCADE NOT NULL,
     profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE company_members (
     UNIQUE(company_id, profile_id)
 );
 
-CREATE TABLE jobs (
+CREATE TABLE IF NOT EXISTS jobs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
     recruiter_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
@@ -41,7 +41,7 @@ CREATE TABLE jobs (
     )
 );
 
-CREATE TABLE question_templates (
+CREATE TABLE IF NOT EXISTS question_templates (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     company_id UUID REFERENCES companies(id) ON DELETE CASCADE NOT NULL,
     question_text TEXT NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE question_templates (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
-CREATE TABLE job_questions (
+CREATE TABLE IF NOT EXISTS job_questions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE NOT NULL,
     question_text TEXT NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE job_questions (
     UNIQUE (id, job_id)
 );
 
-CREATE TABLE applications (
+CREATE TABLE IF NOT EXISTS applications (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE NOT NULL,
     candidate_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
@@ -76,7 +76,7 @@ ON applications (candidate_id, job_id)
 WHERE (status NOT IN ('rejected', 'withdrawn'));
 
 
-CREATE TABLE application_answers (
+CREATE TABLE IF NOT EXISTS application_answers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     application_id UUID NOT NULL,
     job_id UUID NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE application_answers (
 );
 
 
-CREATE TABLE candidate_documents (
+CREATE TABLE IF NOT EXISTS candidate_documents (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     candidate_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
     application_id UUID REFERENCES applications(id) ON DELETE CASCADE,
@@ -98,7 +98,7 @@ CREATE TABLE candidate_documents (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
-CREATE TABLE application_events (
+CREATE TABLE IF NOT EXISTS application_events (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     application_id UUID REFERENCES applications(id) ON DELETE CASCADE NOT NULL,
     actor_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
