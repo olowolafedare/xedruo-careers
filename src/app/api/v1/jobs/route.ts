@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
  }
 
  const { data: membership, error: membershipError } = await supabase
- .from('careers_company_members')
+ .from('company_members')
  .select('company_id')
  .eq('company_id', companyId)
  .eq('profile_id', user.id)

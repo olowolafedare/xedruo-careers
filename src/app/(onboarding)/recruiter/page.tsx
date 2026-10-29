@@ -20,7 +20,7 @@ export default function RecruiterOnboardingPage() {
  void supabase.auth.getUser().then(async ({ data: { user } }) => {
  if (!active) return;
  if (!user) { router.replace("/account"); return; }
- const { data: member } = await supabase.from("careers_company_members").select("id").eq("profile_id", user.id).limit(1).maybeSingle();
+ const { data: member } = await supabase.from("company_members").select("id").eq("profile_id", user.id).limit(1).maybeSingle();
  if (member) { router.replace("/recruiter/dashboard"); return; }
  setLoading(false);
  });
@@ -32,9 +32,9 @@ export default function RecruiterOnboardingPage() {
  try {
  const { data: { user }, error: authError } = await supabase.auth.getUser();
  if (authError || !user) { router.replace("/account"); return; }
- const { data: company, error: companyError } = await supabase.from("careers_companies").insert({ name: name.trim(), website: website.trim() || null, description: description.trim() || null }).select("id").single();
+ const { data: company, error: companyError } = await supabase.from("companies").insert({ name: name.trim(), website: website.trim() || null, description: description.trim() || null }).select("id").single();
  if (companyError) throw companyError;
- const { error: memberError } = await supabase.from("careers_company_members").insert({ company_id: company.id, profile_id: user.id, role: "admin" });
+ const { error: memberError } = await supabase.from("company_members").insert({ company_id: company.id, profile_id: user.id, role: "admin" });
  if (memberError) throw memberError;
  router.push("/recruiter/dashboard"); router.refresh();
  } catch (cause) {
