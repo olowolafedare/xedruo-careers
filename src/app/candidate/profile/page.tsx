@@ -12,14 +12,10 @@ import {
 import { createClient } from "@/src/lib/supabase/client";
 
 type CandidateProfile = {
-  full_name: string | null;
   phone_number: string | null;
-  country: string | null;
-  state: string | null;
   years_experience: number | null;
   job_search_timing: string | null;
   preferred_workplace_type: string | null;
-  resume_path: string | null;
   onboarding_completed: boolean;
 };
 
@@ -44,6 +40,7 @@ export default function CandidateProfilePage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [candidate, setCandidate] = useState<CandidateProfile | null>(null);
+  const [location, setLocation] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,16 +72,16 @@ export default function CandidateProfilePage() {
         { data: saved, error: candidateError },
       ] = await Promise.all([
         supabase
-          .from("profiles")
-          .select("full_name")
+          .from("xedruo_profiles")
+          .select("full_name,phone_number,country,state")
           .eq("id", user.id)
           .maybeSingle(),
         supabase
           .from("hireuo_candidate_profiles")
           .select(
-            "full_name,phone_number,country,state,years_experience,job_search_timing,preferred_workplace_type,resume_path,onboarding_completed",
+            "phone_number,years_experience,job_search_timing,preferred_workplace_type,onboarding_completed",
           )
-          .eq("user_id", user.id)
+          .eq("account_id", user.id)
           .maybeSingle(),
       ]);
 
@@ -93,15 +90,30 @@ export default function CandidateProfilePage() {
         setError("We couldn’t load your profile Please try again");
       } else {
         if (account?.full_name) setFullName(account.full_name);
+        setLocation([account?.state, account?.country].filter(Boolean).join(", "));
         if (saved) {
           const profile = saved as CandidateProfile;
-          if (profile.full_name) setFullName(profile.full_name);
-          setCandidate(profile);
-          if (profile.resume_path) {
-            const { data } = await supabase.storage
-              .from("hireuo-resumes")
-              .createSignedUrl(profile.resume_path, 60 * 60);
-            if (active && data?.signedUrl) setResumeUrl(data.signedUrl);
+          setCandidate({ ...profile, phone_number: profile.phone_number ?? account?.phone_number ?? null });
+          const { data: document } = await supabase
+            .from("hireuo_candidate_documents")
+            .select("media_id")
+            .eq("candidate_id", user.id)
+            .eq("document_type", "resume")
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (document?.media_id) {
+            const { data: media } = await supabase
+              .from("xedruo_media")
+              .select("object_path,bucket_name")
+              .eq("id", document.media_id)
+              .maybeSingle();
+            if (media?.object_path) {
+              const { data } = await supabase.storage
+                .from(media.bucket_name)
+                .createSignedUrl(media.object_path, 60 * 60);
+              if (active && data?.signedUrl) setResumeUrl(data.signedUrl);
+            }
           }
         }
       }
@@ -130,7 +142,7 @@ export default function CandidateProfilePage() {
       rows: [
         [
           "Location",
-          [candidate?.state, candidate?.country].filter(Boolean).join(", "),
+          location,
         ],
         [
           "Preferred work arrangement",
@@ -246,7 +258,7 @@ export default function CandidateProfilePage() {
               <h2 className="font-semibold">Resume</h2>
             </div>
             <p className="mt-4 text-sm text-slate-600">
-              {candidate.resume_path
+              {resumeUrl
                 ? "A resume is saved to your profile"
                 : "No resume uploaded"}
             </p>
