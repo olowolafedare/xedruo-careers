@@ -31,9 +31,10 @@ export default function RecruiterOnboardingPage() {
         return;
       }
       const { data: member } = await supabase
-        .from("company_members")
+        .from("xedruo_organization_members")
         .select("id")
-        .eq("profile_id", user.id)
+        .eq("account_id", user.id)
+        .eq("status", "active")
         .limit(1)
         .maybeSingle();
       if (member) {
@@ -63,20 +64,25 @@ export default function RecruiterOnboardingPage() {
         router.replace("/account?next=%2Frecruiter");
         return;
       }
-      const { data: company, error: companyError } = await supabase
-        .from("companies")
+      const { data: organization, error: companyError } = await supabase
+        .from("xedruo_organizations")
         .insert({
           name: name.trim(),
           website: website.trim() || null,
           description: description.trim() || null,
+          created_by: user.id,
         })
         .select("id")
         .single();
       if (companyError) throw companyError;
       const { error: memberError } = await supabase
-        .from("company_members")
-        .insert({ company_id: company.id, profile_id: user.id, role: "admin" });
+        .from("xedruo_organization_members")
+        .insert({ organization_id: organization.id, account_id: user.id, role: "owner", status: "active", joined_at: new Date().toISOString() });
       if (memberError) throw memberError;
+      const { error: recruiterError } = await supabase
+        .from("hireuo_recruiter_profiles")
+        .upsert({ account_id: user.id, onboarding_completed: true }, { onConflict: "account_id" });
+      if (recruiterError) throw recruiterError;
       router.push("/recruiter/dashboard");
       router.refresh();
     } catch (cause) {
