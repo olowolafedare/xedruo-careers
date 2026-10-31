@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function NewRecruiterJobPage() {
   const { company, membership } = await requireRecruiter();
-  if (membership.role !== "admin" && membership.role !== "recruiter")
+  if (!["owner", "admin", "manager"].includes(membership.role))
     redirect("/recruiter/jobs");
   return (
     <div className="mx-auto max-w-3xl space-y-7">
