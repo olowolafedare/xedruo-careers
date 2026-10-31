@@ -20,9 +20,9 @@ export default async function CompanyPage({
   const { slug } = await params;
   const supabase = await createClient();
   const { data: company, error } = await supabase
-    .from("companies")
+    .from("xedruo_organizations")
     .select("id,name,description,website,logo_url")
-    .eq("id", slug)
+    .eq("slug", slug)
     .maybeSingle();
   if (error || !company) notFound();
   const { data: jobs, error: jobsError } = await supabase
@@ -30,7 +30,7 @@ export default async function CompanyPage({
     .select(
       "id,slug,title,city,state,country,employment_type,workplace_type,created_at",
     )
-    .eq("company_id", company.id)
+    .eq("organization_id", company.id)
     .eq("status", "published")
     .order("created_at", { ascending: false });
   if (jobsError)
