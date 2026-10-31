@@ -14,20 +14,14 @@ const stages = [
 
 export default async function RecruiterAnalyticsPage() {
   const { supabase, company } = await requireRecruiter();
-  const { data: metricRows, error } = await supabase.rpc(
-    "hireuo_recruiter_metrics",
-    { p_company_id: company.id },
-  );
-  if (error)
-    throw new Error(`Unable to load recruiter analytics: ${error.message}`);
-
-  const summary = metricRows?.[0];
-  if (!summary)
-    throw new Error("Recruiter analytics were not returned for this company.");
-  const total = Number(summary.total_applications);
-  const totalRoles = Number(summary.total_jobs);
-  const openRoles = Number(summary.published_jobs);
-  const stageCounts = summary.applications_by_status as Record<string, number>;
+  const [{ count: totalRoles, error: jobsError }, { count: openRoles, error: openError }, { data: applications, error: applicationsError }] = await Promise.all([
+    supabase.from("hireuo_jobs").select("id", { count: "exact", head: true }).eq("organization_id", company.id),
+    supabase.from("hireuo_jobs").select("id", { count: "exact", head: true }).eq("organization_id", company.id).eq("status", "published"),
+    supabase.from("hireuo_applications").select("status,hireuo_jobs!inner(organization_id)").eq("hireuo_jobs.organization_id", company.id),
+  ]);
+  if (jobsError || openError || applicationsError) throw new Error("Unable to load recruiter analytics");
+  const total = applications?.length ?? 0;
+  const stageCounts = Object.fromEntries(stages.map((stage) => [stage, applications?.filter((application) => application.status === stage).length ?? 0]));
 
   return (
     <div className="space-y-7">
