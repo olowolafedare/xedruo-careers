@@ -8,14 +8,14 @@ export async function saveQuestions(input: unknown) {
  if (!parsed.success) return { error: parsed.error.issues.map((issue) => issue.message).join(" ") };
  const { supabase, company } = await requireRecruiter();
  const { jobId, questions } = parsed.data;
- const { data: job, error: jobError } = await supabase.from("hireuo_jobs").select("id").eq("id", jobId).eq("company_id", company.id).maybeSingle();
+ const { data: job, error: jobError } = await supabase.from("hireuo_jobs").select("id").eq("id", jobId).eq("organization_id", company.id).maybeSingle();
  if (jobError || !job) return { error: "Job not found or you do not have access to it" };
 
  const rows = questions.map((question) => ({
  id: question.id,
  job_id: jobId,
  question_text: question.questionText.trim(),
- type: question.type,
+ question_type: question.type,
  options: question.options,
  is_required: question.isRequired,
  sort_order: question.displayOrder,
