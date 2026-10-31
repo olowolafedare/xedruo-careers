@@ -24,14 +24,10 @@ const inputClass =
   "mt-2 w-full rounded-xl bg-rosybrown px-4 py-3 text-sm text-slate-900 outline-none transition focus:ring-4 focus:ring-amber-100";
 
 type CandidateProfile = {
-  full_name: string | null;
   phone_number: string | null;
-  country: string | null;
-  state: string | null;
   years_experience: number | null;
   job_search_timing: string | null;
   preferred_workplace_type: string | null;
-  resume_path: string | null;
   onboarding_completed: boolean;
 };
 
@@ -92,16 +88,16 @@ export default function ApplicantOnboardingPage() {
         { data: candidate, error: candidateError },
       ] = await Promise.all([
         supabase
-          .from("profiles")
-          .select("full_name")
+          .from("xedruo_profiles")
+          .select("full_name,phone_number,country,state")
           .eq("id", user.id)
           .maybeSingle(),
         supabase
           .from("hireuo_candidate_profiles")
           .select(
-            "full_name,phone_number,country,state,years_experience,job_search_timing,preferred_workplace_type,resume_path,onboarding_completed",
+            "phone_number,years_experience,job_search_timing,preferred_workplace_type,onboarding_completed",
           )
-          .eq("user_id", user.id)
+          .eq("account_id", user.id)
           .maybeSingle(),
       ]);
 
@@ -124,14 +120,26 @@ export default function ApplicantOnboardingPage() {
 
       if (candidate) {
         const saved = candidate as CandidateProfile;
-        setFullName(saved.full_name ?? "");
-        setPhone(saved.phone_number ?? "");
-        setCountry(saved.country ?? "Country");
-        setState(saved.state ?? "");
+        setPhone(saved.phone_number ?? profile?.phone_number ?? "");
         setExperience(String(saved.years_experience ?? 0));
         setSearchTiming(saved.job_search_timing ?? "immediately");
         setWorkPreference(saved.preferred_workplace_type ?? "any");
-        setExistingResume(saved.resume_path ?? "");
+        const { data: document } = await supabase
+          .from("hireuo_candidate_documents")
+          .select("media_id")
+          .eq("candidate_id", user.id)
+          .eq("document_type", "resume")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (document?.media_id) {
+          const { data: media } = await supabase
+            .from("xedruo_media")
+            .select("object_path")
+            .eq("id", document.media_id)
+            .maybeSingle();
+          setExistingResume(media?.object_path ?? "");
+        }
       }
 
       setLoading(false);
@@ -214,26 +222,55 @@ export default function ApplicantOnboardingPage() {
 
       currentStep = "Saving HIREUO candidate profile";
 
+      const { error: profileError } = await supabase
+        .from("xedruo_profiles")
+        .upsert({
+          id: userId,
+          full_name: fullName.trim(),
+          phone_number: phone.trim() || null,
+          country: country.trim(),
+          state: state.trim(),
+        }, { onConflict: "id" });
+      if (profileError) throw profileError;
+
       const { error: candidateError } = await supabase
         .from("hireuo_candidate_profiles")
         .upsert(
           {
-            user_id: userId,
-            full_name: fullName.trim(),
+            account_id: userId,
             phone_number: phone.trim() || null,
-            country: country.trim(),
-            state: state.trim(),
             years_experience: years,
             job_search_timing: searchTiming,
             preferred_workplace_type: workPreference,
-            resume_path: resumePath,
             onboarding_completed: true,
             updated_at: new Date().toISOString(),
           },
-          { onConflict: "user_id" },
+          { onConflict: "account_id" },
         );
 
       if (candidateError) throw candidateError;
+
+      if (resume) {
+        const { data: media, error: mediaError } = await supabase
+          .from("xedruo_media")
+          .insert({
+            owner_id: userId,
+            bucket_name: "hireuo-resumes",
+            object_path: resumePath!,
+            file_name: resume.name,
+            mime_type: resume.type || null,
+            file_size: resume.size,
+            visibility: "private",
+            metadata: { service: "hireuo", document_type: "resume" },
+          })
+          .select("id")
+          .single();
+        if (mediaError) throw mediaError;
+        const { error: documentError } = await supabase
+          .from("hireuo_candidate_documents")
+          .insert({ candidate_id: userId, media_id: media.id, file_name: resume.name, document_type: "resume" });
+        if (documentError) throw documentError;
+      }
 
       setNotice("Your candidate profile has been saved");
       router.push("/candidate/dashboard");

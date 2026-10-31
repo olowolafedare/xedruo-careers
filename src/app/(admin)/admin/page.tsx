@@ -10,15 +10,15 @@ async function getCount(table: string) {
 }
 
 export default async function AdminPage() {
-  const [companies, jobs, applications, candidates] = await Promise.all([
-    getCount("companies"),
+  const [organizations, jobs, applications, candidates] = await Promise.all([
+    getCount("xedruo_organizations"),
     getCount("hireuo_jobs"),
     getCount("hireuo_applications"),
     getCount("hireuo_candidate_profiles"),
   ]);
 
   const metrics = [
-    { label: "Companies", value: companies, detail: "Organizations on Hireuo" },
+    { label: "Organizations", value: organizations, detail: "Organizations on Hireuo" },
     {
       label: "Job postings",
       value: jobs,
