@@ -20,31 +20,31 @@ export default async function RecruiterDashboardPage() {
     supabase
       .from("hireuo_jobs")
       .select("id", { count: "exact", head: true })
-      .eq("company_id", company.id),
+      .eq("organization_id", company.id),
     supabase
       .from("hireuo_jobs")
       .select("id", { count: "exact", head: true })
-      .eq("company_id", company.id)
+      .eq("organization_id", company.id)
       .eq("status", "published"),
     supabase
       .from("hireuo_applications")
-      .select("id, hireuo_jobs!inner(company_id)", {
+      .select("id, hireuo_jobs!inner(organization_id)", {
         count: "exact",
         head: true,
       })
-      .eq("hireuo_jobs.company_id", company.id),
+      .eq("hireuo_jobs.organization_id", company.id),
     supabase
       .from("hireuo_applications")
-      .select("id, hireuo_jobs!inner(company_id)", {
+      .select("id, hireuo_jobs!inner(organization_id)", {
         count: "exact",
         head: true,
       })
-      .eq("hireuo_jobs.company_id", company.id)
+      .eq("hireuo_jobs.organization_id", company.id)
       .in("status", ["reviewing", "interview"]),
     supabase
       .from("hireuo_jobs")
       .select("id, title, status, created_at")
-      .eq("company_id", company.id)
+      .eq("organization_id", company.id)
       .order("created_at", { ascending: false })
       .limit(4),
   ]);
@@ -103,7 +103,7 @@ export default async function RecruiterDashboardPage() {
             Manage your openings and keep candidate conversations moving
           </p>
         </div>
-        {(membership.role === "admin" || membership.role === "recruiter") && (
+        {["owner", "admin", "manager"].includes(membership.role) && (
           <Link
             href="/recruiter/jobs/new"
             className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white bg-rosybrown sm:self-auto"
@@ -176,8 +176,7 @@ export default async function RecruiterDashboardPage() {
               <p className="mt-1 text-sm text-slate-500">
                 Create your first opening to get started
               </p>
-              {(membership.role === "admin" ||
-                membership.role === "recruiter") && (
+              {["owner", "admin", "manager"].includes(membership.role) && (
                 <Link
                   href="/recruiter/jobs/new"
                   className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-amber-600"
