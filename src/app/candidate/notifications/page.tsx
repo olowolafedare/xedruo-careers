@@ -37,7 +37,7 @@ export default async function CandidateNotificationsPage() {
         read_at: new Date().toISOString(),
       })
       .eq("id", notificationId)
-      .eq("user_id", user.id);
+      .eq("account_id", user.id);
 
     revalidatePath("/candidate/notifications");
     revalidatePath("/candidate/dashboard");
@@ -48,7 +48,7 @@ export default async function CandidateNotificationsPage() {
     .select(
       "id, title, message, notification_type, action_url, is_read, created_at",
     )
-    .eq("user_id", user.id)
+    .eq("account_id", user.id)
     .order("created_at", { ascending: false })
     .limit(50);
 
