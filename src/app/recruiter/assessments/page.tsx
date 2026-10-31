@@ -28,7 +28,7 @@ export default async function RecruiterAssessmentsPage({
     .select("id, title, status, hireuo_job_questions(count)", {
       count: "exact",
     })
-    .eq("company_id", company.id)
+    .eq("organization_id", company.id)
     .order("created_at", { ascending: false })
     .range(from, to);
 
