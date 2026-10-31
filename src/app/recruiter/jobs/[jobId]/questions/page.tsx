@@ -16,18 +16,18 @@ export default async function JobQuestionsPage({
 }) {
   const { jobId } = await params;
   const { supabase, company, membership } = await requireRecruiter();
-  if (membership.role !== "admin" && membership.role !== "recruiter")
+  if (!["owner", "admin", "manager"].includes(membership.role))
     redirect("/recruiter/jobs");
   const { data: job, error: jobError } = await supabase
     .from("hireuo_jobs")
     .select("id,title")
     .eq("id", jobId)
-    .eq("company_id", company.id)
+    .eq("organization_id", company.id)
     .maybeSingle();
   if (jobError || !job) notFound();
   const { data: rows, error } = await supabase
     .from("hireuo_job_questions")
-    .select("id,question_text,type,options,is_required,sort_order")
+    .select("id,question_text,question_type,options,is_required,sort_order")
     .eq("job_id", job.id)
     .order("sort_order", { ascending: true });
   if (error)
@@ -35,7 +35,7 @@ export default async function JobQuestionsPage({
   const initialQuestions: QuestionnaireQuestion[] = (rows ?? []).map((row) => ({
     id: row.id,
     questionText: row.question_text,
-    type: row.type as QuestionType,
+    type: row.question_type as QuestionType,
     isRequired: row.is_required,
     displayOrder: row.sort_order,
     options: (Array.isArray(row.options)
