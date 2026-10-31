@@ -21,7 +21,7 @@ export function JobComposer({ companyId }: { companyId: string }) {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        company_id: companyId,
+        organization_id: companyId,
         title: form.get("title"),
         description: form.get("description"),
         city: form.get("city"),
