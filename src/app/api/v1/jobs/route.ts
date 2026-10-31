@@ -108,8 +108,8 @@ export async function POST(request: NextRequest) {
  );
  }
 
- const companyId =
- typeof body.company_id === 'string' ? body.company_id : '';
+ const organizationId =
+ typeof body.organization_id === 'string' ? body.organization_id : '';
  const title = typeof body.title === 'string' ? body.title.trim() : '';
  const description =
  typeof body.description === 'string'
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
  const allowedWorkplaceTypes = ['onsite', 'remote', 'hybrid'];
 
  if (
- !companyId ||
+ !organizationId ||
  !title ||
  title.length > 200 ||
  !description ||
@@ -146,11 +146,12 @@ export async function POST(request: NextRequest) {
  }
 
  const { data: membership, error: membershipError } = await supabase
- .from('company_members')
- .select('company_id')
- .eq('company_id', companyId)
- .eq('profile_id', user.id)
- .in('role', ['admin', 'recruiter'])
+ .from('xedruo_organization_members')
+ .select('organization_id')
+ .eq('organization_id', organizationId)
+ .eq('account_id', user.id)
+ .eq('status', 'active')
+ .in('role', ['owner', 'admin', 'manager'])
  .maybeSingle();
 
  if (membershipError) {
@@ -170,7 +171,7 @@ export async function POST(request: NextRequest) {
  const { data: job, error: insertError } = await supabase
  .from('hireuo_jobs')
  .insert({
- company_id: membership.company_id,
+ organization_id: membership.organization_id,
  recruiter_id: user.id,
  title,
  description,
