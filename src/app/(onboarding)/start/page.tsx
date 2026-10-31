@@ -12,12 +12,13 @@ export default async function StartPage() {
     supabase
       .from("hireuo_candidate_profiles")
       .select("onboarding_completed")
-      .eq("user_id", user.id)
+      .eq("account_id", user.id)
       .maybeSingle(),
     supabase
-      .from("company_members")
+      .from("xedruo_organization_members")
       .select("id")
-      .eq("profile_id", user.id)
+      .eq("account_id", user.id)
+      .eq("status", "active")
       .limit(1)
       .maybeSingle(),
   ]);
