@@ -32,8 +32,7 @@ export default async function RecruiterLayout({
 }) {
   await connection();
   const { company, membership } = await requireRecruiter();
-  const canManage =
-    membership.role === "admin" || membership.role === "recruiter";
+  const canManage = ["owner", "admin", "manager"].includes(membership.role);
 
   return (
     <div className="min-h-screen bg-rosybrown text-slate-900">
