@@ -1,6 +1,3 @@
--- Hireuo-owned schema. Shared account, profile, organization and media tables
--- are provided by the Xedruo platform.
-
 insert into public.xedruo_roles (name, description)
 values ('hireuo_staff', 'Access to the Hireuo platform administration area')
 on conflict (name) do nothing;
@@ -186,8 +183,6 @@ drop policy if exists "candidates delete own Hireuo resumes" on storage.objects;
 create policy "candidates delete own Hireuo resumes" on storage.objects for delete to authenticated
 using (bucket_id = 'hireuo-resumes' and (storage.foldername(name))[1] = auth.uid()::text);
 
--- Candidate data is private to its owner. Recruiter reads flow through their
--- organization membership and the jobs they own.
 alter table public.hireuo_candidate_profiles enable row level security;
 alter table public.hireuo_recruiter_profiles enable row level security;
 alter table public.hireuo_jobs enable row level security;
@@ -291,7 +286,6 @@ $$;
 drop trigger if exists hireuo_applications_record_event on public.hireuo_applications;
 create trigger hireuo_applications_record_event after insert or update of status on public.hireuo_applications for each row execute function public.hireuo_record_application_event();
 
--- Keep updated_at current for mutable Hireuo records.
 create or replace function public.hireuo_set_updated_at() returns trigger language plpgsql as $$
 begin
   new.updated_at = now();
