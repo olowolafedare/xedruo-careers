@@ -37,10 +37,10 @@ export default async function RecruiterPipelinePage({
   } = await supabase
     .from("hireuo_applications")
     .select(
-      "id,candidate_id,status,applied_at,hireuo_jobs!hireuo_applications_job_id_fkey!inner(title,company_id)",
+      "id,candidate_id,status,applied_at,hireuo_jobs!hireuo_applications_job_id_fkey!inner(title,organization_id)",
       { count: "exact" },
     )
-    .eq("hireuo_jobs.company_id", company.id)
+    .eq("hireuo_jobs.organization_id", company.id)
     .order("applied_at", { ascending: false })
     .range(from, to);
 
@@ -57,15 +57,15 @@ export default async function RecruiterPipelinePage({
   ];
   const { data: profiles, error: profilesError } = candidateIds.length
     ? await supabase
-        .from("hireuo_candidate_profiles")
-        .select("user_id,full_name")
-        .in("user_id", candidateIds)
+        .from("xedruo_profiles")
+        .select("id,full_name")
+        .in("id", candidateIds)
     : { data: [], error: null };
   if (profilesError) {
     throw new Error(`Unable to load candidate names: ${profilesError.message}`);
   }
   const namesByCandidate = new Map(
-    (profiles ?? []).map(({ user_id, full_name }) => [user_id, full_name]),
+    (profiles ?? []).map(({ id, full_name }) => [id, full_name]),
   );
 
   const stageApplications = new Map<
@@ -132,8 +132,7 @@ export default async function RecruiterPipelinePage({
                               id={application.id}
                               status={application.status}
                               canEdit={
-                                membership.role === "admin" ||
-                                membership.role === "recruiter"
+                                ["owner", "admin", "manager"].includes(membership.role)
                               }
                             />
                           </div>
