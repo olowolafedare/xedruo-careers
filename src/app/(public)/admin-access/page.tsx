@@ -19,7 +19,7 @@ export default function AdminAccessPage() {
           yet A system owner must apply the staff access migration and add your
           profile to{" "}
           <code className="rounded bg-rosybrown px-1 py-0.5 text-xs">
-            public.hireuo_staff_members
+            public.xedruo_account_roles + public.xedruo_roles (hireuo_staff)
           </code>
         </p>
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
