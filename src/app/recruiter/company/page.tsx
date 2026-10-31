@@ -50,7 +50,7 @@ export default async function RecruiterCompanyPage() {
             </p>
           </div>
         </div>
-        {membership.role === "admin" || membership.role === "recruiter" ? (
+        {["owner", "admin", "manager"].includes(membership.role) ? (
           <CompanyProfileForm
             companyId={company.id}
             initialName={company.name}
