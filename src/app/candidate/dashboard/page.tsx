@@ -58,7 +58,7 @@ export default async function CandidateDashboardPage() {
     supabase
       .from("hireuo_candidate_profiles")
       .select("onboarding_completed")
-      .eq("user_id", user.id)
+      .eq("account_id", user.id)
       .maybeSingle(),
   ]);
   const counts = [
