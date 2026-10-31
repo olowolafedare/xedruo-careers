@@ -35,7 +35,7 @@ export default async function RecruiterJobsPage({
       "id, title, city, state, country, employment_type, workplace_type, status, created_at, hireuo_applications(count)",
       { count: "exact" },
     )
-    .eq("company_id", company.id)
+    .eq("organization_id", company.id)
     .order("created_at", { ascending: false })
     .range(from, to);
 
@@ -63,7 +63,7 @@ export default async function RecruiterJobsPage({
             Create and keep track of your organization’s open roles
           </p>
         </div>
-        {(membership.role === "admin" || membership.role === "recruiter") && (
+        {["owner", "admin", "manager"].includes(membership.role) && (
           <Link
             href="/recruiter/jobs/new"
             className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
@@ -103,7 +103,7 @@ export default async function RecruiterJobsPage({
                 id={job.id}
                 status={job.status}
                 canEdit={
-                  membership.role === "admin" || membership.role === "recruiter"
+          ["owner", "admin", "manager"].includes(membership.role)
                 }
               />
             </article>
@@ -125,8 +125,7 @@ export default async function RecruiterJobsPage({
               Create a draft with the role details, then review it with your
               team
             </p>
-            {(membership.role === "admin" ||
-              membership.role === "recruiter") && (
+            {["owner", "admin", "manager"].includes(membership.role) && (
               <Link
                 href="/recruiter/jobs/new"
                 className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
