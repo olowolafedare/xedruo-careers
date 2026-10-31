@@ -30,7 +30,7 @@ export default function CompanyProfileForm({
     setMessage("");
     const supabase = createClient();
     const { error: updateError } = await supabase
-      .from("companies")
+      .from("xedruo_organizations")
       .update({
         name: name.trim(),
         website: website.trim() || null,
