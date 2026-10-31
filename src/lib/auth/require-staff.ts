@@ -4,13 +4,19 @@ import { requireUser } from "@/src/lib/auth/require-user";
 
 export const requireStaff = cache(async function requireStaff() {
  const { supabase, user } = await requireUser();
- const { data: staff, error } = await supabase
- .from("hireuo_staff_members")
- .select("role")
- .eq("profile_id", user.id)
- .eq("is_active", true)
- .maybeSingle();
+ const { data: assignments, error } = await supabase
+ .from("xedruo_account_roles")
+ .select("xedruo_roles!inner(name)")
+ .eq("account_id", user.id)
+ .limit(20);
+
+ const staff = assignments?.find((assignment) => {
+  const role = Array.isArray(assignment.xedruo_roles)
+   ? assignment.xedruo_roles[0]
+   : assignment.xedruo_roles;
+  return role?.name === "hireuo_staff";
+ });
 
  if (error || !staff) redirect("/admin-access");
- return { user, staff };
+ return { user, staff: { role: "hireuo_staff" } };
 });
