@@ -1,4 +1,4 @@
---PLEASE AND PLEASE DONT PUSH THIS TO THE DATABASE, THIS IS FOR REFERENCE ONLY, THUNDER WILL NOT FIRE YOU O, I just spent 11 hours working on the database and auth flow o, Ese Gan
+--PLEASE AND PLEASE DONT PUSH THIS TO THE DATABASE, THIS IS FOR REFERENCE ONLY, I just spent 11 hours working on the database and auth flow o, Ese Gan
 insert into public.xedruo_roles (name, description)
 values ('hireuo_staff', 'Access to the Hireuo platform administration area')
 on conflict (name) do nothing;
