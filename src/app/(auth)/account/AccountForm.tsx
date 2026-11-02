@@ -11,8 +11,15 @@ type AccountFormProps = {
   destination: string;
 };
 
+const HIREUO_APP_ORIGIN = "https://xedruo-careers.vercel.app";
+
 function callbackUrl(path: string, destination: string) {
-  const url = new URL(path, window.location.origin);
+  const hostname = window.location.hostname;
+  const origin =
+    hostname === "localhost" || hostname === "127.0.0.1"
+      ? window.location.origin
+      : HIREUO_APP_ORIGIN;
+  const url = new URL(path, origin);
   url.searchParams.set("next", destination);
   return url.toString();
 }
@@ -53,13 +60,10 @@ export default function AccountForm({
     setMessage("");
 
     try {
-      const redirectTo = new URL("/auth/callback", window.location.origin);
-      redirectTo.searchParams.set("next", destination);
-
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: redirectTo.toString(),
+          redirectTo: callbackUrl("/auth/callback", destination),
         },
       });
 
