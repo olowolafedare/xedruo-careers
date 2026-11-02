@@ -6,6 +6,10 @@ const ALLOWED_DESTINATIONS = new Set([
   "/start",
   "/applicant",
   "/recruiter",
+  "/candidate/dashboard",
+  "/candidate/applications",
+  "/candidate/saved-jobs",
+  "/candidate/notifications",
 ]);
 const HIREUO_APP_ORIGIN = "https://xedruo-careers.vercel.app";
 const LOCAL_CALLBACK_ORIGINS = new Set([
