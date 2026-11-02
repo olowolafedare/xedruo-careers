@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/src/lib/auth/require-user";
 
 export const requireStaff = cache(async function requireStaff() {
- const { supabase, user } = await requireUser();
+ const { supabase, user } = await requireUser("/admin");
  const { data: assignments, error } = await supabase
  .from("xedruo_account_roles")
  .select("xedruo_roles!inner(name)")
