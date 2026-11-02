@@ -53,10 +53,13 @@ export default function AccountForm({
     setMessage("");
 
     try {
+      const redirectTo = new URL("/auth/callback", window.location.origin);
+      redirectTo.searchParams.set("next", destination);
+
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: callbackUrl("/auth/callback", destination),
+          redirectTo: redirectTo.toString(),
         },
       });
 
@@ -64,6 +67,7 @@ export default function AccountForm({
         throw authError;
       }
     } catch (cause) {
+      console.error("Google sign-in failed:", cause);
       setError(
         cause instanceof Error
           ? cause.message
