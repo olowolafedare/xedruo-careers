@@ -45,7 +45,7 @@ const shortcuts = [
 ];
 
 export default async function CandidateDashboardPage() {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireUser("/candidate/dashboard");
   const [applications, savedJobs, profile] = await Promise.all([
     supabase
       .from("hireuo_applications")
