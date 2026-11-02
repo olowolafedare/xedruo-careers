@@ -4,7 +4,7 @@ import { requireUser } from "@/src/lib/auth/require-user";
 import { formatEmploymentType, formatJobLocation } from "@/src/lib/hireuo-jobs";
 
 export default async function SavedJobsPage() {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireUser("/candidate/saved-jobs");
   const { data: savedJobs, error } = await supabase
     .from("hireuo_saved_jobs")
     .select(
