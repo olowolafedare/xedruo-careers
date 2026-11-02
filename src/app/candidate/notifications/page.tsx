@@ -12,7 +12,7 @@ import {
 import { requireUser } from "@/src/lib/auth/require-user";
 
 export default async function CandidateNotificationsPage() {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireUser("/candidate/notifications");
 
   async function markAsRead(formData: FormData) {
     "use server";
@@ -28,7 +28,7 @@ export default async function CandidateNotificationsPage() {
       return;
     }
 
-    const { supabase, user } = await requireUser();
+    const { supabase, user } = await requireUser("/candidate/notifications");
 
     await supabase
       .from("hireuo_notifications")
