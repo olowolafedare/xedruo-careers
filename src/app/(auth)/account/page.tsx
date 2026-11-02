@@ -10,6 +10,10 @@ const ALLOWED_DESTINATIONS = new Set([
   "/start",
   "/applicant",
   "/recruiter",
+  "/candidate/dashboard",
+  "/candidate/applications",
+  "/candidate/saved-jobs",
+  "/candidate/notifications",
 ]);
 
 type AccountPageProps = {
