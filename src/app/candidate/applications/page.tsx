@@ -15,7 +15,7 @@ const stageStyle: Record<string, string> = {
 };
 
 export default async function ApplicationsPage() {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireUser("/candidate/applications");
   const { data: applications, error } = await supabase
     .from("hireuo_applications")
     .select(
