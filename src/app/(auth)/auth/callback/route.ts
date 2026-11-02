@@ -1,1 +1,1 @@
-expok/route";
+export { GET } from "../../callback/route";
