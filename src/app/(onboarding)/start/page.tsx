@@ -7,7 +7,7 @@ export const instant = false;
 
 export default async function StartPage() {
   await connection();
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireUser("/start");
   const [{ data: candidate }, { data: member }] = await Promise.all([
     supabase
       .from("hireuo_candidate_profiles")
