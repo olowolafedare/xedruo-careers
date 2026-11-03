@@ -39,6 +39,9 @@ export default function AccountForm({
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [phoneOtp, setPhoneOtp] = useState("");
+  const [phoneStep, setPhoneStep] = useState<"phone" | "otp">("phone");
 
   function displayAuthError() {
     if (authError === "oauth_failed") {
@@ -79,6 +82,24 @@ export default function AccountForm({
       );
       setBusy(false);
     }
+  }
+
+  async function sendPhoneOtp() {
+    const normalized=phone.trim().replace(/\\s/g,"");
+    if(!/^\\+[1-9]\\d{7,14}$/.test(normalized)){setError("Enter your phone number with its country calling code, e.g. +2348012345678.");return;}
+    setBusy(true);setError("");setMessage("");
+    try{const {error:otpError}=await supabase.auth.signInWithOtp({phone:normalized,options:{shouldCreateUser:false}});if(otpError)throw otpError;setPhoneStep("otp");}
+    catch(cause){setError(cause instanceof Error?cause.message:"Could not send phone verification code.");}
+    finally{setBusy(false);}
+  }
+
+  async function verifyPhoneOtp() {
+    const normalized=phone.trim().replace(/\\s/g,"");
+    if(phoneOtp.length!==6){setError("Enter the 6-digit verification code.");return;}
+    setBusy(true);setError("");setMessage("");
+    try{const {error:verifyError}=await supabase.auth.verifyOtp({phone:normalized,token:phoneOtp,type:"sms"});if(verifyError)throw verifyError;router.replace(destination);router.refresh();}
+    catch(cause){setError(cause instanceof Error?cause.message:"Invalid or expired phone verification code.");}
+    finally{setBusy(false);}
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
