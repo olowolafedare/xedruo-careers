@@ -104,7 +104,13 @@ export default function ApplicantOnboardingPage() {
       if (!active) return;
 
       if (profileError || candidateError) {
-        setError("Complete onboarding to show profile");
+        console.error("HIREUO candidate profile could not be loaded", {
+          profileError,
+          candidateError,
+        });
+        setError(
+          "We couldn't load your profile. Please refresh the page and try again.",
+        );
         setLoading(false);
         return;
       }
@@ -124,7 +130,7 @@ export default function ApplicantOnboardingPage() {
         setExperience(String(saved.years_experience ?? 0));
         setSearchTiming(saved.job_search_timing ?? "immediately");
         setWorkPreference(saved.preferred_workplace_type ?? "any");
-        const { data: document } = await supabase
+        const { data: document, error: documentError } = await supabase
           .from("hireuo_candidate_documents")
           .select("media_id")
           .eq("candidate_id", user.id)
@@ -132,12 +138,38 @@ export default function ApplicantOnboardingPage() {
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
+
+        if (documentError) {
+          console.error(
+            "HIREUO candidate resume record could not be loaded",
+            documentError,
+          );
+          setError(
+            "We couldn't load your saved resume details. Please refresh the page and try again.",
+          );
+          setLoading(false);
+          return;
+        }
+
         if (document?.media_id) {
-          const { data: media } = await supabase
+          const { data: media, error: mediaError } = await supabase
             .from("xedruo_media")
             .select("object_path")
             .eq("id", document.media_id)
             .maybeSingle();
+
+          if (mediaError) {
+            console.error(
+              "HIREUO candidate resume media could not be loaded",
+              mediaError,
+            );
+            setError(
+              "We couldn't load your saved resume details. Please refresh the page and try again.",
+            );
+            setLoading(false);
+            return;
+          }
+
           setExistingResume(media?.object_path ?? "");
         }
       }
