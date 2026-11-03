@@ -1,7 +1,6 @@
 "use client";
-import {useEffect,useState,type FormEvent} from "react";
+import {useEffect,useMemo,useState,type FormEvent} from "react";
 import type {User} from "@supabase/supabase-js";
-import {useRouter} from "next/navigation";
 import {createClient} from "@/src/lib/supabase/client";
 import {completeXedruoIdentity} from "@/src/lib/xedruo-identity";
 
@@ -12,7 +11,7 @@ const countryFlag=(code:string)=>[...String(code||"").trim().toUpperCase()].map(
 type Identity={xedruo_id:string;country_code:string;phone_e164:string|null;phone_verified_at:string|null}|null;
 
 export default function IdentityForm({nextPath}:{nextPath:string}){
- const router=useRouter();const supabase=createClient();
+ const supabase=useMemo(()=>createClient(),[]);
  const [user,setUser]=useState<User|null>(null),[identity,setIdentity]=useState<Identity>(null),[countries,setCountries]=useState<Country[]>([]);
  const [country,setCountry]=useState(""),[countrySearch,setCountrySearch]=useState(""),[phone,setPhone]=useState(""),[googleConnected,setGoogleConnected]=useState(false);
  const [pendingPhone,setPendingPhone]=useState(""),[otp,setOtp]=useState(""),[step,setStep]=useState<"phone"|"otp">("phone");
@@ -37,7 +36,7 @@ export default function IdentityForm({nextPath}:{nextPath:string}){
    }
   }catch(e:unknown){if(active)setError(e instanceof Error?e.message:"Unable to load your Xedruo identity.");}
   finally{if(active)setLoading(false);}
- })();return()=>{active=false;}},[nextPath]);
+ })();return()=>{active=false;}},[nextPath,supabase]);
 
  const filteredCountries=countries.filter(c=>{const q=countrySearch.trim().toLowerCase();return !q||countryName(c.country_code).toLowerCase().includes(q)||c.country_code.toLowerCase().includes(q)||c.calling_code.includes(q);}).sort((a,b)=>countryName(a.country_code).localeCompare(countryName(b.country_code)));
  const selectedCountry=countries.find(c=>c.country_code.trim()===country);
