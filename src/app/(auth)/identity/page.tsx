@@ -3,6 +3,8 @@ import {connection} from "next/server";
 import {createClient} from "@/src/lib/supabase/server";
 import IdentityForm from "./IdentityForm";
 
+export const instant = false;
+
 const ALLOWED=new Set(["/admin","/start","/applicant","/recruiter","/candidate/dashboard","/candidate/applications","/candidate/saved-jobs","/candidate/notifications"]);
 type Props={searchParams:Promise<{next?:string|string[]}>};
 export default async function IdentityPage({searchParams}:Props){
