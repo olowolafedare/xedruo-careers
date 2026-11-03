@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SaveButton({
   jobId,
@@ -9,6 +10,7 @@ export default function SaveButton({
   jobId: string;
   initiallySaved: boolean;
 }) {
+  const router = useRouter();
   const [saved, setSaved] = useState(initiallySaved);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -31,9 +33,7 @@ export default function SaveButton({
         },
       );
       if (response.status === 401) {
-        window.location.assign(
-          `/account?next=${encodeURIComponent("/applicant")}`,
-        );
+        router.push("/account?next=%2Fapplicant");
         return;
       }
       const result = await response.json();
