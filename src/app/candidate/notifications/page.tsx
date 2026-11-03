@@ -7,7 +7,6 @@ import {
   BriefcaseBusiness,
   CalendarDays,
   ClipboardCheck,
-  Info,
 } from "lucide-react";
 import { requireUser } from "@/src/lib/auth/require-user";
 
