@@ -190,7 +190,10 @@ export default function AccountForm({
           </button>
         )}
 
-        <form
+        {!isAdminLogin && (error || displayAuthError()) && <p role="alert" className="mt-4 text-sm text-red-700">{error || displayAuthError()}</p>}
+        {!isAdminLogin && message && <p role="status" className="mt-4 text-sm text-emerald-700">{message}</p>}
+
+        {isAdminLogin && <form
           onSubmit={submit}
           className={isAdminLogin ? "mt-7 space-y-4" : "mt-4 space-y-4"}
         >
