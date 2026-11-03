@@ -280,7 +280,25 @@ export default function AccountForm({
                 ? "Create account"
                 : "Sign in"}
           </button>
-        </form>
+        </form>}
+
+        {!isAdminLogin && mode === "sign-in" && (
+          <div className="mt-5 space-y-3">
+            <label className="block text-sm font-medium">Phone number with country calling code
+              <input type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(event)=>setPhone(event.target.value)} placeholder="+2348012345678" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/>
+            </label>
+            {phoneStep === "otp" ? (
+              <>
+                <label className="block text-sm font-medium">6-digit verification code
+                  <input inputMode="numeric" maxLength={6} value={phoneOtp} onChange={(event)=>setPhoneOtp(event.target.value.replace(/\\D/g,"").slice(0,6))} placeholder="000000" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-center tracking-[.4em]"/>
+                </label>
+                <button type="button" onClick={verifyPhoneOtp} disabled={busy||phoneOtp.length!==6} className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white disabled:opacity-60">{busy?"Verifying…":"Verify and continue"}</button>
+              </>
+            ) : (
+              <button type="button" onClick={sendPhoneOtp} disabled={busy||!phone.trim()} className="w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60">{busy?"Sending…":"Continue with phone number"}</button>
+            )}
+          </div>
+        )}
 
         {!isAdminLogin && (
           <button
