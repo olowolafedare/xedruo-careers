@@ -6,12 +6,15 @@ import {createClient} from "@/src/lib/supabase/client";
 import {completeXedruoIdentity} from "@/src/lib/xedruo-identity";
 
 type Country={country_code:string;calling_code:string};
+const regionNames=new Intl.DisplayNames(["en"],{type:"region"});
+const countryName=(code:string)=>regionNames.of(String(code||"").trim().toUpperCase())||String(code||"").trim().toUpperCase();
+const countryFlag=(code:string)=>[...String(code||"").trim().toUpperCase()].map(ch=>String.fromCodePoint(127397+ch.charCodeAt(0))).join("");
 type Identity={xedruo_id:string;country_code:string;phone_e164:string|null}|null;
 
 export default function IdentityForm({nextPath}:{nextPath:string}){
  const router=useRouter();const supabase=createClient();
  const [user,setUser]=useState<User|null>(null),[identity,setIdentity]=useState<Identity>(null),[countries,setCountries]=useState<Country[]>([]);
- const [country,setCountry]=useState(""),[phone,setPhone]=useState(""),[googleConnected,setGoogleConnected]=useState(false);
+ const [country,setCountry]=useState(""),[countrySearch,setCountrySearch]=useState(""),[phone,setPhone]=useState(""),[googleConnected,setGoogleConnected]=useState(false);
  const [busy,setBusy]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState("");
  useEffect(()=>{let active=true;(async()=>{
   try{
@@ -35,6 +38,9 @@ export default function IdentityForm({nextPath}:{nextPath:string}){
   finally{if(active)setLoading(false);}
  })();return()=>{active=false;}},[nextPath]);
 
+ const filteredCountries=countries.filter(c=>{const q=countrySearch.trim().toLowerCase();return !q||countryName(c.country_code).toLowerCase().includes(q)||c.country_code.toLowerCase().includes(q)||c.calling_code.includes(q);}).sort((a,b)=>countryName(a.country_code).localeCompare(countryName(b.country_code)));
+ const selectedCountry=countries.find(c=>c.country_code.trim()===country);
+ const selectedCallingCode=String(selectedCountry?.calling_code||"").trim();
  async function connectGoogle(){
   setBusy(true);setError("");
   try{
@@ -62,6 +68,6 @@ export default function IdentityForm({nextPath}:{nextPath:string}){
   {identity?.xedruo_id&&<div className="mt-5 rounded-xl bg-amber-50 p-4"><div className="text-xs text-slate-500">Your Xedruo ID</div><div className="mt-1 text-lg font-bold">{identity.xedruo_id}</div></div>}
   {error&&<div role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
   {!googleConnected?<button onClick={connectGoogle} disabled={busy} className="mt-6 w-full rounded-xl bg-amber-900 px-5 py-3 font-bold text-white disabled:opacity-60">{busy?"Connecting…":"Connect Google account"}</button>:
-  <form onSubmit={submit} className="mt-6 space-y-4"><label className="block text-sm font-semibold text-slate-800">Issuing country<select required disabled={Boolean(identity?.country_code)} value={country} onChange={e=>setCountry(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><option value="">Select country</option>{countries.map(c=><option key={c.country_code} value={c.country_code.trim()}>{c.country_code.trim()} ({c.calling_code})</option>)}</select></label><label className="block text-sm font-semibold text-slate-800">Phone number<input required type="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter your phone number" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/></label><p className="text-xs text-slate-500">The country calling code is added automatically. SMS verification can be completed later.</p><button disabled={busy||!countries.length} className="w-full rounded-xl bg-amber-900 px-5 py-3 font-bold text-white disabled:opacity-60">{busy?"Saving your Xedruo ID…":"Save and continue"}</button></form>}
+  <form onSubmit={submit} className="mt-6 space-y-4"><label className="block text-sm font-semibold text-slate-800">Country selection<input type="search" value={countrySearch} onChange={e=>setCountrySearch(e.target.value)} placeholder="Search country…" disabled={Boolean(identity?.country_code)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"/><select required disabled={Boolean(identity?.country_code)} value={country} onChange={e=>setCountry(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><option value="">Select country</option>{filteredCountries.map(c=><option key={c.country_code} value={c.country_code.trim()}>{countryFlag(c.country_code)} {countryName(c.country_code)}</option>)}</select></label><label className="block text-sm font-semibold text-slate-800">Country calling code<input readOnly value={selectedCallingCode} placeholder="Selected automatically" className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"/></label><label className="block text-sm font-semibold text-slate-800">Phone number<input required type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={e=>setPhone(e.target.value.replace(/[^0-9\s()-]/g,""))} placeholder="Enter your phone number" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/></label><p className="text-xs text-slate-500">The country calling code is added automatically. SMS verification can be completed later.</p><button disabled={busy||!countries.length} className="w-full rounded-xl bg-amber-900 px-5 py-3 font-bold text-white disabled:opacity-60">{busy?"Saving your Xedruo ID…":"Save and continue"}</button></form>}
  </section></main>;
 }
