@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ApplyButton({
   jobId,
@@ -10,6 +11,7 @@ export default function ApplyButton({
   jobId: string;
   applied: boolean;
 }) {
+  const router = useRouter();
   const [done, setDone] = useState(applied);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -25,9 +27,7 @@ export default function ApplyButton({
       });
       const result = await response.json();
       if (response.status === 401) {
-        window.location.assign(
-          `/account?next=${encodeURIComponent("/applicant")}`,
-        );
+        router.push("/account?next=%2Fapplicant");
         return;
       }
       if (!response.ok)
