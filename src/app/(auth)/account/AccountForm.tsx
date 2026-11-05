@@ -89,7 +89,7 @@ export default function AccountForm({
     setMessage("");
     try {
       const { data, error: apiError } = await supabase.functions.invoke("xedruo-id-login", {
-        body: { xedruo_id: xedruoId.trim().toUpperCase(), password },
+        body: { company_slug: "hireuo", xedruo_id: xedruoId.trim().toUpperCase(), password },
       });
       if (apiError) throw new Error(apiError.message || "Xedruo ID sign-in failed.");
       if (!data?.access_token || !data?.refresh_token) {
