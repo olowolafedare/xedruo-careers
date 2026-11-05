@@ -71,11 +71,11 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   if (user) {
     const { data: identity, error: identityError } = await supabase
       .from("xedruo_identity")
-      .select("xedruo_id,country_code,phone_e164")
+      .select("xedruo_id,country_code,phone_e164,legal_name")
       .eq("user_id", user.id)
       .maybeSingle();
     const googleConnected = (user.identities || []).some((item) => item.provider === "google");
-    if (identityError || !googleConnected || !identity?.xedruo_id || !identity?.country_code || !identity?.phone_e164) {
+    if (identityError || !googleConnected || !identity?.xedruo_id || !identity?.country_code || !identity?.phone_e164 || !identity?.legal_name) {
       redirect("/identity?next=" + encodeURIComponent(destination));
     }
     const { error: profileError } = await supabase.rpc("ensure_xedruo_company_profile", {
