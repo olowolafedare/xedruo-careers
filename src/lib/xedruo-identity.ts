@@ -6,7 +6,7 @@ export async function completeXedruoIdentity({supabase,companySlug,countryCode,p
  if(!/^[a-z0-9][a-z0-9-]{1,62}$/.test(slug))throw new Error("Invalid Xedruo company application.");
  if(!/^[A-Z]{2}$/.test(country))throw new Error("Select your issuing country.");
  if(name.length<3||name.length>160||!/^[\p{L}][\p{L} .'-]+$/u.test(name))throw new Error("Enter your full legal name.");
- if(!/^\\+[1-9]\d{0,3}$/.test(dial)||!phone.startsWith(dial)||!/^\\+[1-9]\d{7,14}$/.test(phone))throw new Error("Phone number must match the selected country's calling code.");
+ if(!/^\+[1-9]\d{0,3}$/.test(dial)||!phone.startsWith(dial)||!/^\+[1-9]\d{7,14}$/.test(phone))throw new Error("Phone number must match the selected country's calling code.");
  const {data:{user},error:userError}=await supabase.auth.getUser();
  if(userError||!user)throw new Error("Sign in inside this company app first.");
  if(!(user.identities||[]).some(x=>x.provider==="google"))throw new Error("Confirm your Google account before completing Xedruo registration.");
