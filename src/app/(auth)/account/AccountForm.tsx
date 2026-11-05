@@ -11,7 +11,7 @@ type AccountFormProps = {
   destination: string;
 };
 
-const HIREUO_APP_ORIGIN = "https://hireuo.xedruo.com";
+const HIREUO_APP_ORIGIN = "https://xedruo-careers.vercel.app";
 
 function callbackUrl(path: string, destination: string) {
   const hostname = window.location.hostname;
