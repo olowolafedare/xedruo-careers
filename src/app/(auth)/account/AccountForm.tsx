@@ -39,9 +39,7 @@ export default function AccountForm({
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [phoneOtp, setPhoneOtp] = useState("");
-  const [phoneStep, setPhoneStep] = useState<"phone" | "otp">("phone");
+  const [xedruoId, setXedruoId] = useState("");
 
   function displayAuthError() {
     if (authError === "oauth_failed") {
@@ -84,22 +82,31 @@ export default function AccountForm({
     }
   }
 
-  async function sendPhoneOtp() {
-    const normalized=phone.trim().replace(/\\s/g,"");
-    if(!/^\\+[1-9]\\d{7,14}$/.test(normalized)){setError("Enter your phone number with its country calling code, e.g. +2348012345678.");return;}
-    setBusy(true);setError("");setMessage("");
-    try{const {error:otpError}=await supabase.auth.signInWithOtp({phone:normalized,options:{shouldCreateUser:false}});if(otpError)throw otpError;setPhoneStep("otp");}
-    catch(cause){setError(cause instanceof Error?cause.message:"Could not send phone verification code.");}
-    finally{setBusy(false);}
-  }
-
-  async function verifyPhoneOtp() {
-    const normalized=phone.trim().replace(/\\s/g,"");
-    if(phoneOtp.length!==6){setError("Enter the 6-digit verification code.");return;}
-    setBusy(true);setError("");setMessage("");
-    try{const {error:verifyError}=await supabase.auth.verifyOtp({phone:normalized,token:phoneOtp,type:"sms"});if(verifyError)throw verifyError;router.replace(destination);router.refresh();}
-    catch(cause){setError(cause instanceof Error?cause.message:"Invalid or expired phone verification code.");}
-    finally{setBusy(false);}
+  async function signInWithXedruoId(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const { data, error: apiError } = await supabase.functions.invoke("xedruo-id-login", {
+        body: { xedruo_id: xedruoId.trim().toUpperCase(), password },
+      });
+      if (apiError) throw new Error(apiError.message || "Xedruo ID sign-in failed.");
+      if (!data?.access_token || !data?.refresh_token) {
+        throw new Error(data?.error || "Xedruo ID or password is incorrect.");
+      }
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      });
+      if (sessionError) throw sessionError;
+      router.replace(destination);
+      router.refresh();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Xedruo ID sign-in failed.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -283,21 +290,14 @@ export default function AccountForm({
         </form>}
 
         {!isAdminLogin && mode === "sign-in" && (
-          <div className="mt-5 space-y-3">
-            <label className="block text-sm font-medium">Phone number with country calling code
-              <input type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(event)=>setPhone(event.target.value)} placeholder="+2348012345678" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/>
+          <form onSubmit={signInWithXedruoId} className="mt-5 space-y-3">
+            <p className="text-center text-xs font-semibold tracking-wide text-slate-500">OR SIGN IN WITH XEDRUO ID</p>
+            <label className="block text-sm font-medium">Xedruo ID
+              <input required value={xedruoId} onChange={(event) => setXedruoId(event.target.value.toUpperCase())} placeholder="NG-1234567890" autoComplete="username" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/>
             </label>
-            {phoneStep === "otp" ? (
-              <>
-                <label className="block text-sm font-medium">6-digit verification code
-                  <input inputMode="numeric" maxLength={6} value={phoneOtp} onChange={(event)=>setPhoneOtp(event.target.value.replace(/\\D/g,"").slice(0,6))} placeholder="000000" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-center tracking-[.4em]"/>
-                </label>
-                <button type="button" onClick={verifyPhoneOtp} disabled={busy||phoneOtp.length!==6} className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white disabled:opacity-60">{busy?"Verifying…":"Verify and continue"}</button>
-              </>
-            ) : (
-              <button type="button" onClick={sendPhoneOtp} disabled={busy||!phone.trim()} className="w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60">{busy?"Sending…":"Continue with phone number"}</button>
-            )}
-          </div>
+            <button type="submit" disabled={busy || !xedruoId.trim() || !password} className="w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60">{busy ? "Signing in…" : "Sign in with Xedruo ID"}</button>
+            <p className="text-xs text-slate-500">Phone number is collected during identity onboarding. SMS verification is not required.</p>
+          </form>
         )}
 
         {!isAdminLogin && (
