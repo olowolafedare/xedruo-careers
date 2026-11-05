@@ -193,7 +193,7 @@ export default function AccountForm({
             disabled={busy}
             className="mt-7 w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60"
           >
-            {busy ? "Please wait…" : "Continue with Google"}
+            {busy ? "Please wait…" : mode === "sign-up" ? "Create account with Google" : "Continue with Google"}
           </button>
         )}
 
