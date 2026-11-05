@@ -8,12 +8,12 @@ type Country={country_code:string;calling_code:string};
 const regionNames=new Intl.DisplayNames(["en"],{type:"region"});
 const countryName=(code:string)=>regionNames.of(String(code||"").trim().toUpperCase())||String(code||"").trim().toUpperCase();
 const countryFlag=(code:string)=>[...String(code||"").trim().toUpperCase()].map(ch=>String.fromCodePoint(127397+ch.charCodeAt(0))).join("");
-type Identity={xedruo_id:string;country_code:string;phone_e164:string|null;phone_verified_at:string|null}|null;
+type Identity={xedruo_id:string;country_code:string;phone_e164:string|null;phone_verified_at:string|null;legal_name:string|null}|null;
 
 export default function IdentityForm({nextPath}:{nextPath:string}){
  const supabase=useMemo(()=>createClient(),[]);
  const [user,setUser]=useState<User|null>(null),[identity,setIdentity]=useState<Identity>(null),[countries,setCountries]=useState<Country[]>([]);
- const [country,setCountry]=useState(""),[countrySearch,setCountrySearch]=useState(""),[phone,setPhone]=useState(""),[googleConnected,setGoogleConnected]=useState(false);
+ const [country,setCountry]=useState(""),[countrySearch,setCountrySearch]=useState(""),[phone,setPhone]=useState(""),[legalName,setLegalName]=useState(""),[googleConnected,setGoogleConnected]=useState(false);
  const [busy,setBusy]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState("");
  useEffect(()=>{let active=true;(async()=>{
   try{
@@ -21,15 +21,15 @@ export default function IdentityForm({nextPath}:{nextPath:string}){
    if(!current){window.location.replace("/account?next="+encodeURIComponent(nextPath));return;}
    if(!active)return;setUser(current);setGoogleConnected((current.identities||[]).some(x=>x.provider==="google"));
    const [{data:existing,error:identityError},{data:rows,error:countryError}]=await Promise.all([
-    supabase.from("xedruo_identity").select("xedruo_id,country_code,phone_e164,phone_verified_at").eq("user_id",current.id).maybeSingle(),
+    supabase.from("xedruo_identity").select("xedruo_id,country_code,phone_e164,phone_verified_at,legal_name").eq("user_id",current.id).maybeSingle(),
     supabase.from("xedruo_country_calling_codes").select("country_code,calling_code").order("country_code")
    ]);
    if(identityError)throw identityError;if(countryError)throw countryError;
-   if(!active)return;setIdentity(existing||null);setCountries(rows||[]);
+   if(!active)return;setIdentity(existing||null);setCountries(rows||[]);setLegalName(existing?.legal_name||String(current.user_metadata?.full_name||current.user_metadata?.name||""));
    const code=String(existing?.country_code||"").trim();if(code)setCountry(code);
    const dial=String((rows||[]).find((x:Country)=>x.country_code.trim()===code)?.calling_code||"").trim();
    const stored=String(existing?.phone_e164||"");setPhone(dial&&stored.startsWith(dial)?stored.slice(dial.length):stored);
-   if(existing?.xedruo_id&&existing?.phone_e164&&(current.identities||[]).some(x=>x.provider==="google")){
+   if(existing?.xedruo_id&&existing?.phone_e164&&existing?.legal_name&&(current.identities||[]).some(x=>x.provider==="google")){
     const {error:profileError}=await supabase.rpc("ensure_xedruo_company_profile",{p_company_slug:"hireuo",p_display_name:current.user_metadata?.full_name||current.user_metadata?.name||current.email||null});
     if(profileError)throw profileError;window.location.replace(nextPath);return;
    }
@@ -55,7 +55,7 @@ export default function IdentityForm({nextPath}:{nextPath:string}){
    let digits=phone.replace(/\D/g,"");const dialDigits=row.calling_code.replace(/\D/g,"");
    if(dialDigits&&digits.startsWith(dialDigits))digits=digits.slice(dialDigits.length);digits=digits.replace(/^0/,"");
    const e164=row.calling_code+digits;
-   await completeXedruoIdentity({supabase,companySlug:"hireuo",countryCode:selected,phoneE164:e164,callingCode:row.calling_code,displayName:user?.user_metadata?.full_name||user?.user_metadata?.name||user?.email});
+   await completeXedruoIdentity({supabase,companySlug:"hireuo",countryCode:selected,phoneE164:e164,callingCode:row.calling_code,legalName,displayName:user?.user_metadata?.full_name||user?.user_metadata?.name||user?.email});
    window.location.replace(nextPath);
   }catch(e:unknown){setError(e instanceof Error?e.message:"Could not save your Xedruo identity.");setBusy(false);}
  }
@@ -67,6 +67,6 @@ export default function IdentityForm({nextPath}:{nextPath:string}){
   {identity?.xedruo_id&&<div className="mt-5 rounded-xl bg-amber-50 p-4"><div className="text-xs text-slate-500">Your Xedruo ID</div><div className="mt-1 text-lg font-bold">{identity.xedruo_id}</div></div>}
   {error&&<div role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
   {!googleConnected?<button onClick={connectGoogle} disabled={busy} className="mt-6 w-full rounded-xl bg-amber-900 px-5 py-3 font-bold text-white disabled:opacity-60">{busy?"Connecting…":"Connect Google account"}</button>:
-    <form onSubmit={submit} className="mt-6 space-y-4"><label className="block text-sm font-semibold text-slate-800">Country selection<input type="search" value={countrySearch} onChange={e=>setCountrySearch(e.target.value)} placeholder="Search country…" disabled={Boolean(identity?.country_code)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"/><select required disabled={Boolean(identity?.country_code)} value={country} onChange={e=>setCountry(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><option value="">Select country</option>{filteredCountries.map(c=><option key={c.country_code} value={c.country_code.trim()}>{countryFlag(c.country_code)} {countryName(c.country_code)}</option>)}</select></label><label className="block text-sm font-semibold text-slate-800">Country calling code<input readOnly value={selectedCallingCode} placeholder="Selected automatically" className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"/></label><label className="block text-sm font-semibold text-slate-800">Phone number<input required type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={e=>setPhone(e.target.value.replace(/[^0-9\s()-]/g,""))} placeholder="Enter your phone number" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/></label><p className="text-xs text-slate-500">The country calling code is added automatically. Your phone number is saved for your Xedruo identity. SMS verification is not required at this stage.</p><button disabled={busy||!countries.length} className="w-full rounded-xl bg-amber-900 px-5 py-3 font-bold text-white disabled:opacity-60">{busy?"Saving your Xedruo ID…":"Save and continue"}</button></form>}
+    <form onSubmit={submit} className="mt-6 space-y-4"><label className="block text-sm font-semibold text-slate-800">Full legal name<input required autoComplete="name" value={legalName} onChange={e=>setLegalName(e.target.value)} placeholder="Enter your full legal name" className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"/></label><label className="block text-sm font-semibold text-slate-800">Country selection<input type="search" value={countrySearch} onChange={e=>setCountrySearch(e.target.value)} placeholder="Search country…" disabled={Boolean(identity?.country_code)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"/><select required disabled={Boolean(identity?.country_code)} value={country} onChange={e=>setCountry(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"><option value="">Select country</option>{filteredCountries.map(c=><option key={c.country_code} value={c.country_code.trim()}>{countryFlag(c.country_code)} {countryName(c.country_code)}</option>)}</select></label><label className="block text-sm font-semibold text-slate-800">Country calling code<input readOnly value={selectedCallingCode} placeholder="Selected automatically" className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"/></label><label className="block text-sm font-semibold text-slate-800">Phone number<input required type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={e=>setPhone(e.target.value.replace(/[^0-9\s()-]/g,""))} placeholder="Enter your phone number" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/></label><p className="text-xs text-slate-500">The country calling code is added automatically. Your phone number is saved for your Xedruo identity. SMS verification is not required at this stage.</p><button disabled={busy||!countries.length||!legalName.trim()} className="w-full rounded-xl bg-amber-900 px-5 py-3 font-bold text-white disabled:opacity-60">{busy?"Saving your Xedruo ID…":"Save and continue"}</button></form>}
  </section></main>;
 }
