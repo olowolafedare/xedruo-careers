@@ -39,7 +39,6 @@ export default function AccountForm({
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [xedruoId, setXedruoId] = useState("");
 
   function displayAuthError() {
     if (authError === "oauth_failed") {
@@ -78,33 +77,6 @@ export default function AccountForm({
           ? cause.message
           : "Google sign-in could not be started.",
       );
-      setBusy(false);
-    }
-  }
-
-  async function signInWithXedruoId(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setBusy(true);
-    setError("");
-    setMessage("");
-    try {
-      const { data, error: apiError } = await supabase.functions.invoke("xedruo-id-login", {
-        body: { company_slug: "hireuo", xedruo_id: xedruoId.trim().toUpperCase(), password },
-      });
-      if (apiError) throw new Error(apiError.message || "Xedruo ID sign-in failed.");
-      if (!data?.access_token || !data?.refresh_token) {
-        throw new Error(data?.error || "Xedruo ID or password is incorrect.");
-      }
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-      });
-      if (sessionError) throw sessionError;
-      router.replace(destination);
-      router.refresh();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Xedruo ID sign-in failed.");
-    } finally {
       setBusy(false);
     }
   }
@@ -200,10 +172,7 @@ export default function AccountForm({
         {!isAdminLogin && (error || displayAuthError()) && <p role="alert" className="mt-4 text-sm text-red-700">{error || displayAuthError()}</p>}
         {!isAdminLogin && message && <p role="status" className="mt-4 text-sm text-emerald-700">{message}</p>}
 
-        {isAdminLogin && <form
-          onSubmit={submit}
-          className={isAdminLogin ? "mt-7 space-y-4" : "mt-4 space-y-4"}
-        >
+        <form onSubmit={submit} className="mt-7 space-y-4"><form onSubmit={submit} className="mt-7 space-y-4">
           {mode === "sign-up" && (
             <label className="block text-sm font-medium">
               Full name
@@ -287,23 +256,7 @@ export default function AccountForm({
                 ? "Create account"
                 : "Sign in"}
           </button>
-        </form>}
-
-        {!isAdminLogin && mode === "sign-in" && (
-          <form onSubmit={signInWithXedruoId} className="mt-5 space-y-3">
-            <p className="text-center text-xs font-semibold tracking-wide text-slate-500">OR SIGN IN WITH XEDRUO ID</p>
-            <label className="block text-sm font-medium">Xedruo ID
-              <input required value={xedruoId} onChange={(event) => setXedruoId(event.target.value.toUpperCase())} placeholder="NG-1234567890" autoComplete="username" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/>
-            </label>
-            <label className="block text-sm font-medium">Password
-              <input required type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"/>
-            </label>
-            <button type="submit" disabled={busy || !xedruoId.trim() || !password} className="w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60">{busy ? "Signing in…" : "Sign in with Xedruo ID"}</button>
-            <p className="text-xs text-slate-500">Phone number is collected during identity onboarding. SMS verification is not required.</p>
-          </form>
-        )}
-
-        {!isAdminLogin && (
+        </form>}</form>{!isAdminLogin && (
           <button
             type="button"
             onClick={() => {
