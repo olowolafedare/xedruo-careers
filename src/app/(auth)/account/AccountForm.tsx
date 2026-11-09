@@ -172,7 +172,7 @@ export default function AccountForm({
         {!isAdminLogin && (error || displayAuthError()) && <p role="alert" className="mt-4 text-sm text-red-700">{error || displayAuthError()}</p>}
         {!isAdminLogin && message && <p role="status" className="mt-4 text-sm text-emerald-700">{message}</p>}
 
-        <form onSubmit={submit} className="mt-7 space-y-4"><form onSubmit={submit} className="mt-7 space-y-4">
+        <form onSubmit={submit} className="mt-7 space-y-4">
           {mode === "sign-up" && (
             <label className="block text-sm font-medium">
               Full name
@@ -256,7 +256,9 @@ export default function AccountForm({
                 ? "Create account"
                 : "Sign in"}
           </button>
-        </form>}</form>{!isAdminLogin && (
+        </form>
+
+        {!isAdminLogin && (
           <button
             type="button"
             onClick={() => {
