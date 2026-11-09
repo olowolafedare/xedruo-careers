@@ -11,7 +11,7 @@ type AccountFormProps = {
   destination: string;
 };
 
-const HIREUO_APP_ORIGIN = "https://hireuo.xedruo.com";
+const HIREUO_APP_ORIGIN = "https://xedruo-careers.vercel.app";
 
 function callbackUrl(path: string, destination: string) {
   const hostname = window.location.hostname;
@@ -165,12 +165,24 @@ export default function AccountForm({
             disabled={busy}
             className="mt-7 w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 disabled:opacity-60"
           >
-            {busy ? "Please wait…" : mode === "sign-up" ? "Create account with Google" : "Continue with Google"}
+            {busy
+              ? "Please wait…"
+              : mode === "sign-up"
+                ? "Create account with Google"
+                : "Continue with Google"}
           </button>
         )}
 
-        {!isAdminLogin && (error || displayAuthError()) && <p role="alert" className="mt-4 text-sm text-red-700">{error || displayAuthError()}</p>}
-        {!isAdminLogin && message && <p role="status" className="mt-4 text-sm text-emerald-700">{message}</p>}
+        {!isAdminLogin && (error || displayAuthError()) && (
+          <p role="alert" className="mt-4 text-sm text-red-700">
+            {error || displayAuthError()}
+          </p>
+        )}
+        {!isAdminLogin && message && (
+          <p role="status" className="mt-4 text-sm text-emerald-700">
+            {message}
+          </p>
+        )}
 
         <form onSubmit={submit} className="mt-7 space-y-4">
           {mode === "sign-up" && (
