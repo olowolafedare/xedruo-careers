@@ -112,3 +112,51 @@ export const companyMemberships = pgTable(
     index("hireuo_company_memberships_company_status_idx").on(table.companyId, table.status),
   ],
 );
+export const jobStatusEnum = pgEnum(
+  "job_status",
+  ["draft", "pending_review", "published", "paused", "closed", "archived"],
+);
+export const employmentTypeEnum = pgEnum(
+  "employment_type",
+  ["full_time", "part_time", "contract", "temporary", "internship", "freelance"],
+);
+export const workplaceTypeEnum = pgEnum(
+  "workplace_type",
+  ["onsite", "remote", "hybrid"],
+);
+export const experienceLevelEnum = pgEnum(
+  "experience_level",
+  ["entry", "junior", "mid", "senior", "lead", "executive"],
+);
+export const jobs = pgTable(
+  "hireuo_jobs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id),
+    title: text("title").notNull(),
+    slug: text("slug").notNull().unique(),
+    description: text("description").notNull(),
+    responsibilities: text("responsibilities"),
+    requirements: text("requirements"),
+    employmentType: employmentTypeEnum("employment_type").notNull(),
+    workplaceType: workplaceTypeEnum("workplace_type").notNull(),
+    location: text("location"),
+    salaryMin: integer("salary_min"),
+    salaryMax: integer("salary_max"),
+    salaryCurrency: text("salary_currency"),
+    experienceLevel: experienceLevelEnum("experience_level"),
+    openings: integer("openings").notNull().default(1),
+    applicationDeadline: timestamp("application_deadline", { withTimezone: true }),
+    status: jobStatusEnum("status").notNull().default("draft"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    createdBy: uuid("created_by").notNull().references(() => accounts.id),
+    updatedBy: uuid("updated_by").references(() => accounts.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_jobs_company_status_idx").on(table.companyId, table.status),
+    index("hireuo_jobs_created_at_idx").on(table.createdAt),
+    index("hireuo_jobs_deadline_idx").on(table.applicationDeadline),
+  ],
+);
