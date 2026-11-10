@@ -317,3 +317,31 @@ export const auditLogs = pgTable(
     index("hireuo_audit_logs_created_idx").on(table.createdAt),
   ],
 );
+export const candidateVerificationStatusEnum = pgEnum("hireuo_candidate_verification_status", [
+  "unverified",
+  "pending",
+  "verified",
+  "rejected",
+  "expired",
+  "revoked",
+]);
+export const candidateVerifications = pgTable(
+  "hireuo_candidate_verifications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    status: candidateVerificationStatusEnum("status").notNull().default("unverified"),
+    documentId: uuid("document_id").references(() => candidateDocuments.id, { onDelete: "set null" }),
+    reviewedBy: uuid("reviewed_by").references(() => accounts.id),
+    reviewNote: text("review_note"),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("hireuo_candidate_verifications_account_uidx").on(table.accountId),
+    index("hireuo_candidate_verifications_status_idx").on(table.status),
+  ],
+);
