@@ -160,3 +160,40 @@ export const jobs = pgTable(
     index("hireuo_jobs_deadline_idx").on(table.applicationDeadline),
   ],
 );
+export const applicationStatusEnum = pgEnum(
+  "application_status",
+  ["submitted", "under_review", "shortlisted", "assessment", "interview", "offered", "hired", "rejected", "withdrawn"],
+);
+export const applications = pgTable(
+  "hireuo_applications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    jobId: uuid("job_id").notNull().references(() => jobs.id),
+    candidateAccountId: uuid("candidate_account_id").notNull().references(() => accounts.id),
+    status: applicationStatusEnum("status").notNull().default("submitted"),
+    coverLetter: text("cover_letter"),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    withdrawnAt: timestamp("withdrawn_at", { withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("hireuo_applications_job_candidate_uidx").on(table.jobId, table.candidateAccountId),
+    index("hireuo_applications_candidate_status_idx").on(table.candidateAccountId, table.status),
+    index("hireuo_applications_job_status_idx").on(table.jobId, table.status),
+  ],
+);
+export const applicationStatusHistory = pgTable(
+  "hireuo_application_status_history",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id").notNull().references(() => applications.id, { onDelete: "cascade" }),
+    oldStatus: applicationStatusEnum("old_status"),
+    newStatus: applicationStatusEnum("new_status").notNull(),
+    changedBy: uuid("changed_by").notNull().references(() => accounts.id),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_application_status_history_application_idx").on(table.applicationId, table.createdAt),
+  ],
+);
