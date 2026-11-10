@@ -364,3 +364,42 @@ export const notifications = pgTable(
     index("hireuo_notifications_account_read_idx").on(table.accountId, table.readAt),
   ],
 );
+export const jobQuestionTypeEnum = pgEnum("hireuo_job_question_type", [
+  "short_text",
+  "long_text",
+  "single_choice",
+  "multiple_choice",
+  "yes_no",
+]);
+export const jobQuestions = pgTable(
+  "hireuo_job_questions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    jobId: uuid("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }),
+    question: text("question").notNull(),
+    questionType: jobQuestionTypeEnum("question_type").notNull(),
+    options: text("options"),
+    isRequired: boolean("is_required").notNull().default(false),
+    displayOrder: integer("display_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_job_questions_job_order_idx").on(table.jobId, table.displayOrder),
+  ],
+);
+export const applicationAnswers = pgTable(
+  "hireuo_application_answers",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id").notNull().references(() => applications.id, { onDelete: "cascade" }),
+    questionId: uuid("question_id").notNull().references(() => jobQuestions.id, { onDelete: "cascade" }),
+    answer: text("answer").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("hireuo_application_answers_application_question_uidx").on(table.applicationId, table.questionId),
+    index("hireuo_application_answers_question_idx").on(table.questionId),
+  ],
+);
