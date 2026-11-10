@@ -1,4 +1,4 @@
-﻿import {
+import {
   pgTable,
   pgEnum,
   uuid,
@@ -277,50 +277,43 @@ export const companyEmailDomains = pgTable(
     index("hireuo_company_email_domains_domain_idx").on(table.domain),
   ],
 );
-export const companyDocuments = pgTable(
-  "hireuo_company_documents",
+export const staffRoleEnum = pgEnum("hireuo_staff_role", [
+  "super_admin",
+  "admin",
+  "moderator",
+  "support",
+]);
+export const staffRoles = pgTable(
+  "hireuo_staff_roles",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
-    documentType: text("document_type").notNull(),
-    originalName: text("original_name").notNull(),
-    objectKey: text("object_key").notNull().unique(),
-    mimeType: text("mime_type").notNull(),
-    sizeBytes: integer("size_bytes").notNull(),
-    uploadedBy: uuid("uploaded_by").notNull().references(() => accounts.id),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    role: staffRoleEnum("role").notNull(),
+    assignedBy: uuid("assigned_by").references(() => accounts.id),
+    assignedAt: timestamp("assigned_at", { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
   },
   (table) => [
-    index("hireuo_company_documents_company_idx").on(table.companyId),
+    uniqueIndex("hireuo_staff_roles_account_role_uidx").on(table.accountId, table.role),
+    index("hireuo_staff_roles_account_idx").on(table.accountId),
   ],
 );
-export const companyVerificationReviews = pgTable(
-  "hireuo_company_verification_reviews",
+export const auditLogs = pgTable(
+  "hireuo_audit_logs",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
-    reviewerAccountId: uuid("reviewer_account_id").notNull().references(() => accounts.id),
-    previousStatus: companyVerificationStatusEnum("previous_status"),
-    newStatus: companyVerificationStatusEnum("new_status").notNull(),
-    note: text("note"),
+    actorAccountId: uuid("actor_account_id").references(() => accounts.id),
+    action: text("action").notNull(),
+    entityType: text("entity_type").notNull(),
+    entityId: text("entity_id").notNull(),
+    details: text("details"),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index("hireuo_company_verification_reviews_company_idx").on(table.companyId, table.createdAt),
-  ],
-);
-export const companyEmailDomains = pgTable(
-  "hireuo_company_email_domains",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
-    domain: text("domain").notNull(),
-    verifiedAt: timestamp("verified_at", { withTimezone: true }),
-    verifiedBy: uuid("verified_by").references(() => accounts.id),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  },
-  (table) => [
-    uniqueIndex("hireuo_company_email_domains_company_domain_uidx").on(table.companyId, table.domain),
-    index("hireuo_company_email_domains_domain_idx").on(table.domain),
+    index("hireuo_audit_logs_actor_idx").on(table.actorAccountId, table.createdAt),
+    index("hireuo_audit_logs_entity_idx").on(table.entityType, table.entityId),
+    index("hireuo_audit_logs_created_idx").on(table.createdAt),
   ],
 );
