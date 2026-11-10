@@ -197,3 +197,36 @@ export const applicationStatusHistory = pgTable(
     index("hireuo_application_status_history_application_idx").on(table.applicationId, table.createdAt),
   ],
 );
+export const candidateDocumentTypeEnum = pgEnum(
+  "candidate_document_type",
+  ["resume", "identity_document", "certificate", "other"],
+);
+export const candidateDocuments = pgTable(
+  "hireuo_candidate_documents",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id),
+    documentType: candidateDocumentTypeEnum("document_type").notNull(),
+    originalName: text("original_name").notNull(),
+    objectKey: text("object_key").notNull().unique(),
+    mimeType: text("mime_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_candidate_documents_account_idx").on(table.accountId),
+  ],
+);
+export const savedJobs = pgTable(
+  "hireuo_saved_jobs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    jobId: uuid("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("hireuo_saved_jobs_account_job_uidx").on(table.accountId, table.jobId),
+    index("hireuo_saved_jobs_account_idx").on(table.accountId),
+  ],
+);
