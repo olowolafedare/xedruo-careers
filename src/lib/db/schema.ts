@@ -230,3 +230,97 @@ export const savedJobs = pgTable(
     index("hireuo_saved_jobs_account_idx").on(table.accountId),
   ],
 );
+export const companyDocuments = pgTable(
+  "hireuo_company_documents",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    documentType: text("document_type").notNull(),
+    originalName: text("original_name").notNull(),
+    objectKey: text("object_key").notNull().unique(),
+    mimeType: text("mime_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    uploadedBy: uuid("uploaded_by").notNull().references(() => accounts.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_company_documents_company_idx").on(table.companyId),
+  ],
+);
+export const companyVerificationReviews = pgTable(
+  "hireuo_company_verification_reviews",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    reviewerAccountId: uuid("reviewer_account_id").notNull().references(() => accounts.id),
+    previousStatus: companyVerificationStatusEnum("previous_status"),
+    newStatus: companyVerificationStatusEnum("new_status").notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_company_verification_reviews_company_idx").on(table.companyId, table.createdAt),
+  ],
+);
+export const companyEmailDomains = pgTable(
+  "hireuo_company_email_domains",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    domain: text("domain").notNull(),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    verifiedBy: uuid("verified_by").references(() => accounts.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("hireuo_company_email_domains_company_domain_uidx").on(table.companyId, table.domain),
+    index("hireuo_company_email_domains_domain_idx").on(table.domain),
+  ],
+);
+export const companyDocuments = pgTable(
+  "hireuo_company_documents",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    documentType: text("document_type").notNull(),
+    originalName: text("original_name").notNull(),
+    objectKey: text("object_key").notNull().unique(),
+    mimeType: text("mime_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    uploadedBy: uuid("uploaded_by").notNull().references(() => accounts.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_company_documents_company_idx").on(table.companyId),
+  ],
+);
+export const companyVerificationReviews = pgTable(
+  "hireuo_company_verification_reviews",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    reviewerAccountId: uuid("reviewer_account_id").notNull().references(() => accounts.id),
+    previousStatus: companyVerificationStatusEnum("previous_status"),
+    newStatus: companyVerificationStatusEnum("new_status").notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_company_verification_reviews_company_idx").on(table.companyId, table.createdAt),
+  ],
+);
+export const companyEmailDomains = pgTable(
+  "hireuo_company_email_domains",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    domain: text("domain").notNull(),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    verifiedBy: uuid("verified_by").references(() => accounts.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("hireuo_company_email_domains_company_domain_uidx").on(table.companyId, table.domain),
+    index("hireuo_company_email_domains_domain_idx").on(table.domain),
+  ],
+);
