@@ -345,3 +345,22 @@ export const candidateVerifications = pgTable(
     index("hireuo_candidate_verifications_status_idx").on(table.status),
   ],
 );
+export const notifications = pgTable(
+  "hireuo_notifications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    title: text("title").notNull(),
+    message: text("message").notNull(),
+    entityType: text("entity_type"),
+    entityId: text("entity_id"),
+    actionUrl: text("action_url"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_notifications_account_created_idx").on(table.accountId, table.createdAt),
+    index("hireuo_notifications_account_read_idx").on(table.accountId, table.readAt),
+  ],
+);
