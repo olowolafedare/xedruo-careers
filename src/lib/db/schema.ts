@@ -434,3 +434,23 @@ export const jobStatusHistory = pgTable(
     index("hireuo_job_status_history_actor_idx").on(table.changedBy),
   ],
 );
+export const companyInvitations = pgTable(
+  "hireuo_company_invitations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    email: text("email").notNull(),
+    role: membershipRoleEnum("role").notNull(),
+    invitedBy: uuid("invited_by").notNull().references(() => accounts.id),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_company_invitations_company_idx").on(table.companyId),
+    index("hireuo_company_invitations_email_idx").on(table.email),
+    index("hireuo_company_invitations_expiry_idx").on(table.expiresAt),
+  ],
+);
