@@ -314,7 +314,7 @@ export const staffRoles = pgTable(
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
   },
   (table) => [
-    uniqueIndex("hireuo_staff_roles_account_role_uidx").on(table.accountId, table.role),
+    uniqueIndex("hireuo_staff_roles_account_role_uidx").on(table.accountId, table.role).where(sql`${table.revokedAt} IS NULL`),
     index("hireuo_staff_roles_account_idx").on(table.accountId),
   ],
 );
@@ -478,6 +478,9 @@ export const companyInvitations = pgTable(
     index("hireuo_company_invitations_company_idx").on(table.companyId),
     index("hireuo_company_invitations_email_idx").on(table.email),
     index("hireuo_company_invitations_expiry_idx").on(table.expiresAt),
+    check("hireuo_company_invitations_email_valid", sql`${table.email} ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'`),
+    check("hireuo_company_invitations_token_not_empty", sql`length(trim(${table.tokenHash})) > 0`),
+    check("hireuo_company_invitations_cannot_assign_owner", sql`${table.role} <> 'owner'`),
   ],
 );
 export const jobCategories = pgTable(
@@ -509,6 +512,8 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
+
 
 
 
