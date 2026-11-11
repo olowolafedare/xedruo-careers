@@ -7,6 +7,7 @@ import {
   boolean,
   timestamp,
   integer,
+  jsonb,
   uniqueIndex,
   index,
   check,
@@ -399,7 +400,7 @@ export const jobQuestions = pgTable(
     jobId: uuid("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }),
     question: text("question").notNull(),
     questionType: jobQuestionTypeEnum("question_type").notNull(),
-    options: text("options"),
+    options: jsonb("options").$type<{ id: string; label: string }[]>(),
     isRequired: boolean("is_required").notNull().default(false),
     displayOrder: integer("display_order").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -511,18 +512,4 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
