@@ -454,3 +454,19 @@ export const companyInvitations = pgTable(
     index("hireuo_company_invitations_expiry_idx").on(table.expiresAt),
   ],
 );
+export const jobCategories = pgTable(
+  "hireuo_job_categories",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull().unique(),
+    slug: text("slug").notNull().unique(),
+    description: text("description"),
+    isActive: boolean("is_active").notNull().default(true),
+    displayOrder: integer("display_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_job_categories_active_order_idx").on(table.isActive, table.displayOrder),
+  ],
+);
