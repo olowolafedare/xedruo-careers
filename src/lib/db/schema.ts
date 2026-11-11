@@ -94,7 +94,7 @@ export const companies = pgTable(
     index("hireuo_companies_verification_status_idx").on(table.verificationStatus),
     check("hireuo_companies_name_not_empty", sql`length(trim(${table.name})) > 0`),
     check("hireuo_companies_slug_not_empty", sql`length(trim(${table.slug})) > 0`),
-    check("hireuo_companies_email_valid", sql`${table.businessEmail} ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'`),
+    check("hireuo_companies_email_valid", sql`${table.businessEmail} ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}$'`),
     check("hireuo_companies_phone_not_empty", sql`length(trim(${table.contactPhone})) > 0`),
     check("hireuo_companies_website_valid", sql`${table.website} IS NULL OR ${table.website} ~* '^https?://[^[:space:]]+$'`),
   ],
@@ -392,6 +392,10 @@ export const jobQuestionTypeEnum = pgEnum("hireuo_job_question_type", [
   "single_choice",
   "multiple_choice",
   "yes_no",
+  "number",
+  "url",
+  "date",
+  "file",
 ]);
 export const jobQuestions = pgTable(
   "hireuo_job_questions",
@@ -478,7 +482,7 @@ export const companyInvitations = pgTable(
     index("hireuo_company_invitations_company_idx").on(table.companyId),
     index("hireuo_company_invitations_email_idx").on(table.email),
     index("hireuo_company_invitations_expiry_idx").on(table.expiresAt),
-    check("hireuo_company_invitations_email_valid", sql`${table.email} ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'`),
+    check("hireuo_company_invitations_email_valid", sql`${table.email} ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}$'`),
     check("hireuo_company_invitations_token_not_empty", sql`length(trim(${table.tokenHash})) > 0`),
     check("hireuo_company_invitations_cannot_assign_owner", sql`${table.role} <> 'owner'`),
   ],
