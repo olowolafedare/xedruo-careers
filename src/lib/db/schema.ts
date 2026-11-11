@@ -11,6 +11,7 @@ import {
   uniqueIndex,
   index,
   check,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 // Enums
 export const companyVerificationStatusEnum = pgEnum(
@@ -516,6 +517,7 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
 
