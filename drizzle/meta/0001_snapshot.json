@@ -1,5 +1,5 @@
 {
-  "id": "1fc5094f-ba29-4e76-9be4-3f81c3ffc0b6",
+  "id": "a6e5e149-8bd6-4811-ba07-62f5f2a664f1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1267,7 +1267,7 @@
         },
         "hireuo_companies_email_valid": {
           "name": "hireuo_companies_email_valid",
-          "value": "\"hireuo_companies\".\"business_email\" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$'"
+          "value": "\"hireuo_companies\".\"business_email\" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}$'"
         },
         "hireuo_companies_phone_not_empty": {
           "name": "hireuo_companies_phone_not_empty",
@@ -1689,7 +1689,7 @@
       "checkConstraints": {
         "hireuo_company_invitations_email_valid": {
           "name": "hireuo_company_invitations_email_valid",
-          "value": "\"hireuo_company_invitations\".\"email\" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$'"
+          "value": "\"hireuo_company_invitations\".\"email\" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}$'"
         },
         "hireuo_company_invitations_token_not_empty": {
           "name": "hireuo_company_invitations_token_not_empty",
@@ -3231,7 +3231,11 @@
         "long_text",
         "single_choice",
         "multiple_choice",
-        "yes_no"
+        "yes_no",
+        "number",
+        "url",
+        "date",
+        "file"
       ]
     },
     "public.job_status": {

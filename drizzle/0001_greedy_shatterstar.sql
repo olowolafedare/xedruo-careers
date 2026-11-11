@@ -4,7 +4,7 @@ CREATE TYPE "public"."hireuo_candidate_verification_status" AS ENUM('unverified'
 CREATE TYPE "public"."company_verification_status" AS ENUM('pending', 'under_review', 'information_requested', 'approved', 'rejected', 'suspended');--> statement-breakpoint
 CREATE TYPE "public"."employment_type" AS ENUM('full_time', 'part_time', 'contract', 'temporary', 'internship', 'freelance');--> statement-breakpoint
 CREATE TYPE "public"."experience_level" AS ENUM('entry', 'junior', 'mid', 'senior', 'lead', 'executive');--> statement-breakpoint
-CREATE TYPE "public"."hireuo_job_question_type" AS ENUM('short_text', 'long_text', 'single_choice', 'multiple_choice', 'yes_no');--> statement-breakpoint
+CREATE TYPE "public"."hireuo_job_question_type" AS ENUM('short_text', 'long_text', 'single_choice', 'multiple_choice', 'yes_no', 'number', 'url', 'date', 'file');--> statement-breakpoint
 CREATE TYPE "public"."job_status" AS ENUM('draft', 'pending_review', 'published', 'paused', 'closed', 'archived');--> statement-breakpoint
 CREATE TYPE "public"."membership_role" AS ENUM('owner', 'admin', 'hr_manager', 'recruiter', 'viewer');--> statement-breakpoint
 CREATE TYPE "public"."membership_status" AS ENUM('invited', 'active', 'suspended', 'removed');--> statement-breakpoint
@@ -138,7 +138,7 @@ CREATE TABLE "hireuo_companies" (
 	CONSTRAINT "hireuo_companies_slug_unique" UNIQUE("slug"),
 	CONSTRAINT "hireuo_companies_name_not_empty" CHECK (length(trim("hireuo_companies"."name")) > 0),
 	CONSTRAINT "hireuo_companies_slug_not_empty" CHECK (length(trim("hireuo_companies"."slug")) > 0),
-	CONSTRAINT "hireuo_companies_email_valid" CHECK ("hireuo_companies"."business_email" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$'),
+	CONSTRAINT "hireuo_companies_email_valid" CHECK ("hireuo_companies"."business_email" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}$'),
 	CONSTRAINT "hireuo_companies_phone_not_empty" CHECK (length(trim("hireuo_companies"."contact_phone")) > 0),
 	CONSTRAINT "hireuo_companies_website_valid" CHECK ("hireuo_companies"."website" IS NULL OR "hireuo_companies"."website" ~* '^https?://[^[:space:]]+$')
 );
@@ -181,7 +181,7 @@ CREATE TABLE "hireuo_company_invitations" (
 	"revoked_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "hireuo_company_invitations_token_hash_unique" UNIQUE("token_hash"),
-	CONSTRAINT "hireuo_company_invitations_email_valid" CHECK ("hireuo_company_invitations"."email" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$'),
+	CONSTRAINT "hireuo_company_invitations_email_valid" CHECK ("hireuo_company_invitations"."email" ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}$'),
 	CONSTRAINT "hireuo_company_invitations_token_not_empty" CHECK (length(trim("hireuo_company_invitations"."token_hash")) > 0),
 	CONSTRAINT "hireuo_company_invitations_cannot_assign_owner" CHECK ("hireuo_company_invitations"."role" <> 'owner')
 );

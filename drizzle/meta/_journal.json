@@ -8,6 +8,13 @@
       "when": 1794399972853,
       "tag": "0000_quiet_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794401023786,
+      "tag": "0001_greedy_shatterstar",
+      "breakpoints": true
     }
   ]
 }
