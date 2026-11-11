@@ -91,6 +91,11 @@ export const companies = pgTable(
   },
   (table) => [
     index("hireuo_companies_verification_status_idx").on(table.verificationStatus),
+    check("hireuo_companies_name_not_empty", sql`length(trim(${table.name})) > 0`),
+    check("hireuo_companies_slug_not_empty", sql`length(trim(${table.slug})) > 0`),
+    check("hireuo_companies_email_valid", sql`${table.businessEmail} ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'`),
+    check("hireuo_companies_phone_not_empty", sql`length(trim(${table.contactPhone})) > 0`),
+    check("hireuo_companies_website_valid", sql`${table.website} IS NULL OR ${table.website} ~* '^https?://[^[:space:]]+$'`),
   ],
 );
 // Company memberships
@@ -489,5 +494,6 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
