@@ -191,6 +191,7 @@ export const applications = pgTable(
     uniqueIndex("hireuo_applications_job_candidate_uidx").on(table.jobId, table.candidateAccountId),
     index("hireuo_applications_candidate_status_idx").on(table.candidateAccountId, table.status),
     index("hireuo_applications_job_status_idx").on(table.jobId, table.status),
+    check("hireuo_applications_cover_letter_not_blank", sql`${table.coverLetter} IS NULL OR length(trim(${table.coverLetter})) > 0`),
   ],
 );
 export const applicationStatusHistory = pgTable(
@@ -502,6 +503,7 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
 
