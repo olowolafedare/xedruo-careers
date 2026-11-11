@@ -1,5 +1,5 @@
 {
-  "id": "8468dab2-8d08-4be4-addc-9a7b88726fd2",
+  "id": "684acfab-d86a-4bdf-a367-7ef9a35ecc89",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -521,27 +521,6 @@
           "method": "btree",
           "with": {}
         },
-        "hireuo_applications_id_job_uidx": {
-          "name": "hireuo_applications_id_job_uidx",
-          "columns": [
-            {
-              "expression": "id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "job_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "hireuo_applications_candidate_status_idx": {
           "name": "hireuo_applications_candidate_status_idx",
           "columns": [
@@ -614,7 +593,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "hireuo_applications_id_job_key": {
+          "name": "hireuo_applications_id_job_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "job_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {
         "hireuo_applications_cover_letter_not_blank": {
@@ -2320,27 +2308,6 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "hireuo_job_questions_id_job_uidx": {
-          "name": "hireuo_job_questions_id_job_uidx",
-          "columns": [
-            {
-              "expression": "id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "job_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
@@ -2359,7 +2326,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "hireuo_job_questions_id_job_key": {
+          "name": "hireuo_job_questions_id_job_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "job_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {
         "hireuo_job_questions_text_not_blank": {

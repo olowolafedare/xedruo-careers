@@ -9,6 +9,7 @@ import {
   integer,
   jsonb,
   uniqueIndex,
+  unique,
   index,
   check,
   foreignKey,
@@ -192,7 +193,7 @@ export const applications = pgTable(
   },
   (table) => [
     uniqueIndex("hireuo_applications_job_candidate_uidx").on(table.jobId, table.candidateAccountId),
-    uniqueIndex("hireuo_applications_id_job_uidx").on(table.id, table.jobId),
+    unique("hireuo_applications_id_job_key").on(table.id, table.jobId),
     index("hireuo_applications_candidate_status_idx").on(table.candidateAccountId, table.status),
     index("hireuo_applications_job_status_idx").on(table.jobId, table.status),
     check("hireuo_applications_cover_letter_not_blank", sql`${table.coverLetter} IS NULL OR length(trim(${table.coverLetter})) > 0`),
@@ -414,7 +415,7 @@ export const jobQuestions = pgTable(
   },
   (table) => [
     index("hireuo_job_questions_job_order_idx").on(table.jobId, table.displayOrder),
-    uniqueIndex("hireuo_job_questions_id_job_uidx").on(table.id, table.jobId),
+    unique("hireuo_job_questions_id_job_key").on(table.id, table.jobId),
     check("hireuo_job_questions_text_not_blank", sql`length(trim(${table.question})) > 0`),
     check("hireuo_job_questions_order_nonnegative", sql`${table.displayOrder} >= 0`),
   ],

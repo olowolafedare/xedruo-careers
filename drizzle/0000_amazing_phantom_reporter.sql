@@ -60,6 +60,7 @@ CREATE TABLE "hireuo_applications" (
 	"submitted_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"withdrawn_at" timestamp with time zone,
+	CONSTRAINT "hireuo_applications_id_job_key" UNIQUE("id","job_id"),
 	CONSTRAINT "hireuo_applications_cover_letter_not_blank" CHECK ("hireuo_applications"."cover_letter" IS NULL OR length(trim("hireuo_applications"."cover_letter")) > 0)
 );
 --> statement-breakpoint
@@ -240,6 +241,7 @@ CREATE TABLE "hireuo_job_questions" (
 	"display_order" integer DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "hireuo_job_questions_id_job_key" UNIQUE("id","job_id"),
 	CONSTRAINT "hireuo_job_questions_text_not_blank" CHECK (length(trim("hireuo_job_questions"."question")) > 0),
 	CONSTRAINT "hireuo_job_questions_order_nonnegative" CHECK ("hireuo_job_questions"."display_order" >= 0)
 );
@@ -370,7 +372,6 @@ CREATE INDEX "hireuo_application_notes_application_created_idx" ON "hireuo_appli
 CREATE INDEX "hireuo_application_notes_author_idx" ON "hireuo_application_notes" USING btree ("author_account_id");--> statement-breakpoint
 CREATE INDEX "hireuo_application_status_history_application_idx" ON "hireuo_application_status_history" USING btree ("application_id","created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "hireuo_applications_job_candidate_uidx" ON "hireuo_applications" USING btree ("job_id","candidate_account_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "hireuo_applications_id_job_uidx" ON "hireuo_applications" USING btree ("id","job_id");--> statement-breakpoint
 CREATE INDEX "hireuo_applications_candidate_status_idx" ON "hireuo_applications" USING btree ("candidate_account_id","status");--> statement-breakpoint
 CREATE INDEX "hireuo_applications_job_status_idx" ON "hireuo_applications" USING btree ("job_id","status");--> statement-breakpoint
 CREATE INDEX "hireuo_audit_logs_actor_idx" ON "hireuo_audit_logs" USING btree ("actor_account_id","created_at");--> statement-breakpoint
@@ -395,7 +396,6 @@ CREATE INDEX "hireuo_job_categories_active_order_idx" ON "hireuo_job_categories"
 CREATE UNIQUE INDEX "hireuo_job_category_assignments_job_category_uidx" ON "hireuo_job_category_assignments" USING btree ("job_id","category_id");--> statement-breakpoint
 CREATE INDEX "hireuo_job_category_assignments_category_idx" ON "hireuo_job_category_assignments" USING btree ("category_id");--> statement-breakpoint
 CREATE INDEX "hireuo_job_questions_job_order_idx" ON "hireuo_job_questions" USING btree ("job_id","display_order");--> statement-breakpoint
-CREATE UNIQUE INDEX "hireuo_job_questions_id_job_uidx" ON "hireuo_job_questions" USING btree ("id","job_id");--> statement-breakpoint
 CREATE INDEX "hireuo_job_status_history_job_created_idx" ON "hireuo_job_status_history" USING btree ("job_id","created_at");--> statement-breakpoint
 CREATE INDEX "hireuo_job_status_history_actor_idx" ON "hireuo_job_status_history" USING btree ("changed_by");--> statement-breakpoint
 CREATE INDEX "hireuo_jobs_company_status_idx" ON "hireuo_jobs" USING btree ("company_id","status");--> statement-breakpoint
