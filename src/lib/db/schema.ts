@@ -418,3 +418,19 @@ export const applicationNotes = pgTable(
     index("hireuo_application_notes_author_idx").on(table.authorAccountId),
   ],
 );
+export const jobStatusHistory = pgTable(
+  "hireuo_job_status_history",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    jobId: uuid("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }),
+    previousStatus: jobStatusEnum("previous_status"),
+    newStatus: jobStatusEnum("new_status").notNull(),
+    changedBy: uuid("changed_by").references(() => accounts.id),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_job_status_history_job_created_idx").on(table.jobId, table.createdAt),
+    index("hireuo_job_status_history_actor_idx").on(table.changedBy),
+  ],
+);
