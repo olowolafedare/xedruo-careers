@@ -408,6 +408,8 @@ export const jobQuestions = pgTable(
     index("hireuo_job_questions_job_order_idx").on(table.jobId, table.displayOrder),
     check("hireuo_job_questions_text_not_blank", sql`length(trim(${table.question})) > 0`),
     check("hireuo_job_questions_order_nonnegative", sql`${table.displayOrder} >= 0`),
+    check("hireuo_job_questions_text_not_blank", sql`length(trim(${table.question})) > 0`),
+    check("hireuo_job_questions_order_nonnegative", sql`${table.displayOrder} >= 0`),
   ],
 );
 export const applicationAnswers = pgTable(
@@ -423,6 +425,7 @@ export const applicationAnswers = pgTable(
   (table) => [
     uniqueIndex("hireuo_application_answers_application_question_uidx").on(table.applicationId, table.questionId),
     index("hireuo_application_answers_question_idx").on(table.questionId),
+    check("hireuo_application_answers_not_blank", sql`length(trim(${table.answer})) > 0`),
   ],
 );
 export const applicationNotes = pgTable(
@@ -438,6 +441,7 @@ export const applicationNotes = pgTable(
   (table) => [
     index("hireuo_application_notes_application_created_idx").on(table.applicationId, table.createdAt),
     index("hireuo_application_notes_author_idx").on(table.authorAccountId),
+    check("hireuo_application_notes_not_blank", sql`length(trim(${table.note})) > 0`),
   ],
 );
 export const jobStatusHistory = pgTable(
@@ -505,6 +509,8 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
+
 
 
 
