@@ -423,13 +423,24 @@ export const applicationAnswers = pgTable(
   "hireuo_application_answers",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    applicationId: uuid("application_id").notNull().references(() => applications.id, { onDelete: "cascade" }),
-    questionId: uuid("question_id").notNull().references(() => jobQuestions.id, { onDelete: "cascade" }),
+    applicationId: uuid("application_id").notNull(),
+    questionId: uuid("question_id").notNull(),
+    jobId: uuid("job_id").notNull(),
     answer: text("answer").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    foreignKey({
+      columns: [table.applicationId, table.jobId],
+      foreignColumns: [applications.id, applications.jobId],
+      name: "hireuo_application_answers_application_job_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.questionId, table.jobId],
+      foreignColumns: [jobQuestions.id, jobQuestions.jobId],
+      name: "hireuo_application_answers_question_job_fk",
+    }).onDelete("cascade"),
     uniqueIndex("hireuo_application_answers_application_question_uidx").on(table.applicationId, table.questionId),
     index("hireuo_application_answers_question_idx").on(table.questionId),
     check("hireuo_application_answers_not_blank", sql`length(trim(${table.answer})) > 0`),
@@ -519,6 +530,8 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
+
 
 
 
