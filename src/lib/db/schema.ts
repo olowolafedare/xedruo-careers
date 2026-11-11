@@ -226,6 +226,10 @@ export const candidateDocuments = pgTable(
   },
   (table) => [
     index("hireuo_candidate_documents_account_idx").on(table.accountId),
+    check("hireuo_candidate_documents_size_valid", sql`${table.sizeBytes} > 0 AND ${table.sizeBytes} <= 5242880`),
+    check("hireuo_candidate_documents_name_not_empty", sql`length(trim(${table.originalName})) > 0`),
+    check("hireuo_candidate_documents_key_not_empty", sql`length(trim(${table.objectKey})) > 0`),
+    check("hireuo_candidate_documents_mime_not_empty", sql`length(trim(${table.mimeType})) > 0`),
   ],
 );
 export const savedJobs = pgTable(
@@ -256,6 +260,10 @@ export const companyDocuments = pgTable(
   },
   (table) => [
     index("hireuo_company_documents_company_idx").on(table.companyId),
+    check("hireuo_company_documents_size_valid", sql`${table.sizeBytes} > 0 AND ${table.sizeBytes} <= 5242880`),
+    check("hireuo_company_documents_name_not_empty", sql`length(trim(${table.originalName})) > 0`),
+    check("hireuo_company_documents_key_not_empty", sql`length(trim(${table.objectKey})) > 0`),
+    check("hireuo_company_documents_mime_not_empty", sql`length(trim(${table.mimeType})) > 0`),
   ],
 );
 export const companyVerificationReviews = pgTable(
@@ -284,7 +292,7 @@ export const companyEmailDomains = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("hireuo_company_email_domains_company_domain_uidx").on(table.companyId, table.domain),
+    uniqueIndex("hireuo_company_email_domains_company_domain_uidx").on(table.companyId, sql`lower(${table.domain})`),
     index("hireuo_company_email_domains_domain_idx").on(table.domain),
   ],
 );
@@ -494,6 +502,8 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
+
 
 
 
