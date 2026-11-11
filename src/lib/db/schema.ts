@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   pgTable,
   pgEnum,
@@ -8,6 +9,7 @@ import {
   integer,
   uniqueIndex,
   index,
+  check,
 } from "drizzle-orm/pg-core";
 // Enums
 export const companyVerificationStatusEnum = pgEnum(
@@ -158,6 +160,10 @@ export const jobs = pgTable(
     index("hireuo_jobs_company_status_idx").on(table.companyId, table.status),
     index("hireuo_jobs_created_at_idx").on(table.createdAt),
     index("hireuo_jobs_deadline_idx").on(table.applicationDeadline),
+    check("hireuo_jobs_salary_min_nonnegative", sql`${table.salaryMin} IS NULL OR ${table.salaryMin} >= 0`),
+    check("hireuo_jobs_salary_max_nonnegative", sql`${table.salaryMax} IS NULL OR ${table.salaryMax} >= 0`),
+    check("hireuo_jobs_salary_range_valid", sql`${table.salaryMin} IS NULL OR ${table.salaryMax} IS NULL OR ${table.salaryMax} >= ${table.salaryMin}`),
+    check("hireuo_jobs_openings_positive", sql`${table.openings} > 0`),
   ],
 );
 export const applicationStatusEnum = pgEnum(
@@ -483,3 +489,5 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
+
