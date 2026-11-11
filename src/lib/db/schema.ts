@@ -406,6 +406,8 @@ export const jobQuestions = pgTable(
   },
   (table) => [
     index("hireuo_job_questions_job_order_idx").on(table.jobId, table.displayOrder),
+    check("hireuo_job_questions_text_not_blank", sql`length(trim(${table.question})) > 0`),
+    check("hireuo_job_questions_order_nonnegative", sql`${table.displayOrder} >= 0`),
   ],
 );
 export const applicationAnswers = pgTable(
@@ -503,6 +505,7 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
 
