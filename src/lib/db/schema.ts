@@ -328,7 +328,7 @@ export const auditLogs = pgTable(
     action: text("action").notNull(),
     entityType: text("entity_type").notNull(),
     entityId: text("entity_id").notNull(),
-    details: text("details"),
+    details: jsonb("details").$type<Record<string, unknown>>(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -512,4 +512,6 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
+
 
