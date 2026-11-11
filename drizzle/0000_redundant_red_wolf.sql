@@ -24,6 +24,7 @@ CREATE TABLE "hireuo_application_answers" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"application_id" uuid NOT NULL,
 	"question_id" uuid NOT NULL,
+	"job_id" uuid NOT NULL,
 	"answer" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -323,8 +324,8 @@ CREATE TABLE "hireuo_staff_roles" (
 	"revoked_at" timestamp with time zone
 );
 --> statement-breakpoint
-ALTER TABLE "hireuo_application_answers" ADD CONSTRAINT "hireuo_application_answers_application_id_hireuo_applications_id_fk" FOREIGN KEY ("application_id") REFERENCES "public"."hireuo_applications"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "hireuo_application_answers" ADD CONSTRAINT "hireuo_application_answers_question_id_hireuo_job_questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."hireuo_job_questions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "hireuo_application_answers" ADD CONSTRAINT "hireuo_application_answers_application_job_fk" FOREIGN KEY ("application_id","job_id") REFERENCES "public"."hireuo_applications"("id","job_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "hireuo_application_answers" ADD CONSTRAINT "hireuo_application_answers_question_job_fk" FOREIGN KEY ("question_id","job_id") REFERENCES "public"."hireuo_job_questions"("id","job_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "hireuo_application_notes" ADD CONSTRAINT "hireuo_application_notes_application_id_hireuo_applications_id_fk" FOREIGN KEY ("application_id") REFERENCES "public"."hireuo_applications"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "hireuo_application_notes" ADD CONSTRAINT "hireuo_application_notes_author_account_id_hireuo_accounts_id_fk" FOREIGN KEY ("author_account_id") REFERENCES "public"."hireuo_accounts"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "hireuo_application_status_history" ADD CONSTRAINT "hireuo_application_status_history_application_id_hireuo_applications_id_fk" FOREIGN KEY ("application_id") REFERENCES "public"."hireuo_applications"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -369,6 +370,7 @@ CREATE INDEX "hireuo_application_notes_application_created_idx" ON "hireuo_appli
 CREATE INDEX "hireuo_application_notes_author_idx" ON "hireuo_application_notes" USING btree ("author_account_id");--> statement-breakpoint
 CREATE INDEX "hireuo_application_status_history_application_idx" ON "hireuo_application_status_history" USING btree ("application_id","created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "hireuo_applications_job_candidate_uidx" ON "hireuo_applications" USING btree ("job_id","candidate_account_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "hireuo_applications_id_job_uidx" ON "hireuo_applications" USING btree ("id","job_id");--> statement-breakpoint
 CREATE INDEX "hireuo_applications_candidate_status_idx" ON "hireuo_applications" USING btree ("candidate_account_id","status");--> statement-breakpoint
 CREATE INDEX "hireuo_applications_job_status_idx" ON "hireuo_applications" USING btree ("job_id","status");--> statement-breakpoint
 CREATE INDEX "hireuo_audit_logs_actor_idx" ON "hireuo_audit_logs" USING btree ("actor_account_id","created_at");--> statement-breakpoint
@@ -393,6 +395,7 @@ CREATE INDEX "hireuo_job_categories_active_order_idx" ON "hireuo_job_categories"
 CREATE UNIQUE INDEX "hireuo_job_category_assignments_job_category_uidx" ON "hireuo_job_category_assignments" USING btree ("job_id","category_id");--> statement-breakpoint
 CREATE INDEX "hireuo_job_category_assignments_category_idx" ON "hireuo_job_category_assignments" USING btree ("category_id");--> statement-breakpoint
 CREATE INDEX "hireuo_job_questions_job_order_idx" ON "hireuo_job_questions" USING btree ("job_id","display_order");--> statement-breakpoint
+CREATE UNIQUE INDEX "hireuo_job_questions_id_job_uidx" ON "hireuo_job_questions" USING btree ("id","job_id");--> statement-breakpoint
 CREATE INDEX "hireuo_job_status_history_job_created_idx" ON "hireuo_job_status_history" USING btree ("job_id","created_at");--> statement-breakpoint
 CREATE INDEX "hireuo_job_status_history_actor_idx" ON "hireuo_job_status_history" USING btree ("changed_by");--> statement-breakpoint
 CREATE INDEX "hireuo_jobs_company_status_idx" ON "hireuo_jobs" USING btree ("company_id","status");--> statement-breakpoint

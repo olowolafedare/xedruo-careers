@@ -1,5 +1,5 @@
 {
-  "id": "966eafbf-c83d-45e8-b16d-b77dcc10b5ec",
+  "id": "8468dab2-8d08-4be4-addc-9a7b88726fd2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -104,6 +104,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "job_id": {
+          "name": "job_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "answer": {
           "name": "answer",
           "type": "text",
@@ -164,28 +170,32 @@
         }
       },
       "foreignKeys": {
-        "hireuo_application_answers_application_id_hireuo_applications_id_fk": {
-          "name": "hireuo_application_answers_application_id_hireuo_applications_id_fk",
+        "hireuo_application_answers_application_job_fk": {
+          "name": "hireuo_application_answers_application_job_fk",
           "tableFrom": "hireuo_application_answers",
           "tableTo": "hireuo_applications",
           "columnsFrom": [
-            "application_id"
+            "application_id",
+            "job_id"
           ],
           "columnsTo": [
-            "id"
+            "id",
+            "job_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "hireuo_application_answers_question_id_hireuo_job_questions_id_fk": {
-          "name": "hireuo_application_answers_question_id_hireuo_job_questions_id_fk",
+        "hireuo_application_answers_question_job_fk": {
+          "name": "hireuo_application_answers_question_job_fk",
           "tableFrom": "hireuo_application_answers",
           "tableTo": "hireuo_job_questions",
           "columnsFrom": [
-            "question_id"
+            "question_id",
+            "job_id"
           ],
           "columnsTo": [
-            "id"
+            "id",
+            "job_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -501,6 +511,27 @@
             },
             {
               "expression": "candidate_account_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "hireuo_applications_id_job_uidx": {
+          "name": "hireuo_applications_id_job_uidx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "job_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2286,6 +2317,27 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "hireuo_job_questions_id_job_uidx": {
+          "name": "hireuo_job_questions_id_job_uidx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
