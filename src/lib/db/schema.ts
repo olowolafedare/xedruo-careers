@@ -470,3 +470,16 @@ export const jobCategories = pgTable(
     index("hireuo_job_categories_active_order_idx").on(table.isActive, table.displayOrder),
   ],
 );
+export const jobCategoryAssignments = pgTable(
+  "hireuo_job_category_assignments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    jobId: uuid("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }),
+    categoryId: uuid("category_id").notNull().references(() => jobCategories.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("hireuo_job_category_assignments_job_category_uidx").on(table.jobId, table.categoryId),
+    index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
+  ],
+);
