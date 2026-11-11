@@ -36,7 +36,7 @@ export const accounts = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("hireuo_accounts_email_uidx").on(table.email),
+    uniqueIndex("hireuo_accounts_email_uidx").on(sql`lower(${table.email})`),
   ],
 );
 // Candidate profile
@@ -494,6 +494,7 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
 
