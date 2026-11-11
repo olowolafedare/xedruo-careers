@@ -403,3 +403,18 @@ export const applicationAnswers = pgTable(
     index("hireuo_application_answers_question_idx").on(table.questionId),
   ],
 );
+export const applicationNotes = pgTable(
+  "hireuo_application_notes",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id").notNull().references(() => applications.id, { onDelete: "cascade" }),
+    authorAccountId: uuid("author_account_id").notNull().references(() => accounts.id),
+    note: text("note").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_application_notes_application_created_idx").on(table.applicationId, table.createdAt),
+    index("hireuo_application_notes_author_idx").on(table.authorAccountId),
+  ],
+);
