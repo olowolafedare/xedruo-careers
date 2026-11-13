@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+﻿import { sql } from "drizzle-orm";
 import {
   pgTable,
   pgEnum,
@@ -33,13 +33,13 @@ export const accounts = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     xedruoIdentityId: text("xedruo_identity_id").notNull().unique(),
-    email: text("email").notNull(),
+    email: text("email"),
     emailVerified: boolean("email_verified").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("hireuo_accounts_email_uidx").on(sql`lower(${table.email})`),
+    uniqueIndex("hireuo_accounts_email_uidx").on(sql`lower(${table.email})`).where(sql`${table.email} IS NOT NULL`),
   ],
 );
 // Candidate profile
@@ -484,7 +484,7 @@ export const companyInvitations = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
-    email: text("email").notNull(),
+    email: text("email"),
     role: membershipRoleEnum("role").notNull(),
     invitedBy: uuid("invited_by").notNull().references(() => accounts.id),
     tokenHash: text("token_hash").notNull().unique(),
@@ -531,6 +531,7 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
 
