@@ -1,7 +1,3 @@
-// @xedruo/auth-client
-// Company-owned Google OAuth callback with Neon-backed central Xedruo sessions.
-// The company owns its login page, callback URL and dashboard; the holding platform is API-only.
-
 export class XedruoAuthError extends Error {
   constructor(code, message, status = 0) {
     super(message);
