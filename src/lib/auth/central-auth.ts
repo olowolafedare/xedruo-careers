@@ -139,3 +139,30 @@ export async function centralAuthRequestRegistrationOtp(
     },
   );
 }
+
+
+export interface CentralAuthRegistrationResult {
+  tokens: CentralAuthTokens;
+  session: {
+    id: string;
+    expiresAt: string;
+  };
+}
+
+export async function centralAuthRegister(input: {
+  challengeId: string;
+  phoneNumber: string;
+  countryCode: string;
+  otp: string;
+  password: string;
+  displayName?: string;
+  email?: string;
+}) {
+  return authRequest<CentralAuthRegistrationResult>(
+    "/v1/auth/registration",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
+}
