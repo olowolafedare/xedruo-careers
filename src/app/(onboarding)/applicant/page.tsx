@@ -53,125 +53,73 @@ export default function ApplicantOnboardingPage() {
     let active = true;
 
     async function loadProfile() {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+      try {
+        const [profileResponse, resumeResponse] = await Promise.all([
+          fetch("/api/v1/candidate/profile", {
+            credentials: "same-origin",
+            cache: "no-store",
+          }),
+          fetch("/api/v1/candidate/resume", {
+            credentials: "same-origin",
+            cache: "no-store",
+          }),
+        ]);
 
-      if (!active) return;
+        if (!active) return;
 
-      if (authError) {
-        setError(
-          "We couldn't verify your Xedruo account session. Please refresh and try again.",
-        );
-        setLoading(false);
-        return;
-      }
-
-      if (!user) {
-        router.replace("/account?next=%2Fapplicant");
-        return;
-      }
-
-      setUserId(user.id);
-      setEmail(user.email ?? "");
-
-      if (typeof user.user_metadata?.full_name === "string") {
-        setFullName(user.user_metadata.full_name);
-      }
-
-      const [
-        { data: profile, error: profileError },
-        { data: candidate, error: candidateError },
-      ] = await Promise.all([
-        supabase
-          .from("xedruo_profiles")
-          .select("full_name,phone_number,country,state")
-          .eq("id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("hireuo_candidate_profiles")
-          .select(
-            "phone_number,years_experience,job_search_timing,preferred_workplace_type,onboarding_completed",
-          )
-          .eq("account_id", user.id)
-          .maybeSingle(),
-      ]);
-
-      if (!active) return;
-
-      if (profileError || candidateError) {
-        console.error("HIREUO candidate profile could not be loaded", {
-          profileError,
-          candidateError,
-        });
-        setError(
-          "We couldn't load your profile. Please refresh the page and try again.",
-        );
-        setLoading(false);
-        return;
-      }
-
-      if (candidate?.onboarding_completed) {
-        router.replace("/candidate/dashboard");
-        return;
-      }
-
-      if (profile) {
-        setFullName(profile.full_name ?? "");
-      }
-
-      if (candidate) {
-        const saved = candidate as CandidateProfile;
-        setPhone(saved.phone_number ?? profile?.phone_number ?? "");
-        setExperience(String(saved.years_experience ?? 0));
-        setSearchTiming(saved.job_search_timing ?? "immediately");
-        setWorkPreference(saved.preferred_workplace_type ?? "any");
-        const { data: document, error: documentError } = await supabase
-          .from("hireuo_candidate_documents")
-          .select("media_id")
-          .eq("candidate_id", user.id)
-          .eq("document_type", "resume")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (documentError) {
-          console.error(
-            "HIREUO candidate resume record could not be loaded",
-            documentError,
-          );
-          setError(
-            "We couldn't load your saved resume details. Please refresh the page and try again.",
-          );
-          setLoading(false);
+        if (profileResponse.status === 401) {
+          router.replace("/account?next=%2Fapplicant");
           return;
         }
 
-        if (document?.media_id) {
-          const { data: media, error: mediaError } = await supabase
-            .from("xedruo_media")
-            .select("object_path")
-            .eq("id", document.media_id)
-            .maybeSingle();
+        const profilePayload = await profileResponse.json();
 
-          if (mediaError) {
-            console.error(
-              "HIREUO candidate resume media could not be loaded",
-              mediaError,
-            );
-            setError(
-              "We couldn't load your saved resume details. Please refresh the page and try again.",
-            );
-            setLoading(false);
-            return;
-          }
-
-          setExistingResume(media?.object_path ?? "");
+        if (!profileResponse.ok) {
+          throw new Error(
+            profilePayload.error ?? "We couldn't load your profile.",
+          );
         }
-      }
 
-      setLoading(false);
+        const resumePayload = await resumeResponse.json();
+
+        if (!resumeResponse.ok) {
+          throw new Error(
+            resumePayload.error ?? "We couldn't load your saved resume.",
+          );
+        }
+
+        if (!active) return;
+
+        const profile = profilePayload.profile;
+
+        setUserId("authenticated");
+        setEmail(profilePayload.email ?? "");
+
+        if (profile?.onboardingCompleted) {
+          router.replace("/candidate/dashboard");
+          return;
+        }
+
+        setFullName(profile?.fullName ?? "");
+        setPhone(profile?.phone ?? "");
+        setCountry(profile?.country ?? "Nigeria");
+        setState(profile?.state ?? "");
+        setExperience(String(profile?.yearsExperience ?? 0));
+        setSearchTiming(profile?.searchTiming ?? "immediately");
+        setWorkPreference(profile?.workplacePreference ?? "any");
+        setExistingResume(resumePayload.resume?.originalName ?? "");
+      } catch (error) {
+        if (!active) return;
+
+        console.error("HIREUO candidate profile could not be loaded", error);
+        setError(
+          error instanceof Error
+            ? error.message
+            : "We couldn't load your profile. Please refresh and try again.",
+        );
+      } finally {
+        if (active) setLoading(false);
+      }
     }
 
     void loadProfile();
