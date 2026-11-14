@@ -105,26 +105,10 @@ export async function getCurrentSession() {
   };
 }
 
+
 export async function revokeCurrentSession() {
   const cookieStore = await cookies();
   const rawToken = cookieStore.get(COOKIE_NAME)?.value;
-
-  if (rawToken) {
-    const db = getDb();
-
-    await db
-      .update(sessions)
-      .set({
-        revokedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(sessions.sessionTokenHash, hashSessionToken(rawToken)),
-          isNull(sessions.revokedAt),
-        ),
-      );
-  }
 
   cookieStore.set(COOKIE_NAME, "", {
     httpOnly: true,
@@ -133,7 +117,25 @@ export async function revokeCurrentSession() {
     path: "/",
     maxAge: 0,
   });
+
+  if (rawToken) {
+    const now = new Date();
+
+    await getDb()
+      .update(sessions)
+      .set({
+        revokedAt: now,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(sessions.sessionTokenHash, hashSessionToken(rawToken)),
+          isNull(sessions.revokedAt),
+        ),
+      );
+  }
 }
+
 
 
 export async function updateSessionTokens(input: {
