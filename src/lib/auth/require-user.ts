@@ -29,14 +29,15 @@ async function refreshSession(session: {
 }
 
 export async function requireUser(returnTo = "/start") {
-  const redirectToAccount = () =>
+    const redirectToAccount = (): never => {
     redirect("/account?next=" + encodeURIComponent(returnTo));
+    };
 
   const current = await getCurrentSession();
 
-  if (!current) {
-    redirectToAccount();
-  }
+    if (!current) {
+    return redirectToAccount();
+    }
 
   let accessToken = current.session.accessToken;
   let refreshed = false;
