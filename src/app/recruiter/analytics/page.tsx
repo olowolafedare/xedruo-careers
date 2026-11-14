@@ -1,6 +1,5 @@
-
 import { BarChart3 } from "lucide-react";
-import { count, eq } from "drizzle-orm";
+import { and,count, eq } from "drizzle-orm";
 
 import { requireRecruiter } from "../_lib/context";
 import { getDb } from "@/src/lib/db";
@@ -43,13 +42,15 @@ export default async function RecruiterAnalyticsPage() {
       .select({ total: count() })
       .from(jobs)
       .where(eq(jobs.companyId, company.id)),
-
     db
       .select({ total: count() })
       .from(jobs)
-      .where(eq(jobs.companyId, company.id))
-      .where(eq(jobs.status, "published")),
-
+      .where(
+        and(
+          eq(jobs.companyId, company.id),
+          eq(jobs.status, "published"),
+        ),
+      ),
     db
       .select({
         status: applications.status,
