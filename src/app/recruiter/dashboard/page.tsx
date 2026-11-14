@@ -6,84 +6,89 @@ import {
   UserRoundCheck,
   Plus,
 } from "lucide-react";
+import { and, count, desc, eq, inArray } from "drizzle-orm";
+
 import { requireRecruiter } from "../_lib/context";
+import { getDb } from "@/src/lib/db";
+import { applications, jobs } from "@/src/lib/db/schema";
 
 export default async function RecruiterDashboardPage() {
-  const { supabase, company, membership } = await requireRecruiter();
+  const { company, membership } = await requireRecruiter();
+  const db = getDb();
+
   const [
-    { count: totalJobs, error: totalJobsError },
-    { count: publishedJobs, error: publishedJobsError },
-    { count: totalApplications, error: totalApplicationsError },
-    { count: inProgressApplications, error: inProgressApplicationsError },
-    { data: jobs, error: jobsError },
+    [totalJobsResult],
+    [publishedJobsResult],
+    [totalApplicationsResult],
+    [inProgressApplicationsResult],
+    recentJobs,
   ] = await Promise.all([
-    supabase
-      .from("hireuo_jobs")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", company.id),
-    supabase
-      .from("hireuo_jobs")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", company.id)
-      .eq("status", "published"),
-    supabase
-      .from("hireuo_applications")
-      .select("id, hireuo_jobs!inner(organization_id)", {
-        count: "exact",
-        head: true,
+    db
+      .select({ value: count() })
+      .from(jobs)
+      .where(eq(jobs.companyId, company.id)),
+
+    db
+      .select({ value: count() })
+      .from(jobs)
+      .where(
+        and(
+          eq(jobs.companyId, company.id),
+          eq(jobs.status, "published"),
+        ),
+      ),
+
+    db
+      .select({ value: count() })
+      .from(applications)
+      .innerJoin(jobs, eq(applications.jobId, jobs.id))
+      .where(eq(jobs.companyId, company.id)),
+
+    db
+      .select({ value: count() })
+      .from(applications)
+      .innerJoin(jobs, eq(applications.jobId, jobs.id))
+      .where(
+        and(
+          eq(jobs.companyId, company.id),
+          inArray(applications.status, ["under_review", "interview"]),
+        ),
+      ),
+
+    db
+      .select({
+        id: jobs.id,
+        title: jobs.title,
+        status: jobs.status,
+        createdAt: jobs.createdAt,
       })
-      .eq("hireuo_jobs.organization_id", company.id),
-    supabase
-      .from("hireuo_applications")
-      .select("id, hireuo_jobs!inner(organization_id)", {
-        count: "exact",
-        head: true,
-      })
-      .eq("hireuo_jobs.organization_id", company.id)
-      .in("status", ["reviewing", "interview"]),
-    supabase
-      .from("hireuo_jobs")
-      .select("id, title, status, created_at")
-      .eq("organization_id", company.id)
-      .order("created_at", { ascending: false })
+      .from(jobs)
+      .where(eq(jobs.companyId, company.id))
+      .orderBy(desc(jobs.createdAt))
       .limit(4),
   ]);
 
-  if (totalJobsError)
-    throw new Error(
-      `Unable to count recruiter jobs: ${totalJobsError.message}`,
-    );
-  if (publishedJobsError)
-    throw new Error(
-      `Unable to count published jobs: ${publishedJobsError.message}`,
-    );
-  if (totalApplicationsError)
-    throw new Error(
-      `Unable to count recruiter applications: ${totalApplicationsError.message}`,
-    );
-  if (inProgressApplicationsError)
-    throw new Error(
-      `Unable to count in-progress applications: ${inProgressApplicationsError.message}`,
-    );
-  if (jobsError)
-    throw new Error(`Unable to load recent jobs: ${jobsError.message}`);
+  const totalJobs = totalJobsResult?.value ?? 0;
+  const publishedJobs = publishedJobsResult?.value ?? 0;
+  const totalApplications = totalApplicationsResult?.value ?? 0;
+  const inProgressApplications = inProgressApplicationsResult?.value ?? 0;
 
   const metrics = [
     {
       label: "Open roles",
-      value: publishedJobs ?? 0,
-      note: `${totalJobs ?? 0} total roles`,
+      value: publishedJobs,
+      note: `${totalJobs} total roles`,
       icon: BriefcaseBusiness,
     },
     {
       label: "Applicants",
-      value: totalApplications ?? 0,
+      value: totalApplications,
       note: "Across your roles",
       icon: Users,
     },
     {
       label: "In progress",
-      value: inProgressApplications ?? 0,
+      value: inProgressApplications,
       note: "Reviewing or interview",
       icon: UserRoundCheck,
     },
@@ -103,7 +108,7 @@ export default async function RecruiterDashboardPage() {
             Manage your openings and keep candidate conversations moving
           </p>
         </div>
-        {["owner", "admin", "manager"].includes(membership.role) && (
+        {["owner", "admin", "hr_manager"].includes(membership.role) && (
           <Link
             href="/recruiter/jobs/new"
             className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white bg-rosybrown sm:self-auto"
@@ -112,6 +117,7 @@ export default async function RecruiterDashboardPage() {
           </Link>
         )}
       </section>
+
       <section
         className="grid gap-4 sm:grid-cols-3"
         aria-label="Recruiting summary"
@@ -129,6 +135,7 @@ export default async function RecruiterDashboardPage() {
           </article>
         ))}
       </section>
+
       <section className="grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">
         <div className="rounded-2xl bg-rosybrown p-6">
           <div className="flex items-center justify-between gap-4">
@@ -145,9 +152,10 @@ export default async function RecruiterDashboardPage() {
               All jobs
             </Link>
           </div>
-          {jobs?.length ? (
-            <div className="mt-5 ">
-              {jobs.map((job) => (
+
+          {recentJobs.length ? (
+            <div className="mt-5">
+              {recentJobs.map((job) => (
                 <Link
                   key={job.id}
                   href="/recruiter/jobs"
@@ -157,13 +165,19 @@ export default async function RecruiterDashboardPage() {
                     <p className="text-sm font-semibold">{job.title}</p>
                     <p className="mt-1 text-xs text-slate-500">
                       Created{" "}
-                      {new Date(job.created_at).toLocaleDateString("en", {
+                      {new Date(job.createdAt).toLocaleDateString("en", {
                         dateStyle: "medium",
                       })}
                     </p>
                   </div>
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${job.status === "published" ? "bg-rosybrown text-emerald-700" : job.status === "closed" ? "bg-rosybrown text-slate-600" : "bg-rosybrown text-amber-700"}`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      job.status === "published"
+                        ? "bg-rosybrown text-emerald-700"
+                        : job.status === "closed"
+                          ? "bg-rosybrown text-slate-600"
+                          : "bg-rosybrown text-amber-700"
+                    }`}
                   >
                     {job.status}
                   </span>
@@ -176,7 +190,7 @@ export default async function RecruiterDashboardPage() {
               <p className="mt-1 text-sm text-slate-500">
                 Create your first opening to get started
               </p>
-              {["owner", "admin", "manager"].includes(membership.role) && (
+              {["owner", "admin", "hr_manager"].includes(membership.role) && (
                 <Link
                   href="/recruiter/jobs/new"
                   className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-amber-600"
@@ -187,6 +201,7 @@ export default async function RecruiterDashboardPage() {
             </div>
           )}
         </div>
+
         <div className="rounded-2xl bg-rosybrown p-6 text-white">
           <span className="grid size-10 place-items-center rounded-xl bg-rosybrown">
             <Users size={19} />
