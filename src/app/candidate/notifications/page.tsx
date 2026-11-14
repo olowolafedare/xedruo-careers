@@ -38,7 +38,6 @@ export default async function CandidateNotificationsPage() {
     await db
       .update(notifications)
       .set({
-        isRead: true,
         readAt: new Date(),
       })
       .where(
@@ -58,7 +57,7 @@ export default async function CandidateNotificationsPage() {
     message: string;
     notificationType: string;
     actionUrl: string | null;
-    isRead: boolean;
+    isRead: Date | null;
     createdAt: Date;
   }[] = [];
 
@@ -70,9 +69,9 @@ export default async function CandidateNotificationsPage() {
         id: notifications.id,
         title: notifications.title,
         message: notifications.message,
-        notificationType: notifications.notificationType,
+        notificationType: notifications.type,
         actionUrl: notifications.actionUrl,
-        isRead: notifications.isRead,
+        isRead: notifications.readAt,
         createdAt: notifications.createdAt,
       })
       .from(notifications)
