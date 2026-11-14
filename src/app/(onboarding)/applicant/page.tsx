@@ -129,142 +129,111 @@ export default function ApplicantOnboardingPage() {
     };
   }, [router]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setNotice("");
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+      event.preventDefault();
+      setError("");
+      setNotice("");
 
-    if (!userId) {
-      setError("Please sign in with HIREUO before continuing");
-      return;
-    }
-
-    if (!fullName.trim() || !country.trim() || !state.trim()) {
-      setError("Please complete your name and location");
-      return;
-    }
-
-    const years = Number(experience);
-
-    if (!Number.isFinite(years) || years < 0 || years > 100) {
-      setError("Enter a valid number of years of experience");
-      return;
-    }
-
-    if (resume) {
-      const allowedTypes = [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ];
-
-      if (!allowedTypes.includes(resume.type)) {
-        setError("Your resume must be a PDF, DOC, or DOCX file");
+      if (!userId) {
+        setError("Please sign in with HIREUO before continuing");
         return;
       }
 
-      if (resume.size > 5 * 1024 * 1024) {
-        setError("Your resume must be no larger than 5 MB");
+      if (!fullName.trim() || !country.trim() || !state.trim()) {
+        setError("Please complete your name and location");
         return;
       }
-    }
 
-    setSaving(true);
+      const years = Number(experience);
 
-    let currentStep = "Preparing onboarding";
-
-    try {
-      let resumePath = existingResume || null;
+      if (!Number.isInteger(years) || years < 0 || years > 100) {
+        setError("Enter a valid whole number of years of experience");
+        return;
+      }
 
       if (resume) {
-        currentStep = "Uploading resume";
-
         const extension = resume.name.split(".").pop()?.toLowerCase();
 
         if (!extension || !["pdf", "doc", "docx"].includes(extension)) {
-          throw new Error("The selected resume has an invalid file extension");
+          setError("Your resume must be a PDF, DOC, or DOCX file");
+          return;
         }
 
-        resumePath = `${userId}/resume.${extension}`;
+        if (resume.size > 5 * 1024 * 1024) {
+          setError("Your resume must be no larger than 5 MB");
+          return;
+        }
+      }
 
-        const { error: uploadError } = await supabase.storage
-          .from("hireuo-resumes")
-          .upload(resumePath, resume, {
-            upsert: true,
-            contentType: resume.type,
+      setSaving(true);
+
+      let currentStep = "Preparing onboarding";
+
+      try {
+        if (resume) {
+          currentStep = "Uploading resume";
+
+          const formData = new FormData();
+          formData.append("resume", resume);
+
+          const uploadResponse = await fetch("/api/v1/candidate/resume", {
+            method: "POST",
+            credentials: "same-origin",
+            body: formData,
           });
 
-        if (uploadError) throw uploadError;
-      }
+          const uploadPayload = await uploadResponse.json();
 
-      currentStep = "Saving HIREUO candidate profile";
+          if (!uploadResponse.ok) {
+            throw new Error(
+              uploadPayload.error ?? "We couldn't upload your resume.",
+            );
+          }
+        }
 
-      const { error: profileError } = await supabase
-        .from("xedruo_profiles")
-        .upsert({
-          id: userId,
-          full_name: fullName.trim(),
-          phone_number: phone.trim() || null,
-          country: country.trim(),
-          state: state.trim(),
-        }, { onConflict: "id" });
-      if (profileError) throw profileError;
+        currentStep = "Saving HIREUO candidate profile";
 
-      const { error: candidateError } = await supabase
-        .from("hireuo_candidate_profiles")
-        .upsert(
-          {
-            account_id: userId,
-            phone_number: phone.trim() || null,
-            years_experience: years,
-            job_search_timing: searchTiming,
-            preferred_workplace_type: workPreference,
-            onboarding_completed: true,
-            updated_at: new Date().toISOString(),
+        const profileResponse = await fetch("/api/v1/candidate/profile", {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
           },
-          { onConflict: "account_id" },
-        );
+          body: JSON.stringify({
+            fullName: fullName.trim(),
+            phone: phone.trim(),
+            country: country.trim(),
+            state: state.trim(),
+            yearsExperience: years,
+            workplacePreference: workPreference,
+            searchTiming,
+          }),
+        });
 
-      if (candidateError) throw candidateError;
+        const profilePayload = await profileResponse.json();
 
-      if (resume) {
-        const { data: media, error: mediaError } = await supabase
-          .from("xedruo_media")
-          .insert({
-            owner_id: userId,
-            bucket_name: "hireuo-resumes",
-            object_path: resumePath!,
-            file_name: resume.name,
-            mime_type: resume.type || null,
-            file_size: resume.size,
-            visibility: "private",
-            metadata: { service: "hireuo", document_type: "resume" },
-          })
-          .select("id")
-          .single();
-        if (mediaError) throw mediaError;
-        const { error: documentError } = await supabase
-          .from("hireuo_candidate_documents")
-          .insert({ candidate_id: userId, media_id: media.id, file_name: resume.name, document_type: "resume" });
-        if (documentError) throw documentError;
+        if (!profileResponse.ok) {
+          throw new Error(
+            profilePayload.error ?? "We couldn't save your candidate profile.",
+          );
+        }
+
+        setNotice("Your candidate profile has been saved");
+        router.push("/candidate/dashboard");
+        router.refresh();
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Something went wrong while saving your profile";
+
+        console.error(`HIREUO onboarding failed at: ${currentStep}`, err);
+        setError(`${currentStep}: ${message}`);
+      } finally {
+        setSaving(false);
       }
-
-      setNotice("Your candidate profile has been saved");
-      router.push("/candidate/dashboard");
-      router.refresh();
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Something went wrong while saving your profile";
-
-      console.error(`HIREUO onboarding failed at: ${currentStep}`, err);
-      setError(`${currentStep}: ${message}`);
-    } finally {
-      setSaving(false);
     }
-  }
-
+  
   if (loading) {
     return (
       <main className="grid min-h-screen place-items-center bg-rosybrown px-6">
