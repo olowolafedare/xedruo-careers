@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { connection } from "next/server";
 import AccountForm from "./AccountForm";
-import { createClient } from "@/src/lib/supabase/server";
 
 const ALLOWED_DESTINATIONS = new Set([
   "/admin",
@@ -62,13 +61,6 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
     redirect(accountUrl.toString());
   }
-
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) redirect(destination);
 
   return (
     <Suspense
