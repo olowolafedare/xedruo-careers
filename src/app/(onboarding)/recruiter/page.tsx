@@ -66,45 +66,48 @@ export default function RecruiterOnboardingPage() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+
+    if (!name.trim() || !businessEmail.trim() || !contactPhone.trim()) {
+      setError("Company name, business email, and contact phone are required.");
+      return;
+    }
+
     setSaving(true);
+
     try {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-      if (authError) {
-        throw authError;
-      }
-      if (!user) {
+      const response = await fetch("/api/v1/recruiter/workspace", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          businessEmail: businessEmail.trim(),
+          contactPhone: contactPhone.trim(),
+          website: website.trim(),
+          description: description.trim(),
+        }),
+      });
+
+      if (response.status === 401) {
         router.replace("/account?next=%2Frecruiter");
         return;
       }
-      const { data: organization, error: companyError } = await supabase
-        .from("xedruo_organizations")
-        .insert({
-          name: name.trim(),
-          website: website.trim() || null,
-          description: description.trim() || null,
-          created_by: user.id,
-        })
-        .select("id")
-        .single();
-      if (companyError) throw companyError;
-      const { error: memberError } = await supabase
-        .from("xedruo_organization_members")
-        .insert({ organization_id: organization.id, account_id: user.id, role: "owner", status: "active", joined_at: new Date().toISOString() });
-      if (memberError) throw memberError;
-      const { error: recruiterError } = await supabase
-        .from("hireuo_recruiter_profiles")
-        .upsert({ account_id: user.id, onboarding_completed: true }, { onConflict: "account_id" });
-      if (recruiterError) throw recruiterError;
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Could not create your recruiter workspace.");
+      }
+
       router.push("/recruiter/dashboard");
       router.refresh();
     } catch (cause) {
       setError(
         cause instanceof Error
           ? cause.message
-          : "We couldn't save your employer profile",
+          : "Could not create your recruiter workspace.",
       );
     } finally {
       setSaving(false);
