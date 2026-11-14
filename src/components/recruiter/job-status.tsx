@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/src/lib/supabase/client";
 
 export function JobStatus({
   id,
@@ -20,14 +20,33 @@ export function JobStatus({
   async function changeStatus(nextStatus: string) {
     setSaving(true);
     setError("");
-    const supabase = createClient();
-    const { error: updateError } = await supabase
-      .from("hireuo_jobs")
-      .update({ status: nextStatus, updated_at: new Date().toISOString() })
-      .eq("id", id);
-    if (updateError) setError("Unable to update");
-    else router.refresh();
-    setSaving(false);
+
+    try {
+      const response = await fetch(
+        `/api/v1/jobs/${encodeURIComponent(id)}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "same-origin",
+          body: JSON.stringify({ status: nextStatus }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "Unable to update");
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setError("Unable to update. Check your connection and try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const statusClass =
@@ -36,6 +55,7 @@ export function JobStatus({
       : status === "closed"
         ? "bg-rosybrown text-slate-600"
         : "bg-rosybrown text-amber-700";
+
   return (
     <div>
       {canEdit ? (
@@ -58,6 +78,7 @@ export function JobStatus({
           {status}
         </span>
       )}
+
       {error && (
         <p role="status" className="mt-1 text-xs text-red-600">
           {error}
