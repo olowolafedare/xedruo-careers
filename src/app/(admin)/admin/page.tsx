@@ -1,3 +1,5 @@
+
+import { connection } from "next/server";
 import { count } from "drizzle-orm";
 import { getDb } from "../../../lib/db";
 import {
@@ -6,14 +8,10 @@ import {
   companies,
   jobs,
 } from "../../../lib/db/schema";
-import { connection } from "next/server";
 
 export default async function AdminPage() {
   await connection();
 
-  const db = getDb();
-
-export default async function AdminPage() {
   const db = getDb();
 
   const [
