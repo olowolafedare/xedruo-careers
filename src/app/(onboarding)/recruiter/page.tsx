@@ -19,36 +19,49 @@ export default function RecruiterOnboardingPage() {
 
   useEffect(() => {
     let active = true;
-    void supabase.auth.getUser().then(async ({ data: { user }, error }) => {
-      if (!active) return;
-      if (error) {
+
+    async function checkWorkspace() {
+      try {
+        const response = await fetch("/api/v1/recruiter/workspace", {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+
+        if (!active) return;
+
+        if (response.status === 401) {
+          router.replace("/account?next=%2Frecruiter");
+          return;
+        }
+
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Could not check your recruiter workspace.");
+        }
+
+        if (payload.hasWorkspace) {
+          router.replace("/recruiter/dashboard");
+          return;
+        }
+      } catch (cause) {
+        if (!active) return;
         setError(
-          "We couldn't verify your Xedruo account session. Please refresh and try again.",
+          cause instanceof Error
+            ? cause.message
+            : "Could not check your recruiter workspace.",
         );
-        setLoading(false);
-        return;
+      } finally {
+        if (active) setLoading(false);
       }
-      if (!user) {
-        router.replace("/account?next=%2Frecruiter");
-        return;
-      }
-      const { data: member } = await supabase
-        .from("xedruo_organization_members")
-        .select("id")
-        .eq("account_id", user.id)
-        .eq("status", "active")
-        .limit(1)
-        .maybeSingle();
-      if (member) {
-        router.replace("/recruiter/dashboard");
-        return;
-      }
-      setLoading(false);
-    });
+    }
+
+    void checkWorkspace();
+
     return () => {
       active = false;
     };
-  }, [router, supabase]);
+  }, [router]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
