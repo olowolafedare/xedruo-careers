@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/src/lib/supabase/client";
 
 const stages = [
   "submitted",
-  "reviewing",
+  "under_review",
   "shortlisted",
+  "assessment",
   "interview",
   "offered",
   "hired",
   "rejected",
   "withdrawn",
-];
+] as const;
 
 export function ApplicationStage({
   id,
@@ -31,14 +31,33 @@ export function ApplicationStage({
   async function updateStatus(nextStatus: string) {
     setSaving(true);
     setMessage("");
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("hireuo_applications")
-      .update({ status: nextStatus, updated_at: new Date().toISOString() })
-      .eq("id", id);
-    if (error) setMessage("Could not update");
-    else router.refresh();
-    setSaving(false);
+
+    try {
+      const response = await fetch(
+        `/api/v1/applications/${encodeURIComponent(id)}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "same-origin",
+          body: JSON.stringify({ status: nextStatus }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setMessage(result.error || "Could not update");
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setMessage("Could not update. Check your connection and try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -52,10 +71,11 @@ export function ApplicationStage({
       >
         {stages.map((stage) => (
           <option key={stage} value={stage}>
-            {stage}
+            {stage.replaceAll("_", " ")}
           </option>
         ))}
       </select>
+
       {message && (
         <p role="status" className="mt-1 text-xs text-red-600">
           {message}
