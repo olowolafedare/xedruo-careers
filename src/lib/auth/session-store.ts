@@ -4,8 +4,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { and, eq, gt, isNull } from "drizzle-orm";
 
-import { getDb } from "@/src/lib/db";
-import { accounts, sessions } from "@/src/lib/db/schema";
+import { getDb } from "../db";
+import { accounts, sessions } from "../db/schema";
 import { encryptToken, decryptToken } from "./token-crypto";
 
 const COOKIE_NAME = "hireuo_session";
