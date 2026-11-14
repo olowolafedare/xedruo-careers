@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { eq, asc, and } from "drizzle-orm";
+
+import { getDb } from "@/src/lib/db";
+import { jobs, jobQuestions } from "@/src/lib/db/schema";
 import { QuestionnaireEditor } from "@/src/features/questionnaires/components/questionnaire-editor";
 import type {
   QuestionnaireOption,
@@ -15,33 +19,49 @@ export default async function JobQuestionsPage({
   params: Promise<{ jobId: string }>;
 }) {
   const { jobId } = await params;
-  const { supabase, company, membership } = await requireRecruiter();
-  if (!["owner", "admin", "manager"].includes(membership.role))
+  const { company, membership } = await requireRecruiter();
+
+  if (!["owner", "admin", "hr_manager"].includes(membership.role)) {
     redirect("/recruiter/jobs");
-  const { data: job, error: jobError } = await supabase
-    .from("hireuo_jobs")
-    .select("id,title")
-    .eq("id", jobId)
-    .eq("organization_id", company.id)
-    .maybeSingle();
-  if (jobError || !job) notFound();
-  const { data: rows, error } = await supabase
-    .from("hireuo_job_questions")
-    .select("id,question_text,question_type,options,is_required,sort_order")
-    .eq("job_id", job.id)
-    .order("sort_order", { ascending: true });
-  if (error)
-    throw new Error(`Unable to load application questions: ${error.message}`);
-  const initialQuestions: QuestionnaireQuestion[] = (rows ?? []).map((row) => ({
+  }
+
+  const db = getDb();
+
+  const [job] = await db
+    .select({
+      id: jobs.id,
+      title: jobs.title,
+    })
+    .from(jobs)
+    .where(and(eq(jobs.id, jobId), eq(jobs.companyId, company.id)))
+    .limit(1);
+
+  if (!job) notFound();
+
+  const rows = await db
+    .select({
+      id: jobQuestions.id,
+      question: jobQuestions.question,
+      questionType: jobQuestions.questionType,
+      options: jobQuestions.options,
+      isRequired: jobQuestions.isRequired,
+      displayOrder: jobQuestions.displayOrder,
+    })
+    .from(jobQuestions)
+    .where(eq(jobQuestions.jobId, job.id))
+    .orderBy(asc(jobQuestions.displayOrder));
+
+  const initialQuestions: QuestionnaireQuestion[] = rows.map((row) => ({
     id: row.id,
-    questionText: row.question_text,
-    type: row.question_type as QuestionType,
-    isRequired: row.is_required,
-    displayOrder: row.sort_order,
+    questionText: row.question,
+    type: row.questionType as QuestionType,
+    isRequired: row.isRequired,
+    displayOrder: row.displayOrder,
     options: (Array.isArray(row.options)
       ? row.options
       : []) as QuestionnaireOption[],
   }));
+
   return (
     <div className="space-y-6">
       <Link
@@ -51,6 +71,7 @@ export default async function JobQuestionsPage({
         <ArrowLeft size={16} />
         Back to assessments
       </Link>
+
       <div className="rounded-2xl bg-rosybrown p-5 sm:p-8">
         <p className="mb-5 text-sm font-medium text-slate-500">{job.title}</p>
         <QuestionnaireEditor
