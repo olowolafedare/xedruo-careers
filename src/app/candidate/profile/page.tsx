@@ -9,14 +9,35 @@ import {
   FileText,
   MapPin,
 } from "lucide-react";
-import { createClient } from "@/src/lib/supabase/client";
 
 type CandidateProfile = {
-  phone_number: string | null;
-  years_experience: number | null;
-  job_search_timing: string | null;
-  preferred_workplace_type: string | null;
-  onboarding_completed: boolean;
+  fullName: string | null;
+  phone: string | null;
+  country: string | null;
+  state: string | null;
+  yearsExperience: number | null;
+  searchTiming: string | null;
+  workplacePreference: string | null;
+  onboardingCompleted: boolean;
+};
+
+type ProfileResponse = {
+  success?: boolean;
+  profile?: CandidateProfile | null;
+  email?: string | null;
+  error?: string;
+};
+
+type ResumeResponse = {
+  success?: boolean;
+  resume?: {
+    id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    url: string;
+  } | null;
+  error?: string;
 };
 
 const searchTimingLabels: Record<string, string> = {
@@ -34,8 +55,6 @@ const workPreferenceLabels: Record<string, string> = {
   any: "Open to any",
 };
 
-const supabase = createClient();
-
 export default function CandidateProfilePage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,78 +68,68 @@ export default function CandidateProfilePage() {
     let active = true;
 
     async function loadProfile() {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-      if (!active) return;
-      if (authError || !user) {
-        setError("Sign in to view your candidate profile");
-        setLoading(false);
-        return;
-      }
+      try {
+        const [profileResponse, resumeResponse] = await Promise.all([
+          fetch("/api/v1/candidate/profile", {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store",
+          }),
+          fetch("/api/v1/candidate/resume", {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store",
+          }),
+        ]);
 
-      setEmail(user.email ?? "");
-      setFullName(
-        typeof user.user_metadata?.full_name === "string"
-          ? user.user_metadata.full_name
-          : "",
-      );
+        if (!active) return;
 
-      const [
-        { data: account, error: accountError },
-        { data: saved, error: candidateError },
-      ] = await Promise.all([
-        supabase
-          .from("xedruo_profiles")
-          .select("full_name,phone_number,country,state")
-          .eq("id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("hireuo_candidate_profiles")
-          .select(
-            "phone_number,years_experience,job_search_timing,preferred_workplace_type,onboarding_completed",
-          )
-          .eq("account_id", user.id)
-          .maybeSingle(),
-      ]);
+        if (profileResponse.status === 401) {
+          setError("Sign in to view your candidate profile");
+          return;
+        }
 
-      if (!active) return;
-      if (accountError || candidateError) {
-        setError("We couldn’t load your profile Please try again");
-      } else {
-        if (account?.full_name) setFullName(account.full_name);
-        setLocation([account?.state, account?.country].filter(Boolean).join(", "));
-        if (saved) {
-          const profile = saved as CandidateProfile;
-          setCandidate({ ...profile, phone_number: profile.phone_number ?? account?.phone_number ?? null });
-          const { data: document } = await supabase
-            .from("hireuo_candidate_documents")
-            .select("media_id")
-            .eq("candidate_id", user.id)
-            .eq("document_type", "resume")
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (document?.media_id) {
-            const { data: media } = await supabase
-              .from("xedruo_media")
-              .select("object_path,bucket_name")
-              .eq("id", document.media_id)
-              .maybeSingle();
-            if (media?.object_path) {
-              const { data } = await supabase.storage
-                .from(media.bucket_name)
-                .createSignedUrl(media.object_path, 60 * 60);
-              if (active && data?.signedUrl) setResumeUrl(data.signedUrl);
-            }
+        const profileData =
+          (await profileResponse.json()) as ProfileResponse;
+
+        if (!profileResponse.ok || !profileData.success) {
+          throw new Error(
+            profileData.error || "Unable to retrieve your profile.",
+          );
+        }
+
+        const profile = profileData.profile ?? null;
+
+        setEmail(profileData.email ?? "");
+        setFullName(profile?.fullName ?? "");
+        setLocation(
+          [profile?.state, profile?.country].filter(Boolean).join(", "),
+        );
+        setCandidate(profile);
+
+        if (resumeResponse.ok) {
+          const resumeData =
+            (await resumeResponse.json()) as ResumeResponse;
+
+          if (active && resumeData.success && resumeData.resume?.url) {
+            setResumeUrl(resumeData.resume.url);
           }
         }
+      } catch (err) {
+        console.error("Candidate profile loading failed:", err);
+
+        if (active) {
+          setError("We couldn't load your profile. Please try again.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
-      if (active) setLoading(false);
     }
 
     void loadProfile();
+
     return () => {
       active = false;
     };
@@ -133,29 +142,26 @@ export default function CandidateProfilePage() {
       rows: [
         ["Full name", fullName],
         ["Email address", email],
-        ["Phone number", candidate?.phone_number],
+        ["Phone number", candidate?.phone],
       ],
     },
     {
       icon: MapPin,
       title: "Location and preferences",
       rows: [
-        [
-          "Location",
-          location,
-        ],
+        ["Location", location],
         [
           "Preferred work arrangement",
-          candidate?.preferred_workplace_type
-            ? (workPreferenceLabels[candidate.preferred_workplace_type] ??
-              candidate.preferred_workplace_type)
+          candidate?.workplacePreference
+            ? (workPreferenceLabels[candidate.workplacePreference] ??
+              candidate.workplacePreference)
             : "",
         ],
         [
           "Job search timing",
-          candidate?.job_search_timing
-            ? (searchTimingLabels[candidate.job_search_timing] ??
-              candidate.job_search_timing)
+          candidate?.searchTiming
+            ? (searchTimingLabels[candidate.searchTiming] ??
+              candidate.searchTiming)
             : "",
         ],
       ],
@@ -166,9 +172,9 @@ export default function CandidateProfilePage() {
       rows: [
         [
           "Years of experience",
-          candidate?.years_experience == null
+          candidate?.yearsExperience == null
             ? ""
-            : `${candidate.years_experience} years`,
+            : `${candidate.yearsExperience} years`,
         ],
       ],
     },
@@ -189,7 +195,7 @@ export default function CandidateProfilePage() {
       <div className="flex justify-end">
         <Link
           href="/applicant"
-          className="inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white bg-rosybrown"
+          className="inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
         >
           Update profile <ArrowRight size={15} />
         </Link>
@@ -197,9 +203,10 @@ export default function CandidateProfilePage() {
 
       {loading ? (
         <p className="rounded-2xl bg-rosybrown p-6 text-sm text-slate-500">
-          Loading your profile…
+          Loading your profile...
         </p>
       ) : null}
+
       {error ? (
         <p
           role="alert"
@@ -208,7 +215,8 @@ export default function CandidateProfilePage() {
           {error}
         </p>
       ) : null}
-      {!loading && !error && !candidate?.onboarding_completed ? (
+
+      {!loading && !error && !candidate?.onboardingCompleted ? (
         <section className="rounded-2xl bg-rosybrown p-6">
           <h2 className="font-semibold">Complete your candidate profile</h2>
           <p className="mt-2 text-sm text-slate-500">
@@ -223,7 +231,8 @@ export default function CandidateProfilePage() {
           </Link>
         </section>
       ) : null}
-      {!loading && !error && candidate?.onboarding_completed ? (
+
+      {!loading && !error && candidate?.onboardingCompleted ? (
         <>
           {details.map(({ icon: Icon, title, rows }) => (
             <section
@@ -236,6 +245,7 @@ export default function CandidateProfilePage() {
                 </span>
                 <h2 className="font-semibold">{title}</h2>
               </div>
+
               <dl className="mt-5 grid gap-4 sm:grid-cols-2">
                 {rows.map(([label, value]) => (
                   <div key={label}>
@@ -250,6 +260,7 @@ export default function CandidateProfilePage() {
               </dl>
             </section>
           ))}
+
           <section className="rounded-2xl bg-rosybrown p-6 sm:p-8">
             <div className="flex items-center gap-3">
               <span className="grid size-10 place-items-center rounded-xl bg-rosybrown text-amber-600">
@@ -257,16 +268,18 @@ export default function CandidateProfilePage() {
               </span>
               <h2 className="font-semibold">Resume</h2>
             </div>
+
             <p className="mt-4 text-sm text-slate-600">
               {resumeUrl
                 ? "A resume is saved to your profile"
                 : "No resume uploaded"}
             </p>
+
             {resumeUrl ? (
               <a
                 href={resumeUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="mt-3 inline-flex text-sm font-semibold text-amber-600 hover:text-amber-700"
               >
                 View resume <ArrowRight size={15} className="ml-2" />
