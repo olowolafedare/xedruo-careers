@@ -42,6 +42,49 @@ export const accounts = pgTable(
     uniqueIndex("hireuo_accounts_email_uidx").on(sql`lower(${table.email})`).where(sql`${table.email} IS NOT NULL`),
   ],
 );
+
+export const sessions = pgTable(
+  "hireuo_sessions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => accounts.id, { onDelete: "cascade" }),
+
+    // SHA-256 hash of the opaque browser cookie
+    sessionTokenHash: text("session_token_hash").notNull().unique(),
+
+    // AES-256-GCM encrypted Central Auth tokens
+    accessTokenEncrypted: text("access_token_encrypted").notNull(),
+    refreshTokenEncrypted: text("refresh_token_encrypted").notNull(),
+
+    accessTokenExpiresAt: timestamp("access_token_expires_at", {
+      withTimezone: true,
+    }).notNull(),
+
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+    }).notNull(),
+
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+
+    userAgent: text("user_agent"),
+    ipAddress: text("ip_address"),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("hireuo_sessions_account_idx").on(table.accountId),
+    index("hireuo_sessions_expiry_idx").on(table.expiresAt),
+  ],
+);
 // Candidate profile
 export const candidateProfiles = pgTable(
   "hireuo_candidate_profiles",
