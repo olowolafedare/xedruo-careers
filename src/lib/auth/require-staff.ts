@@ -1,22 +1,37 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { requireUser } from "@/src/lib/auth/require-user";
+import { and, eq, isNull } from "drizzle-orm";
+
+import { requireUser } from "./require-user";
+import { getDb } from "../db";
+import { staffRoles } from "../db/schema";
 
 export const requireStaff = cache(async function requireStaff() {
- const { supabase, user } = await requireUser("/admin");
- const { data: assignments, error } = await supabase
- .from("xedruo_account_roles")
- .select("xedruo_roles!inner(name)")
- .eq("account_id", user.id)
- .limit(20);
+  const { account, user } = await requireUser("/admin");
 
- const staff = assignments?.find((assignment) => {
-  const role = Array.isArray(assignment.xedruo_roles)
-   ? assignment.xedruo_roles[0]
-   : assignment.xedruo_roles;
-  return role?.name === "hireuo_staff";
- });
+  const assignments = await getDb()
+    .select({
+      role: staffRoles.role,
+    })
+    .from(staffRoles)
+    .where(
+      and(
+        eq(staffRoles.accountId, account.id),
+        isNull(staffRoles.revokedAt),
+      ),
+    )
+    .limit(20);
 
- if (error || !staff) redirect("/admin-access");
- return { user, staff: { role: "hireuo_staff" } };
+  if (assignments.length === 0) {
+    redirect("/admin-access");
+  }
+
+  return {
+    account,
+    user,
+    staff: {
+      role: assignments[0].role,
+      roles: assignments.map((assignment) => assignment.role),
+    },
+  };
 });
