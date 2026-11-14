@@ -1,12 +1,17 @@
 import Link from "next/link";
 import { BriefcaseBusiness, MapPin } from "lucide-react";
+import { desc, eq } from "drizzle-orm";
 import { requireUser } from "@/src/lib/auth/require-user";
+import { getDb } from "@/src/lib/db";
+import { applications, jobs } from "@/src/lib/db/schema";
 import { formatEmploymentType, formatJobLocation } from "@/src/lib/hireuo-jobs";
 
 const stageStyle: Record<string, string> = {
   submitted: "bg-rosybrown text-blue-700",
+  under_review: "bg-rosybrown text-amber-700",
   reviewing: "bg-rosybrown text-amber-700",
   shortlisted: "bg-rosybrown text-violet-700",
+  assessment: "bg-rosybrown text-violet-700",
   interview: "bg-rosybrown text-violet-700",
   offered: "bg-rosybrown text-emerald-700",
   hired: "bg-rosybrown text-emerald-700",
@@ -15,17 +20,38 @@ const stageStyle: Record<string, string> = {
 };
 
 export default async function ApplicationsPage() {
-  const { supabase, user } = await requireUser("/candidate/applications");
-  const { data: applications, error } = await supabase
-    .from("hireuo_applications")
-    .select(
-      "id,job_id,status,applied_at,hireuo_jobs!hireuo_applications_job_id_fkey!inner(id,title,city,state,country,employment_type,workplace_type)",
-    )
-    .eq("candidate_id", user.id)
-    .order("applied_at", { ascending: false });
+  const { account } = await requireUser("/candidate/applications");
+  const db = getDb();
 
-  if (error)
-    throw new Error(`Unable to load your applications: ${error.message}`);
+  const applicationRows = await db
+    .select({
+      id: applications.id,
+      status: applications.status,
+      appliedAt: applications.submittedAt,
+      job: {
+        id: jobs.id,
+        title: jobs.title,
+        location: jobs.location,
+        employmentType: jobs.employmentType,
+        workplaceType: jobs.workplaceType,
+      },
+    })
+    .from(applications)
+    .innerJoin(jobs, eq(applications.jobId, jobs.id))
+    .where(eq(applications.candidateAccountId, account.id))
+    .orderBy(desc(applications.submittedAt));
+
+  const applicationItems = applicationRows.map((application) => ({
+    ...application,
+    job: {
+      ...application.job,
+      city: application.job.location,
+      state: null,
+      country: null,
+      employment_type: application.job.employmentType,
+      workplace_type: application.job.workplaceType,
+    },
+  }));
 
   return (
     <div className="space-y-7">
@@ -36,12 +62,11 @@ export default async function ApplicationsPage() {
           Keep track of the roles you have applied for and what comes next
         </p>
       </header>
-      {applications?.length ? (
+
+      {applicationItems.length ? (
         <section className="space-y-3">
-          {applications.map((application) => {
-            const job = Array.isArray(application.hireuo_jobs)
-              ? application.hireuo_jobs[0]
-              : application.hireuo_jobs;
+          {applicationItems.map((application) => {
+            const job = application.job;
 
             return (
               <article
@@ -69,11 +94,9 @@ export default async function ApplicationsPage() {
                       <span>{formatEmploymentType(job?.employment_type)}</span>
                       <span>
                         Applied{" "}
-                        {new Date(application.applied_at).toLocaleDateString(
+                        {new Date(application.appliedAt).toLocaleDateString(
                           "en",
-                          {
-                            dateStyle: "medium",
-                          },
+                          { dateStyle: "medium" },
                         )}
                       </span>
                     </p>
@@ -82,7 +105,7 @@ export default async function ApplicationsPage() {
                 <span
                   className={`w-fit rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${stageStyle[application.status] || "bg-rosybrown text-slate-600"}`}
                 >
-                  {application.status}
+                  {application.status.replaceAll("_", " ")}
                 </span>
               </article>
             );
