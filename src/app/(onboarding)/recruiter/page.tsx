@@ -3,10 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/src/lib/supabase/client";
 
 export default function RecruiterOnboardingPage() {
-  const supabase = createClient();
   const router = useRouter();
   const [name, setName] = useState("");
   const [website, setWebsite] = useState("");
