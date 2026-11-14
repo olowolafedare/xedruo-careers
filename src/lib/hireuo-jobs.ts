@@ -22,6 +22,7 @@ export function formatWorkplaceType(type: string | null | undefined) {
 }
 
 export function formatJobLocation(job: {
+  location?: string | null;
   city?: string | null;
   state?: string | null;
   country?: string | null;
@@ -29,6 +30,12 @@ export function formatJobLocation(job: {
 }) {
   if (job.workplace_type === "remote") return "Remote";
 
-  return [job.city, job.state, job.country].filter(Boolean).join(", ") ||
-    (job.workplace_type ? formatWorkplaceType(job.workplace_type) : "Location not specified");
+  if (job.location?.trim()) return job.location;
+
+  return (
+    [job.city, job.state, job.country].filter(Boolean).join(", ") ||
+    (job.workplace_type
+      ? formatWorkplaceType(job.workplace_type)
+      : "Location not specified")
+  );
 }
