@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import {
@@ -8,10 +9,14 @@ import {
   CalendarDays,
   ClipboardCheck,
 } from "lucide-react";
+import { and, desc, eq } from "drizzle-orm";
 import { requireUser } from "@/src/lib/auth/require-user";
+import { getDb } from "@/src/lib/db";
+import { notifications } from "@/src/lib/db/schema";
 
 export default async function CandidateNotificationsPage() {
-  const { supabase, user } = await requireUser("/candidate/notifications");
+  const { account } = await requireUser("/candidate/notifications");
+  const db = getDb();
 
   async function markAsRead(formData: FormData) {
     "use server";
@@ -27,32 +32,61 @@ export default async function CandidateNotificationsPage() {
       return;
     }
 
-    const { supabase, user } = await requireUser("/candidate/notifications");
+    const { account } = await requireUser("/candidate/notifications");
+    const db = getDb();
 
-    await supabase
-      .from("hireuo_notifications")
-      .update({
-        is_read: true,
-        read_at: new Date().toISOString(),
+    await db
+      .update(notifications)
+      .set({
+        isRead: true,
+        readAt: new Date(),
       })
-      .eq("id", notificationId)
-      .eq("account_id", user.id);
+      .where(
+        and(
+          eq(notifications.id, notificationId),
+          eq(notifications.accountId, account.id),
+        ),
+      );
 
     revalidatePath("/candidate/notifications");
     revalidatePath("/candidate/dashboard");
   }
 
-  const { data: notifications, error } = await supabase
-    .from("hireuo_notifications")
-    .select(
-      "id, title, message, notification_type, action_url, is_read, created_at",
-    )
-    .eq("account_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(50);
+  let notificationsList: {
+    id: string;
+    title: string;
+    message: string;
+    notificationType: string;
+    actionUrl: string | null;
+    isRead: boolean;
+    createdAt: Date;
+  }[] = [];
 
-  const unreadCount =
-    notifications?.filter((notification) => !notification.is_read).length ?? 0;
+  let loadError = false;
+
+  try {
+    notificationsList = await db
+      .select({
+        id: notifications.id,
+        title: notifications.title,
+        message: notifications.message,
+        notificationType: notifications.notificationType,
+        actionUrl: notifications.actionUrl,
+        isRead: notifications.isRead,
+        createdAt: notifications.createdAt,
+      })
+      .from(notifications)
+      .where(eq(notifications.accountId, account.id))
+      .orderBy(desc(notifications.createdAt))
+      .limit(50);
+  } catch (error) {
+    console.error("Failed to load candidate notifications:", error);
+    loadError = true;
+  }
+
+  const unreadCount = notificationsList.filter(
+    (notification) => !notification.isRead,
+  ).length;
 
   const iconForType = (type: string) => {
     switch (type) {
@@ -90,18 +124,17 @@ export default async function CandidateNotificationsPage() {
         </div>
       </header>
 
-      {error ? (
+      {loadError ? (
         <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
           <h2 className="font-semibold text-amber-900">
             Notifications could not be loaded
           </h2>
           <p className="mt-2 text-sm leading-6 text-amber-800">
-            Check that the hireuo_notifications table exists in this Supabase
-            project and that its permissions allow the signed-in user to read
-            their own notifications.
+            Please try again later. If this continues, check the HIREUO
+            notifications table and database connection.
           </p>
         </section>
-      ) : !notifications?.length ? (
+      ) : !notificationsList.length ? (
         <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
           <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-amber-50 text-amber-600">
             <Bell size={25} />
@@ -122,14 +155,14 @@ export default async function CandidateNotificationsPage() {
         </section>
       ) : (
         <section className="space-y-3" aria-label="Your notifications">
-          {notifications.map((notification) => {
-            const Icon = iconForType(notification.notification_type);
+          {notificationsList.map((notification) => {
+            const Icon = iconForType(notification.notificationType);
 
             return (
               <article
                 key={notification.id}
                 className={`rounded-2xl border p-5 transition ${
-                  notification.is_read
+                  notification.isRead
                     ? "border-slate-200 bg-rosybrown"
                     : "border-amber-200 bg-amber-50/50"
                 }`}
@@ -142,7 +175,7 @@ export default async function CandidateNotificationsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="font-semibold">{notification.title}</h2>
-                      {!notification.is_read && (
+                      {!notification.isRead && (
                         <span className="size-2 rounded-full bg-amber-600" />
                       )}
                     </div>
@@ -152,7 +185,7 @@ export default async function CandidateNotificationsPage() {
                     </p>
 
                     <p className="mt-3 text-xs text-slate-500">
-                      {new Date(notification.created_at).toLocaleString(
+                      {new Date(notification.createdAt).toLocaleString(
                         "en-NG",
                         {
                           dateStyle: "medium",
@@ -162,17 +195,17 @@ export default async function CandidateNotificationsPage() {
                     </p>
 
                     <div className="mt-4 flex flex-wrap items-center gap-4">
-                      {notification.action_url?.startsWith("/") &&
-                        notification.action_url.startsWith("//") === false && (
+                      {notification.actionUrl?.startsWith("/") &&
+                        !notification.actionUrl.startsWith("//") && (
                           <Link
-                            href={notification.action_url}
+                            href={notification.actionUrl}
                             className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 hover:text-amber-900"
                           >
                             View details <ArrowUpRight size={15} />
                           </Link>
                         )}
 
-                      {!notification.is_read && (
+                      {!notification.isRead && (
                         <form action={markAsRead}>
                           <input
                             type="hidden"
