@@ -4,10 +4,10 @@ import {
   centralAuthLogin,
   centralAuthMe,
   CentralAuthError,
-} from "@/src/lib/auth/central-auth";
+} from "../../../../../lib/auth/central-auth";
 
-import { ensureLocalAccount } from "@/src/lib/auth/account-store";
-import { createSession } from "@/src/lib/auth/session-store";
+import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
+import { createSession } from "../../../../../lib/auth/session-store";
 
 export async function POST(request: NextRequest) {
   try {
