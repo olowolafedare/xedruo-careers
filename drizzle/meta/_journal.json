@@ -15,6 +15,13 @@
       "when": 1794646002361,
       "tag": "0001_small_gunslinger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794648476280,
+      "tag": "0002_wild_mantis",
+      "breakpoints": true
     }
   ]
 }
