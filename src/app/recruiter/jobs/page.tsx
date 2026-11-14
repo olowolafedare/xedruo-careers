@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, BriefcaseBusiness, Plus } from "lucide-react";
+import { count, desc, eq } from "drizzle-orm";
+
 import { requireRecruiter } from "../_lib/context";
+import { getDb } from "@/src/lib/db";
+import { jobs, applications } from "@/src/lib/db/schema";
 import { JobStatus } from "@/src/components/recruiter/job-status";
 import {
   getPageRange,
@@ -21,36 +25,50 @@ export default async function RecruiterJobsPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const { supabase, company, membership } = await requireRecruiter();
-  const { page: pageParam } = await searchParams;
+  const [{ page: pageParam }, { company, membership }] = await Promise.all([
+    searchParams,
+    requireRecruiter(),
+  ]);
+
   const page = parsePage(pageParam);
   const { from, to } = getPageRange(page, DEFAULT_PAGE_SIZE);
-  const {
-    data: jobs,
-    error,
-    count,
-  } = await supabase
-    .from("hireuo_jobs")
-    .select(
-      "id, title, city, state, country, employment_type, workplace_type, status, created_at, hireuo_applications(count)",
-      { count: "exact" },
-    )
-    .eq("organization_id", company.id)
-    .order("created_at", { ascending: false })
-    .range(from, to);
+  const db = getDb();
 
-  if (error) throw new Error(`Unable to load jobs: ${error.message}`);
+  const [[countResult], jobRows] = await Promise.all([
+    db
+      .select({ total: count() })
+      .from(jobs)
+      .where(eq(jobs.companyId, company.id)),
 
-  const total = count ?? 0;
+    db
+      .select({
+        id: jobs.id,
+        title: jobs.title,
+        location: jobs.location,
+        employmentType: jobs.employmentType,
+        workplaceType: jobs.workplaceType,
+        status: jobs.status,
+        createdAt: jobs.createdAt,
+        applicantCount: count(applications.id),
+      })
+      .from(jobs)
+      .leftJoin(applications, eq(applications.jobId, jobs.id))
+      .where(eq(jobs.companyId, company.id))
+      .groupBy(jobs.id)
+      .orderBy(desc(jobs.createdAt))
+      .limit(to - from + 1)
+      .offset(from),
+  ]);
+
+  const total = countResult?.total ?? 0;
   const totalPages = getTotalPages(total, DEFAULT_PAGE_SIZE);
-  if (total > 0 && page > totalPages)
-    redirect(`/recruiter/jobs?page=${totalPages}`);
 
-  const applicationCounts = new Map(
-    (jobs ?? []).map((job) => [
-      job.id,
-      Number(job.hireuo_applications[0]?.count ?? 0),
-    ]),
+  if (total > 0 && page > totalPages) {
+    redirect(`/recruiter/jobs?page=${totalPages}`);
+  }
+
+  const canManageJobs = ["owner", "admin", "hr_manager"].includes(
+    membership.role,
   );
 
   return (
@@ -63,7 +81,8 @@ export default async function RecruiterJobsPage({
             Create and keep track of your organization’s open roles
           </p>
         </div>
-        {["owner", "admin", "manager"].includes(membership.role) && (
+
+        {canManageJobs && (
           <Link
             href="/recruiter/jobs/new"
             className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
@@ -72,7 +91,8 @@ export default async function RecruiterJobsPage({
           </Link>
         )}
       </header>
-      {jobs?.length ? (
+
+      {jobRows.length ? (
         <section className="overflow-hidden rounded-2xl bg-rosybrown">
           <div className="hidden grid-cols-[minmax(0,1.5fr)_1fr_0.8fr_0.7fr] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:grid">
             <span>Role</span>
@@ -80,7 +100,8 @@ export default async function RecruiterJobsPage({
             <span>Applicants</span>
             <span>Status</span>
           </div>
-          {jobs.map((job) => (
+
+          {jobRows.map((job) => (
             <article
               key={job.id}
               className="grid gap-3 px-5 py-5 sm:grid-cols-[minmax(0,1.5fr)_1fr_0.8fr_0.7fr] sm:items-center sm:gap-4"
@@ -88,26 +109,30 @@ export default async function RecruiterJobsPage({
               <div>
                 <h2 className="text-sm font-semibold">{job.title}</h2>
                 <p className="mt-1 text-xs text-slate-500">
-                  {formatEmploymentType(job.employment_type)} ·{" "}
-                  {formatWorkplaceType(job.workplace_type)} · Created{" "}
-                  {new Date(job.created_at).toLocaleDateString("en", {
+                  {formatEmploymentType(job.employmentType)} ·{" "}
+                  {formatWorkplaceType(job.workplaceType)} · Created{" "}
+                  {new Date(job.createdAt).toLocaleDateString("en", {
                     dateStyle: "medium",
                   })}
                 </p>
               </div>
-              <p className="text-sm text-slate-600">{formatJobLocation(job)}</p>
+
               <p className="text-sm text-slate-600">
-                {applicationCounts.get(job.id) ?? 0} applicants
+                {formatJobLocation(job)}
               </p>
+
+              <p className="text-sm text-slate-600">
+                {job.applicantCount} applicants
+              </p>
+
               <JobStatus
                 id={job.id}
                 status={job.status}
-                canEdit={
-          ["owner", "admin", "manager"].includes(membership.role)
-                }
+                canEdit={canManageJobs}
               />
             </article>
           ))}
+
           <Pagination
             basePath="/recruiter/jobs"
             page={page}
@@ -120,12 +145,15 @@ export default async function RecruiterJobsPage({
             <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
               <BriefcaseBusiness size={22} />
             </span>
-            <h2 className="mt-5 text-lg font-semibold">No job openings yet</h2>
+            <h2 className="mt-5 text-lg font-semibold">
+              No job openings yet
+            </h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">
               Create a draft with the role details, then review it with your
               team
             </p>
-            {["owner", "admin", "manager"].includes(membership.role) && (
+
+            {canManageJobs && (
               <Link
                 href="/recruiter/jobs/new"
                 className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
