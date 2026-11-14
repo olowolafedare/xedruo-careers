@@ -484,7 +484,7 @@ export const companyInvitations = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
-    email: text("email"),
+    email: text("email").notNull(),
     role: membershipRoleEnum("role").notNull(),
     invitedBy: uuid("invited_by").notNull().references(() => accounts.id),
     tokenHash: text("token_hash").notNull().unique(),
@@ -531,6 +531,7 @@ export const jobCategoryAssignments = pgTable(
     index("hireuo_job_category_assignments_category_idx").on(table.categoryId),
   ],
 );
+
 
 
 
