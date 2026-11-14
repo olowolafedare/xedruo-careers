@@ -1,0 +1,6 @@
+[33m2cad8ce[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m chunks?Err
+ drizzle/{0001_nervous_toro.sql => 0002_chunky_roughhouse.sql} | 1 [31m-[m
+ drizzle/meta/{0001_snapshot.json => 0002_snapshot.json}       | 4 [32m++[m[31m--[m
+ drizzle/meta/_journal.json                                    | 7 [32m+++++++[m
+ src/lib/db/schema.ts                                          | 3 [32m++[m[31m-[m
+ 4 files changed, 11 insertions(+), 4 deletions(-)
