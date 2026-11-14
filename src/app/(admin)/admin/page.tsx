@@ -1,37 +1,46 @@
-import { supabaseAdmin } from "@/src/lib/supabase/admin";
-
-async function getCount(table: string) {
-  const { count, error } = await supabaseAdmin
-    .from(table)
-    .select("*", { count: "exact", head: true });
-
-  if (error) throw new Error(`Unable to load ${table} count: ${error.message}`);
-  return count ?? 0;
-}
+import { count } from "drizzle-orm";
+import { getDb } from "../../../lib/db";
+import {
+  applications,
+  candidateProfiles,
+  companies,
+  jobs,
+} from "../../../lib/db/schema";
 
 export default async function AdminPage() {
-  const [organizations, jobs, applications, candidates] = await Promise.all([
-    getCount("xedruo_organizations"),
-    getCount("hireuo_jobs"),
-    getCount("hireuo_applications"),
-    getCount("hireuo_candidate_profiles"),
+  const db = getDb();
+
+  const [
+    [companyCount],
+    [jobCount],
+    [applicationCount],
+    [candidateCount],
+  ] = await Promise.all([
+    db.select({ total: count() }).from(companies),
+    db.select({ total: count() }).from(jobs),
+    db.select({ total: count() }).from(applications),
+    db.select({ total: count() }).from(candidateProfiles),
   ]);
 
   const metrics = [
-    { label: "Organizations", value: organizations, detail: "Organizations on Hireuo" },
+    {
+      label: "Companies",
+      value: companyCount.total,
+      detail: "Companies registered on Hireuo",
+    },
     {
       label: "Job postings",
-      value: jobs,
+      value: jobCount.total,
       detail: "Including drafts and closed roles",
     },
     {
       label: "Applications",
-      value: applications,
+      value: applicationCount.total,
       detail: "Applications across the platform",
     },
     {
       label: "Candidate profiles",
-      value: candidates,
+      value: candidateCount.total,
       detail: "Profiles created by candidates",
     },
   ];
@@ -60,7 +69,9 @@ export default async function AdminPage() {
             <p className="mt-3 text-3xl font-bold tracking-tight">
               {value.toLocaleString()}
             </p>
-            <p className="mt-2 text-xs leading-5 text-slate-500">{detail}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              {detail}
+            </p>
           </article>
         ))}
       </section>
@@ -69,7 +80,7 @@ export default async function AdminPage() {
         <h2 className="font-semibold">Staff access is restricted</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
           Only active accounts in the Hireuo staff access list can open this
-          portal Platform totals update from the live careers database
+          portal. Platform totals update from the live careers database.
         </p>
       </section>
     </div>
