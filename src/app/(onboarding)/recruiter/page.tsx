@@ -14,6 +14,10 @@ export default function RecruiterOnboardingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+
+
 
   useEffect(() => {
     let active = true;
@@ -147,6 +151,29 @@ export default function RecruiterOnboardingPage() {
               maxLength={2000}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              className="mt-2 w-full rounded-xl px-4 py-3"
+            />
+          </label>
+          <label className="block text-sm font-medium">
+            Business email *
+            <input
+              required
+              type="email"
+              maxLength={254}
+              value={businessEmail}
+              onChange={(e) => setBusinessEmail(e.target.value)}
+              className="mt-2 w-full rounded-xl px-4 py-3"
+            />
+          </label>
+
+          <label className="block text-sm font-medium">
+            Business contact phone *
+            <input
+              required
+              type="tel"
+              maxLength={30}
+              value={contactPhone}
+              onChange={(e) => setContactPhone(e.target.value)}
               className="mt-2 w-full rounded-xl px-4 py-3"
             />
           </label>
