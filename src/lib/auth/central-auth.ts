@@ -119,3 +119,23 @@ export async function centralAuthLogout(accessToken: string) {
     },
   });
 }
+
+export interface CentralAuthRegistrationOtpResult {
+  challengeId: string;
+  expiresAt: string;
+  browserOtpCode: string;
+  delivery: "browser-popup";
+}
+
+export async function centralAuthRequestRegistrationOtp(
+  phoneNumber: string,
+  countryCode: string,
+) {
+  return authRequest<CentralAuthRegistrationOtpResult>(
+    "/v1/auth/registration/otp",
+    {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber, countryCode }),
+    },
+  );
+}
