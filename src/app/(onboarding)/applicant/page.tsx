@@ -3,7 +3,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/src/lib/supabase/client";
 
 const SEARCH_TIMINGS = [
   { value: "immediately", label: "Immediately" },
@@ -30,8 +29,6 @@ type CandidateProfile = {
   preferred_workplace_type: string | null;
   onboarding_completed: boolean;
 };
-
-const supabase = createClient();
 
 export default function ApplicantOnboardingPage() {
   const router = useRouter();
@@ -463,7 +460,7 @@ export default function ApplicantOnboardingPage() {
                   type="number"
                   min="0"
                   max="100"
-                  step="0.5"
+                  step="1"
                   value={experience}
                   onChange={(e) => setExperience(e.target.value)}
                   required
