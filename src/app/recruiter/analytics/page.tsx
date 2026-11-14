@@ -1,27 +1,81 @@
+
 import { BarChart3 } from "lucide-react";
+import { count, eq } from "drizzle-orm";
+
 import { requireRecruiter } from "../_lib/context";
+import { getDb } from "@/src/lib/db";
+import { applications, jobs } from "@/src/lib/db/schema";
 
 const stages = [
   "submitted",
-  "reviewing",
+  "under_review",
   "shortlisted",
+  "assessment",
   "interview",
   "offered",
   "hired",
   "rejected",
   "withdrawn",
-];
+] as const;
+
+const stageLabels: Record<(typeof stages)[number], string> = {
+  submitted: "Submitted",
+  under_review: "Under review",
+  shortlisted: "Shortlisted",
+  assessment: "Assessment",
+  interview: "Interview",
+  offered: "Offered",
+  hired: "Hired",
+  rejected: "Rejected",
+  withdrawn: "Withdrawn",
+};
 
 export default async function RecruiterAnalyticsPage() {
-  const { supabase, company } = await requireRecruiter();
-  const [{ count: totalRoles, error: jobsError }, { count: openRoles, error: openError }, { data: applications, error: applicationsError }] = await Promise.all([
-    supabase.from("hireuo_jobs").select("id", { count: "exact", head: true }).eq("organization_id", company.id),
-    supabase.from("hireuo_jobs").select("id", { count: "exact", head: true }).eq("organization_id", company.id).eq("status", "published"),
-    supabase.from("hireuo_applications").select("status,hireuo_jobs!inner(organization_id)").eq("hireuo_jobs.organization_id", company.id),
+  const { company } = await requireRecruiter();
+  const db = getDb();
+
+  const [
+    [totalRolesResult],
+    [openRolesResult],
+    applicationStageResults,
+  ] = await Promise.all([
+    db
+      .select({ total: count() })
+      .from(jobs)
+      .where(eq(jobs.companyId, company.id)),
+
+    db
+      .select({ total: count() })
+      .from(jobs)
+      .where(eq(jobs.companyId, company.id))
+      .where(eq(jobs.status, "published")),
+
+    db
+      .select({
+        status: applications.status,
+        total: count(),
+      })
+      .from(applications)
+      .innerJoin(jobs, eq(applications.jobId, jobs.id))
+      .where(eq(jobs.companyId, company.id))
+      .groupBy(applications.status),
   ]);
-  if (jobsError || openError || applicationsError) throw new Error("Unable to load recruiter analytics");
-  const total = applications?.length ?? 0;
-  const stageCounts = Object.fromEntries(stages.map((stage) => [stage, applications?.filter((application) => application.status === stage).length ?? 0]));
+
+  const totalRoles = totalRolesResult?.total ?? 0;
+  const openRoles = openRolesResult?.total ?? 0;
+
+  const stageCounts: Record<string, number> = Object.fromEntries(
+    stages.map((stage) => [stage, 0]),
+  );
+
+  for (const result of applicationStageResults) {
+    stageCounts[result.status] = result.total;
+  }
+
+  const total = applicationStageResults.reduce(
+    (sum, result) => sum + result.total,
+    0,
+  );
 
   return (
     <div className="space-y-7">
@@ -32,25 +86,30 @@ export default async function RecruiterAnalyticsPage() {
           A current snapshot of hiring activity across {company.name}
         </p>
       </header>
+
       <section className="grid gap-4 sm:grid-cols-3">
         <article className="rounded-2xl bg-rosybrown p-5">
           <p className="text-sm text-slate-500">Total job openings</p>
           <p className="mt-3 text-3xl font-bold">{totalRoles}</p>
         </article>
+
         <article className="rounded-2xl bg-rosybrown p-5">
           <p className="text-sm text-slate-500">Published roles</p>
           <p className="mt-3 text-3xl font-bold">{openRoles}</p>
         </article>
+
         <article className="rounded-2xl bg-rosybrown p-5">
           <p className="text-sm text-slate-500">Applications received</p>
           <p className="mt-3 text-3xl font-bold">{total}</p>
         </article>
       </section>
+
       <section className="rounded-2xl bg-rosybrown p-6 sm:p-7">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl bg-rosybrown text-amber-600">
             <BarChart3 size={19} />
           </span>
+
           <div>
             <h2 className="font-semibold">Applications by stage</h2>
             <p className="mt-1 text-sm text-slate-500">
@@ -58,18 +117,25 @@ export default async function RecruiterAnalyticsPage() {
             </p>
           </div>
         </div>
+
         <div className="mt-6 space-y-4">
           {stages.map((stage) => {
-            const count = Number(stageCounts[stage] ?? 0);
+            const value = stageCounts[stage] ?? 0;
             const width = total
-              ? Math.max((count / total) * 100, count ? 4 : 0)
+              ? Math.max((value / total) * 100, value ? 4 : 0)
               : 0;
+
             return (
               <div key={stage}>
                 <div className="mb-1.5 flex justify-between text-sm">
-                  <span className="capitalize text-slate-600">{stage}</span>
-                  <span className="font-medium text-slate-800">{count}</span>
+                  <span className="text-slate-600">
+                    {stageLabels[stage]}
+                  </span>
+                  <span className="font-medium text-slate-800">
+                    {value}
+                  </span>
                 </div>
+
                 <div className="h-2 overflow-hidden rounded-full bg-rosybrown">
                   <div
                     className="h-full rounded-full bg-rosybrown transition-all"
@@ -80,6 +146,7 @@ export default async function RecruiterAnalyticsPage() {
             );
           })}
         </div>
+
         {!total && (
           <p className="mt-5 text-xs text-slate-400">
             Stage totals appear as candidates apply to your jobs
