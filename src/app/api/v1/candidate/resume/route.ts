@@ -14,8 +14,6 @@ import {
   deletePrivateFile,
 } from "../../../../../lib/storage/r2";
 
-export const runtime = "nodejs";
-
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const ALLOWED_TYPES = {

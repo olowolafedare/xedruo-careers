@@ -8,8 +8,6 @@ import {
 } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
 
-export const runtime = "nodejs";
-
 export async function PATCH(request: NextRequest) {
   try {
     const auth = await requireApiUser();
