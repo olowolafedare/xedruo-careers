@@ -8,7 +8,7 @@ import {
   candidateProfiles,
   companyMemberships,
 } from "../../../lib/db/schema";
-import { requireUser } from "@/src/lib/auth/require-user";
+import { requireUser } from "../../../lib/auth/require-user";
 
 export const instant = false;
 
