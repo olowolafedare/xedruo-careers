@@ -7,7 +7,10 @@ import {
   Globe2,
   MapPin,
 } from "lucide-react";
-import { createClient } from "@/src/lib/supabase/server";
+import { desc, eq } from "drizzle-orm";
+
+import { getDb } from "@/src/lib/db";
+import { companies, jobs } from "@/src/lib/db/schema";
 import { formatEmploymentType, formatJobLocation } from "@/src/lib/hireuo-jobs";
 
 export const instant = false;
@@ -18,26 +21,52 @@ export default async function CompanyPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const { data: company, error } = await supabase
-    .from("xedruo_organizations")
-    .select("id,name,description,website,logo_url")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error || !company) notFound();
-  const { data: jobs, error: jobsError } = await supabase
-    .from("hireuo_jobs")
-    .select(
-      "id,slug,title,city,state,country,employment_type,workplace_type,created_at",
+  const db = getDb();
+
+  const [company] = await db
+    .select({
+      id: companies.id,
+      name: companies.name,
+      description: companies.description,
+      website: companies.website,
+      slug: companies.slug,
+    })
+    .from(companies)
+    .where(eq(companies.slug, slug))
+    .limit(1);
+
+  if (!company) notFound();
+
+  const companyJobs = await db
+    .select({
+      id: jobs.id,
+      slug: jobs.slug,
+      title: jobs.title,
+      location: jobs.location,
+      employment_type: jobs.employmentType,
+      workplace_type: jobs.workplaceType,
+      created_at: jobs.createdAt,
+    })
+    .from(jobs)
+    .where(
+      and(
+        eq(jobs.companyId, company.id),
+        eq(jobs.status, "published"),
+      ),
     )
-    .eq("organization_id", company.id)
-    .eq("status", "published")
-    .order("created_at", { ascending: false });
-  if (jobsError)
-    throw new Error(`Unable to load company jobs: ${jobsError.message}`);
+    .orderBy(desc(jobs.createdAt));
+
+  const publishedJobs = companyJobs.filter(
+    (job) => job && job.title && job.slug !== undefined,
+  );
+
+  const openJobs = publishedJobs.filter(
+    async () => true,
+  );
+
   return (
     <main className="min-h-screen bg-rosybrown">
-      <header className=" bg-rosybrown">
+      <header className="bg-rosybrown">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
           <Link href="/" className="font-extrabold">
             HIREUO
@@ -47,6 +76,7 @@ export default async function CompanyPage({
           </Link>
         </div>
       </header>
+
       <div className="mx-auto max-w-5xl px-5 py-9">
         <Link
           href="/jobs"
@@ -55,11 +85,13 @@ export default async function CompanyPage({
           <ArrowLeft size={16} />
           All jobs
         </Link>
+
         <section className="mt-6 rounded-2xl bg-rosybrown p-6 sm:p-9">
           <div className="flex items-center gap-4">
             <span className="grid size-14 place-items-center rounded-2xl bg-rosybrown text-amber-600">
               <Building2 size={25} />
             </span>
+
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-amber-600">
                 Company profile
@@ -67,11 +99,13 @@ export default async function CompanyPage({
               <h1 className="mt-1 text-3xl font-bold">{company.name}</h1>
             </div>
           </div>
+
           {company.description && (
             <p className="mt-6 whitespace-pre-wrap text-sm leading-7 text-slate-600">
               {company.description}
             </p>
           )}
+
           {company.website && (
             <a
               href={company.website}
@@ -84,6 +118,7 @@ export default async function CompanyPage({
             </a>
           )}
         </section>
+
         <section className="mt-9">
           <div className="flex items-end justify-between">
             <div>
@@ -94,26 +129,34 @@ export default async function CompanyPage({
                 Jobs at {company.name}
               </h2>
             </div>
+
             <span className="text-sm text-slate-500">
-              {jobs?.length ?? 0} open
+              {openJobs.length} open
             </span>
           </div>
-          {jobs?.length ? (
+
+          {openJobs.length > 0 ? (
             <div className="mt-5 space-y-3">
-              {jobs.map((job) => (
+              {openJobs.map((job) => (
                 <Link
                   key={job.id}
-                  href={`/jobs/${job.slug ?? job.id}`}
-                  className="flex items-center justify-between gap-4 rounded-2xl bg-rosybrown p-5 "
+                  href={`/jobs/${job.slug || job.id}`}
+                  className="flex items-center justify-between gap-4 rounded-2xl bg-rosybrown p-5"
                 >
                   <div>
                     <h3 className="font-semibold">{job.title}</h3>
+
                     <p className="mt-2 flex items-center gap-1 text-sm text-slate-500">
                       <MapPin size={14} />
-                      {formatJobLocation(job)} ·{" "}
+                      {formatJobLocation({
+                        location: job.location,
+                        workplace_type: job.workplace_type,
+                      })}
+                      {" · "}
                       {formatEmploymentType(job.employment_type)}
                     </p>
                   </div>
+
                   <BriefcaseBusiness
                     size={18}
                     className="shrink-0 text-amber-600"
