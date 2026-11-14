@@ -7,7 +7,7 @@ import {
   Globe2,
   MapPin,
 } from "lucide-react";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { getDb } from "@/src/lib/db";
 import { companies, jobs } from "@/src/lib/db/schema";
