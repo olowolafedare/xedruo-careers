@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, ClipboardCheck } from "lucide-react";
+import { count, desc, eq } from "drizzle-orm";
+
 import {
   getPageRange,
   getTotalPages,
   parsePage,
   DEFAULT_PAGE_SIZE,
 } from "@/src/lib/pagination";
+import { getDb } from "@/src/lib/db";
+import { jobs, jobQuestions } from "@/src/lib/db/schema";
 import { requireRecruiter } from "../_lib/context";
 import { Pagination } from "@/src/components/recruiter/pagination";
 
@@ -15,28 +19,40 @@ export default async function RecruiterAssessmentsPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const { supabase, company } = await requireRecruiter();
-  const { page: pageParam } = await searchParams;
+  const [{ page: pageParam }, { company }] = await Promise.all([
+    searchParams,
+    requireRecruiter(),
+  ]);
+
   const page = parsePage(pageParam);
   const { from, to } = getPageRange(page, DEFAULT_PAGE_SIZE);
-  const {
-    data: jobs,
-    error,
-    count,
-  } = await supabase
-    .from("hireuo_jobs")
-    .select("id, title, status, hireuo_job_questions(count)", {
-      count: "exact",
-    })
-    .eq("organization_id", company.id)
-    .order("created_at", { ascending: false })
-    .range(from, to);
+  const db = getDb();
 
-  if (error)
-    throw new Error(`Unable to load assessment jobs: ${error.message}`);
+  const [[countResult], jobRows] = await Promise.all([
+    db
+      .select({ total: count() })
+      .from(jobs)
+      .where(eq(jobs.companyId, company.id)),
 
-  const total = count ?? 0;
+    db
+      .select({
+        id: jobs.id,
+        title: jobs.title,
+        status: jobs.status,
+        questionCount: count(jobQuestions.id),
+      })
+      .from(jobs)
+      .leftJoin(jobQuestions, eq(jobQuestions.jobId, jobs.id))
+      .where(eq(jobs.companyId, company.id))
+      .groupBy(jobs.id)
+      .orderBy(desc(jobs.createdAt))
+      .limit(to - from + 1)
+      .offset(from),
+  ]);
+
+  const total = countResult?.total ?? 0;
   const totalPages = getTotalPages(total, DEFAULT_PAGE_SIZE);
+
   if (total > 0 && page > totalPages) {
     redirect(`/recruiter/assessments?page=${totalPages}`);
   }
@@ -53,9 +69,10 @@ export default async function RecruiterAssessmentsPage({
           candidates
         </p>
       </header>
-      {jobs?.length ? (
+
+      {jobRows.length ? (
         <section className="overflow-hidden rounded-2xl bg-rosybrown">
-          {jobs.map((job) => (
+          {jobRows.map((job) => (
             <article
               key={job.id}
               className="flex flex-col justify-between gap-3 px-5 py-5 sm:flex-row sm:items-center"
@@ -63,8 +80,8 @@ export default async function RecruiterAssessmentsPage({
               <div>
                 <h2 className="text-sm font-semibold">{job.title}</h2>
                 <p className="mt-1 text-xs text-slate-500">
-                  {job.hireuo_job_questions[0]?.count ?? 0} application
-                  questions · <span className="capitalize">{job.status}</span>
+                  {job.questionCount} application questions ·{" "}
+                  <span className="capitalize">{job.status}</span>
                 </p>
               </div>
               <Link
@@ -96,7 +113,7 @@ export default async function RecruiterAssessmentsPage({
             </p>
             <Link
               href="/recruiter/jobs/new"
-              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white bg-rosybrown"
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
             >
               Create a job <ArrowRight size={15} />
             </Link>
