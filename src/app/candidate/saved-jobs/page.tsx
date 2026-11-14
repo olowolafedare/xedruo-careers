@@ -1,19 +1,36 @@
 import Link from "next/link";
 import { Bookmark, MapPin } from "lucide-react";
+import { desc, eq } from "drizzle-orm";
+
 import { requireUser } from "@/src/lib/auth/require-user";
-import { formatEmploymentType, formatJobLocation } from "@/src/lib/hireuo-jobs";
+import { getDb } from "@/src/lib/db";
+import { savedJobs, jobs } from "@/src/lib/db/schema";
+import {
+  formatEmploymentType,
+  formatJobLocation,
+} from "@/src/lib/hireuo-jobs";
 
 export default async function SavedJobsPage() {
-  const { supabase, user } = await requireUser("/candidate/saved-jobs");
-  const { data: savedJobs, error } = await supabase
-    .from("hireuo_saved_jobs")
-    .select(
-      "id,saved_at,hireuo_jobs!hireuo_saved_jobs_job_id_fkey!inner(id,title,description,city,state,country,employment_type,workplace_type)",
-    )
-    .eq("candidate_id", user.id)
-    .order("saved_at", { ascending: false });
+  const { account } = await requireUser("/candidate/saved-jobs");
+  const db = getDb();
 
-  if (error) throw new Error(`Unable to load saved jobs: ${error.message}`);
+  const savedJobsList = await db
+    .select({
+      id: savedJobs.id,
+      savedAt: savedJobs.createdAt,
+      job: {
+        id: jobs.id,
+        title: jobs.title,
+        description: jobs.description,
+        location: jobs.location,
+        employmentType: jobs.employmentType,
+        workplaceType: jobs.workplaceType,
+      },
+    })
+    .from(savedJobs)
+    .innerJoin(jobs, eq(savedJobs.jobId, jobs.id))
+    .where(eq(savedJobs.accountId, account.id))
+    .orderBy(desc(savedJobs.createdAt));
 
   return (
     <div className="space-y-7">
@@ -24,14 +41,13 @@ export default async function SavedJobsPage() {
           Keep the opportunities you are considering together in one place
         </p>
       </header>
-      {savedJobs?.length ? (
-        <section className="space-y-3">
-          {savedJobs.map((saved) => {
-            const job = Array.isArray(saved.hireuo_jobs)
-              ? saved.hireuo_jobs[0]
-              : saved.hireuo_jobs;
 
-            return job ? (
+      {savedJobsList.length ? (
+        <section className="space-y-3">
+          {savedJobsList.map((saved) => {
+            const job = saved.job;
+
+            return (
               <article
                 key={saved.id}
                 className="flex flex-col justify-between gap-4 rounded-2xl bg-rosybrown p-5 sm:flex-row sm:items-center"
@@ -48,15 +64,16 @@ export default async function SavedJobsPage() {
                       <MapPin size={13} />
                       {formatJobLocation(job)}
                     </span>
-                    <span>{formatEmploymentType(job.employment_type)}</span>
+                    <span>{formatEmploymentType(job.employmentType)}</span>
                     <span>
                       Saved{" "}
-                      {new Date(saved.saved_at).toLocaleDateString("en", {
+                      {new Date(saved.savedAt).toLocaleDateString("en", {
                         dateStyle: "medium",
                       })}
                     </span>
                   </p>
                 </Link>
+
                 <Link
                   href={`/jobs/${job.id}`}
                   className="inline-flex w-fit items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:text-amber-700"
@@ -65,7 +82,7 @@ export default async function SavedJobsPage() {
                   View job
                 </Link>
               </article>
-            ) : null;
+            );
           })}
         </section>
       ) : (
