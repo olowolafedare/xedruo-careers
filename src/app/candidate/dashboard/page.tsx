@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -9,7 +10,14 @@ import {
   Bell,
   UserRound,
 } from "lucide-react";
+import { eq, count } from "drizzle-orm";
 import { requireUser } from "@/src/lib/auth/require-user";
+import { getDb } from "@/src/lib/db";
+import {
+  applications,
+  savedJobs,
+  candidateProfiles,
+} from "@/src/lib/db/schema";
 
 const shortcuts = [
   {
@@ -45,30 +53,39 @@ const shortcuts = [
 ];
 
 export default async function CandidateDashboardPage() {
-  const { supabase, user } = await requireUser("/candidate/dashboard");
-  const [applications, savedJobs, profile] = await Promise.all([
-    supabase
-      .from("hireuo_applications")
-      .select("id", { count: "exact", head: true })
-      .eq("candidate_id", user.id),
-    supabase
-      .from("hireuo_saved_jobs")
-      .select("id", { count: "exact", head: true })
-      .eq("candidate_id", user.id),
-    supabase
-      .from("hireuo_candidate_profiles")
-      .select("onboarding_completed")
-      .eq("account_id", user.id)
-      .maybeSingle(),
-  ]);
+  const { account } = await requireUser("/candidate/dashboard");
+  const db = getDb();
+
+  const [applicationResult, savedJobResult, profileResult] =
+    await Promise.all([
+      db
+        .select({ total: count() })
+        .from(applications)
+        .where(eq(applications.candidateAccountId, account.id)),
+      db
+        .select({ total: count() })
+        .from(savedJobs)
+        .where(eq(savedJobs.accountId, account.id)),
+      db
+        .select({
+          onboardingCompleted: candidateProfiles.onboardingCompleted,
+        })
+        .from(candidateProfiles)
+        .where(eq(candidateProfiles.accountId, account.id))
+        .limit(1),
+    ]);
+
   const counts = [
-    { label: "Applications", value: applications.count ?? 0 },
-    { label: "Saved jobs", value: savedJobs.count ?? 0 },
+    { label: "Applications", value: applicationResult[0]?.total ?? 0 },
+    { label: "Saved jobs", value: savedJobResult[0]?.total ?? 0 },
     {
       label: "Profile",
-      value: profile.data?.onboarding_completed ? "Complete" : "In progress",
+      value: profileResult[0]?.onboardingCompleted
+        ? "Complete"
+        : "In progress",
     },
   ];
+
   return (
     <div className="space-y-8">
       <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
