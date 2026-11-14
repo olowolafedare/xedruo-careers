@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/src/lib/supabase/client";
 
 export default function CompanyProfileForm({
   companyId,
@@ -28,30 +28,42 @@ export default function CompanyProfileForm({
     setBusy(true);
     setError("");
     setMessage("");
-    const supabase = createClient();
-    const { error: updateError } = await supabase
-      .from("xedruo_organizations")
-      .update({
-        name: name.trim(),
-        website: website.trim() || null,
-        description: description.trim() || null,
-      })
-      .eq("id", companyId);
-    if (updateError) {
-      setError(
-        "Unable to save company profile Check your access and try again",
-      );
+
+    try {
+      const response = await fetch("/api/v1/workspace/company", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          companyId,
+          name: name.trim(),
+          website: website.trim(),
+          description: description.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "Unable to save company profile. Try again.");
+        return;
+      }
+
+      setMessage("Company profile saved");
+      router.refresh();
+    } catch {
+      setError("Unable to save company profile. Check your connection and try again.");
+    } finally {
       setBusy(false);
-      return;
     }
-    setMessage("Company profile saved");
-    setBusy(false);
-    router.refresh();
   }
 
   return (
     <form onSubmit={save} className="mt-7 space-y-5 pt-6">
       <h3 className="font-semibold">Edit organization details</h3>
+
       <label className="block text-sm font-medium">
         Company name
         <input
@@ -62,6 +74,7 @@ export default function CompanyProfileForm({
           className="mt-2 w-full rounded-xl px-4 py-3"
         />
       </label>
+
       <label className="block text-sm font-medium">
         Website
         <input
@@ -73,6 +86,7 @@ export default function CompanyProfileForm({
           className="mt-2 w-full rounded-xl px-4 py-3"
         />
       </label>
+
       <label className="block text-sm font-medium">
         About the organization
         <textarea
@@ -83,19 +97,22 @@ export default function CompanyProfileForm({
           className="mt-2 w-full rounded-xl px-4 py-3"
         />
       </label>
+
       {error && (
         <p role="alert" className="text-sm text-red-700">
           {error}
         </p>
       )}
+
       {message && (
         <p role="status" className="text-sm text-emerald-700">
           {message}
         </p>
       )}
+
       <button
         disabled={busy}
-        className="rounded-xl bg-rosybrown px-5 py-3 text-sm font-semibold text-white bg-rosybrown disabled:opacity-60"
+        className="rounded-xl bg-rosybrown px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
         {busy ? "Saving…" : "Save changes"}
       </button>
