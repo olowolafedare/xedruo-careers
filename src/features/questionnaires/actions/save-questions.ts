@@ -1,7 +1,6 @@
-
 "use server";
 
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
 import { requireRecruiter } from "@/src/app/recruiter/_lib/context";
 import { getDb } from "@/src/lib/db";
@@ -34,17 +33,19 @@ export async function saveQuestions(input: unknown) {
 
   const questionIds = questions.map((question) => question.id);
 
-  // Prevent an incoming question ID from modifying a question belonging
-  // to another job.
   if (questionIds.length > 0) {
-    const conflictingQuestions = await db
+    const existingIds = await db
       .select({ id: jobQuestions.id })
       .from(jobQuestions)
       .where(inArray(jobQuestions.id, questionIds));
 
-    const existingIds = new Set(conflictingQuestions.map((question) => question.id));
+    const validIds = new Set(
+      existingIds
+        .filter((question) => true)
+        .map((question) => question.id),
+    );
 
-    const jobQuestionsForIds = await db
+    const questionsForJob = await db
       .select({ id: jobQuestions.id })
       .from(jobQuestions)
       .where(
@@ -54,9 +55,11 @@ export async function saveQuestions(input: unknown) {
         ),
       );
 
-    const validIds = new Set(jobQuestionsForIds.map((question) => question.id));
+    const jobQuestionIds = new Set(
+      questionsForJob.map((question) => question.id),
+    );
 
-    if ([...existingIds].some((id) => !validIds.has(id))) {
+    if ([...validIds].some((id) => !jobQuestionIds.has(id))) {
       return { error: "One or more question IDs are invalid" };
     }
   }
@@ -80,12 +83,12 @@ export async function saveQuestions(input: unknown) {
         .onConflictDoUpdate({
           target: jobQuestions.id,
           set: {
-            question: jobQuestions.question,
-            questionType: jobQuestions.questionType,
-            options: jobQuestions.options,
-            isRequired: jobQuestions.isRequired,
-            displayOrder: jobQuestions.displayOrder,
-            updatedAt: new Date(),
+            question: sql`excluded.question`,
+            questionType: sql`excluded.question_type`,
+            options: sql`excluded.options`,
+            isRequired: sql`excluded.is_required`,
+            displayOrder: sql`excluded.display_order`,
+            updatedAt: sql`now()`,
           },
           setWhere: eq(jobQuestions.jobId, jobId),
         });
@@ -97,6 +100,7 @@ export async function saveQuestions(input: unknown) {
       .where(eq(jobQuestions.jobId, jobId));
 
     const submittedIds = new Set(questionIds);
+
     const removed = existing
       .filter((question) => !submittedIds.has(question.id))
       .map((question) => question.id);
