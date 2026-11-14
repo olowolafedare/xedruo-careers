@@ -99,6 +99,7 @@ export const candidateProfiles = pgTable(
     workplacePreference: text("workplace_preference"),
     searchTiming: text("search_timing"),
     discoverable: boolean("discoverable").notNull().default(false),
+    onboardingCompleted: boolean("onboarding_completed").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

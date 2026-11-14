@@ -1,0 +1,1 @@
+ALTER TABLE "hireuo_candidate_profiles" ADD COLUMN "onboarding_completed" boolean DEFAULT false NOT NULL;
