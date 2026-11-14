@@ -12,7 +12,7 @@ type CentralIdentity = {
 
 export async function ensureLocalAccount(identity: CentralIdentity) {
   if (!identity.id) {
-    throw new Error("Central Auth identity ID is required.");
+    throw new Error("Central Auth identity ID is required");
   }
 
   const db = getDb();
@@ -34,8 +34,9 @@ export async function ensureLocalAccount(identity: CentralIdentity) {
     .returning();
 
   if (!account) {
-    throw new Error("Unable to provision HIREUO account.");
+    throw new Error("Unable to provision HIREUO account");
   }
 
   return account;
 }
+

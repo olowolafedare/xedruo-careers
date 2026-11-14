@@ -34,7 +34,7 @@ export async function createSession(input: {
   ipAddress?: string | null;
 }) {
   if (input.expiresAt <= new Date()) {
-    throw new Error("Cannot create an already expired session.");
+    throw new Error("Cannot create an already expired session");
   }
 
   const rawToken = randomBytes(32).toString("base64url");
@@ -133,4 +133,37 @@ export async function revokeCurrentSession() {
     path: "/",
     maxAge: 0,
   });
+}
+
+
+export async function updateSessionTokens(input: {
+  sessionId: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}) {
+  const now = new Date();
+
+  const [updated] = await getDb()
+    .update(sessions)
+    .set({
+      accessTokenEncrypted: encryptToken(input.accessToken),
+      refreshTokenEncrypted: encryptToken(input.refreshToken),
+      accessTokenExpiresAt: new Date(
+        now.getTime() + input.expiresIn * 1000,
+      ),
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(sessions.id, input.sessionId),
+        isNull(sessions.revokedAt),
+        gt(sessions.expiresAt, now),
+      ),
+    )
+    .returning({ id: sessions.id });
+
+  if (!updated) {
+    throw new Error("Session expired or revoked during token refresh");
+  }
 }
