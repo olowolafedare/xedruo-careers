@@ -83,8 +83,7 @@ export default async function AdminPage() {
       <section className="rounded-2xl bg-rosybrown p-6">
         <h2 className="font-semibold">Staff access is restricted</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          Only active accounts in the Hireuo staff access list can open this
-          portal. Platform totals update from the live careers database.
+          Only staff
         </p>
       </section>
     </div>
