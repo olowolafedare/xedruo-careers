@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error("HIREUO registration OTP request failed:", error);
+    console.error("OTP DEBUG:", error instanceof Error ? error.stack : String(error));
 
     return NextResponse.json(
       { error: "Unable to request a registration code." },
