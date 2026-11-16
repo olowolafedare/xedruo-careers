@@ -44,6 +44,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof CentralAuthError) {
+      console.warn("HIREUO registration OTP upstream request failed:", {
+        status: error.status,
+      });
+
       const status =
         error.status === 429 ? 429 :
         error.status >= 400 && error.status < 500 ? error.status :
