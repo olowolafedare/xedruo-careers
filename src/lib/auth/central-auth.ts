@@ -120,27 +120,6 @@ export async function centralAuthLogout(accessToken: string) {
   });
 }
 
-export interface CentralAuthRegistrationOtpResult {
-  challengeId: string;
-  expiresAt: string;
-  browserOtpCode: string;
-  delivery: "browser-popup";
-}
-
-export async function centralAuthRequestRegistrationOtp(
-  phoneNumber: string,
-  countryCode: string,
-) {
-  return authRequest<CentralAuthRegistrationOtpResult>(
-    "/v1/auth/registration/otp",
-    {
-      method: "POST",
-      body: JSON.stringify({ phoneNumber, countryCode }),
-    },
-  );
-}
-
-
 export interface CentralAuthRegistrationResult {
   tokens: CentralAuthTokens;
   session: {
@@ -150,10 +129,8 @@ export interface CentralAuthRegistrationResult {
 }
 
 export async function centralAuthRegister(input: {
-  challengeId: string;
   phoneNumber: string;
   countryCode: string;
-  otp: string;
   password: string;
   displayName?: string;
   email?: string;
