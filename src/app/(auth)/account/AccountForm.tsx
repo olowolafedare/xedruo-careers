@@ -11,7 +11,6 @@ type AccountFormProps = {
 };
 
 type AuthMode = "sign-in" | "sign-up";
-type RegistrationStage = "details" | "otp";
 
 export default function AccountForm({
   authError,
@@ -21,7 +20,6 @@ export default function AccountForm({
   const isAdminLogin = destination === "/admin";
 
   const [mode, setMode] = useState<AuthMode>("sign-in");
-  const [stage, setStage] = useState<RegistrationStage>("details");
 
   const [xedruoId, setXedruoId] = useState("");
   const [name, setName] = useState("");
@@ -29,12 +27,9 @@ export default function AccountForm({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
-  const [challengeId, setChallengeId] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
   function displayAuthError() {
@@ -52,7 +47,6 @@ export default function AccountForm({
     event.preventDefault();
     setBusy(true);
     setError("");
-    setMessage("");
 
     try {
       if (mode === "sign-in") {
@@ -72,41 +66,13 @@ export default function AccountForm({
         return;
       }
 
-      if (stage === "details") {
-        const response = await fetch("/api/v1/auth/register/otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({ phoneNumber, countryCode }),
-        });
-
-        if (!response.ok) {
-          throw new Error(await getApiError(response));
-        }
-
-        const result = await response.json();
-
-        setChallengeId(result.challengeId);
-        setStage("otp");
-
-        window.alert(
-          `Your HIREUO registration code is: ${result.browserOtpCode}\n\n` +
-          "This code was displayed by your browser. It does not independently verify ownership of the phone number.",
-        );
-
-        setMessage("Your registration code has been displayed. Enter it below.");
-        return;
-      }
-
       const response = await fetch("/api/v1/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
         body: JSON.stringify({
-          challengeId,
           phoneNumber,
           countryCode,
-          otp,
           password,
           displayName: name,
           email: email || undefined,
@@ -134,11 +100,7 @@ export default function AccountForm({
     setMode((current) =>
       current === "sign-in" ? "sign-up" : "sign-in",
     );
-    setStage("details");
     setError("");
-    setMessage("");
-    setOtp("");
-    setChallengeId("");
   }
 
   return (
@@ -155,9 +117,7 @@ export default function AccountForm({
           {isAdminLogin
             ? "Staff sign in"
             : mode === "sign-up"
-              ? stage === "otp"
-                ? "Verify your registration"
-                : "Create your HIREUO account"
+              ? "Create your HIREUO account"
               : "Sign in to HIREUO"}
         </h1>
 
@@ -170,12 +130,6 @@ export default function AccountForm({
         {(error || displayAuthError()) && (
           <p role="alert" className="mt-4 text-sm text-red-700">
             {error || displayAuthError()}
-          </p>
-        )}
-
-        {message && (
-          <p role="status" className="mt-4 text-sm text-emerald-700">
-            {message}
           </p>
         )}
 
@@ -196,7 +150,7 @@ export default function AccountForm({
             </>
           )}
 
-          {mode === "sign-up" && stage === "details" && (
+          {mode === "sign-up" && (
             <>
               <label className="block text-sm font-medium">
                 Full name
@@ -248,43 +202,8 @@ export default function AccountForm({
             </>
           )}
 
-          {mode === "sign-up" && stage === "otp" && (
-            <>
-              <p className="text-sm leading-6 text-slate-600">
-                Enter the registration code displayed in your browser popup.
-              </p>
-
-              <label className="block text-sm font-medium">
-                Verification code
-                <input
-                  required
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  value={otp}
-                  onChange={(event) => setOtp(event.target.value)}
-                  placeholder="Enter your code"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
-                />
-              </label>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setStage("details");
-                  setOtp("");
-                  setChallengeId("");
-                  setError("");
-                  setMessage("");
-                }}
-                className="text-sm font-medium text-amber-600"
-              >
-                Change registration details
-              </button>
-            </>
-          )}
-
           {(mode === "sign-in" ||
-            (mode === "sign-up" && stage === "details")) && (
+            mode === "sign-up") && (
             <div>
               <label
                 htmlFor="account-password"
@@ -331,9 +250,7 @@ export default function AccountForm({
               ? "Please wait..."
               : mode === "sign-in"
                 ? "Sign in"
-                : stage === "details"
-                  ? "Request registration code"
-                  : "Verify and create account"}
+                : "Create account"}
           </button>
         </form>
 
