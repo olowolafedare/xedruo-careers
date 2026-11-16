@@ -6,6 +6,7 @@ export class CentralAuthError extends Error {
   constructor(
     message: string,
     public readonly status: number,
+    public readonly retryAfter: string | null = null,
   ) {
     super(message);
     this.name = "CentralAuthError";
@@ -17,7 +18,13 @@ function getAuthUrl() {
     throw new Error("XEDRUO_CENTRAL_AUTH_URL is not configured.");
   }
 
-  return AUTH_BASE_URL.replace(/\/+$/, "");
+  const url = new URL(AUTH_BASE_URL);
+
+  if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
+    throw new Error("Central Auth must use HTTPS in production.");
+  }
+
+  return url.toString().replace(/\/+$/, "");
 }
 
 async function authRequest<T>(
@@ -37,6 +44,7 @@ async function authRequest<T>(
       ...options,
       headers,
       cache: "no-store",
+      redirect: "error",
     });
   } catch {
     throw new CentralAuthError("Central Auth service is unavailable.", 502);
@@ -48,6 +56,7 @@ async function authRequest<T>(
     throw new CentralAuthError(
       body?.message || body?.error || "Central Auth request failed.",
       response.status,
+      response.headers.get("Retry-After"),
     );
   }
 
