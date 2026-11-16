@@ -58,6 +58,8 @@ export async function POST(request: NextRequest) {
           error:
             status === 429
               ? "Too many OTP requests. Please try again later."
+              : status === 400
+                ? "The registration service rejected the phone number or country code. Check both values and try again."
               : "Unable to request a registration code.",
         },
         { status },
