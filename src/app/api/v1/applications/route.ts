@@ -3,8 +3,9 @@ import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/src/lib/db";
 import { applications, jobs } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
+import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
-export async function GET() {
+export const GET = withCentralAuthErrors(async function GET() {
   const current = await requireApiUser();
 
   if (!current) {
@@ -56,9 +57,9 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   const current = await requireApiUser();
 
   if (!current) {
@@ -167,4 +168,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});
