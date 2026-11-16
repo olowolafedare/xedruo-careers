@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { centralAuthLogout } from "../../../../../lib/auth/central-auth";
+import {
+  centralAuthLogout,
+  CentralAuthError,
+} from "../../../../../lib/auth/central-auth";
+import { centralAuthErrorResponse } from "../../../../../lib/auth/central-auth-response";
 import {
   getCurrentSession,
   revokeCurrentSession,
@@ -20,6 +24,12 @@ export async function POST() {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof CentralAuthError) {
+      return centralAuthErrorResponse(error, {
+        429: "Too many sign-out requests. Please wait before trying again.",
+      });
+    }
+
     console.error("HIREUO logout failed:", error);
 
     return NextResponse.json(
