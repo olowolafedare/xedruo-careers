@@ -22,7 +22,6 @@ type AccountPageProps = {
   }>;
 };
 
-export const instant = false;
 const HIREUO_APP_ORIGIN =
   process.env.HIREUO_APP_ORIGIN ?? "https://hireuo.xedruo.com";
 
