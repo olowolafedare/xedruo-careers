@@ -9,6 +9,7 @@ import {
 import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
 import { createSession } from "../../../../../lib/auth/session-store";
 import { normalizeRegistrationPhone } from "../../../../../lib/auth/registration-phone";
+import { centralAuthErrorResponse } from "../../../../../lib/auth/central-auth-response";
 
 export async function POST(request: NextRequest) {
   try {
@@ -106,27 +107,12 @@ export async function POST(request: NextRequest) {
       console.warn("HIREUO registration rejected by Central Auth:", {
         status: error.status,
       });
-
-      const status =
-        error.status === 429
-          ? 429
-          : error.status >= 400 && error.status < 500
-            ? error.status
-            : 502;
-
-      return NextResponse.json(
-        {
-          error:
-            status === 429
-              ? "Too many registration attempts. Please try again later."
-              : status === 409
-                ? "These details are already linked to a Xedruo identity"
-                : status === 400 || status === 422
-                  ? "Check your phone number, country, and password, then try again."
-                  : "The registration service is temporarily unavailable. Please try again later.",
-        },
-        { status },
-      );
+      return centralAuthErrorResponse(error, {
+        400: "Check your phone number, country, display name, and password, then try again.",
+        409: "These details are already linked to a Xedruo identity.",
+        422: "Check your phone number, country, display name, and password, then try again.",
+        429: "Too many registration attempts. Please wait before trying again.",
+      });
     }
 
     console.error("HIREUO registration failed:", error instanceof Error ? error.name : "Unknown error");
