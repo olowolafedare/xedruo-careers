@@ -23,6 +23,9 @@ export function centralAuthErrorResponse(
   if (error.retryAfter) {
     headers.set("Retry-After", error.retryAfter);
   }
+  for (const [name, value] of Object.entries(error.rateLimitHeaders)) {
+    headers.set(name, value);
+  }
 
   headers.set("Cache-Control", "no-store");
 

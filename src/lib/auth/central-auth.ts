@@ -7,6 +7,7 @@ export class CentralAuthError extends Error {
     message: string,
     public readonly status: number,
     public readonly retryAfter: string | null = null,
+    public readonly rateLimitHeaders: Readonly<Record<string, string>> = {},
   ) {
     super(message);
     this.name = "CentralAuthError";
@@ -53,10 +54,26 @@ async function authRequest<T>(
   const body = await response.json().catch(() => null);
 
   if (!response.ok) {
+    const rateLimitHeaders: Record<string, string> = {};
+    for (const name of [
+      "RateLimit",
+      "RateLimit-Policy",
+      "RateLimit-Limit",
+      "RateLimit-Remaining",
+      "RateLimit-Reset",
+      "X-RateLimit-Limit",
+      "X-RateLimit-Remaining",
+      "X-RateLimit-Reset",
+    ]) {
+      const value = response.headers.get(name);
+      if (value) rateLimitHeaders[name] = value;
+    }
+
     throw new CentralAuthError(
       body?.message || body?.error || "Central Auth request failed.",
       response.status,
       response.headers.get("Retry-After"),
+      rateLimitHeaders,
     );
   }
 
