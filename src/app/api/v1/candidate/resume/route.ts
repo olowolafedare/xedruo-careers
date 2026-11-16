@@ -8,6 +8,8 @@ import {
   candidateDocuments,
 } from "../../../../../lib/db/schema";
 import { requireApiUser } from "../../../../../lib/auth/require-api-user";
+import { CentralAuthError } from "../../../../../lib/auth/central-auth";
+import { withCentralAuthErrors } from "../../../../../lib/auth/central-auth-response";
 import {
   uploadPrivateFile,
   createPrivateFileUrl,
@@ -81,7 +83,7 @@ function detectResumeType(
   return isZip ? type : null;
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   let uploadedKey: string | null = null;
 
   try {
@@ -186,6 +188,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (error instanceof CentralAuthError) throw error;
+
     console.error("Candidate resume upload failed:", error);
 
     return NextResponse.json(
@@ -193,9 +197,9 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});
 
-export async function GET() {
+export const GET = withCentralAuthErrors(async function GET() {
   try {
     const auth = await requireApiUser();
 
@@ -240,6 +244,7 @@ export async function GET() {
       },
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Candidate resume retrieval failed:", error);
 
     return NextResponse.json(
@@ -247,4 +252,4 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+});

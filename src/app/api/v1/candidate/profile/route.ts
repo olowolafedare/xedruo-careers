@@ -5,8 +5,10 @@ import { eq } from "drizzle-orm";
 import { getDb } from "../../../../../lib/db";
 import { candidateProfiles } from "../../../../../lib/db/schema";
 import { requireApiUser } from "../../../../../lib/auth/require-api-user";
+import { CentralAuthError } from "../../../../../lib/auth/central-auth";
+import { withCentralAuthErrors } from "../../../../../lib/auth/central-auth-response";
 
-export async function GET() {
+export const GET = withCentralAuthErrors(async function GET() {
   try {
     const auth = await requireApiUser();
 
@@ -31,6 +33,7 @@ export async function GET() {
       email: auth.user.email ?? auth.account.email ?? null,
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Candidate profile retrieval failed:", error);
 
     return NextResponse.json(
@@ -38,9 +41,9 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+});
 
-export async function PUT(request: NextRequest) {
+export const PUT = withCentralAuthErrors(async function PUT(request: NextRequest) {
   try {
     const auth = await requireApiUser();
 
@@ -174,6 +177,7 @@ export async function PUT(request: NextRequest) {
       profile,
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Candidate profile update failed:", error);
 
     return NextResponse.json(
@@ -181,4 +185,4 @@ export async function PUT(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});
