@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof CentralAuthError) {
       console.warn("HIREUO registration OTP upstream request failed:", {
         status: error.status,
+        message: error.message,
       });
 
       const status =
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
               : status === 400
                 ? "The registration service rejected the phone number or country code. Check both values and try again."
               : "Unable to request a registration code.",
-        },
+        }, 
         { status },
       );
     }
