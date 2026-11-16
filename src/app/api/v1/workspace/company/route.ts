@@ -7,8 +7,10 @@ import {
   companyMemberships,
 } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
+import { CentralAuthError } from "@/src/lib/auth/central-auth";
+import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = withCentralAuthErrors(async function PATCH(request: NextRequest) {
   try {
     const auth = await requireApiUser();
 
@@ -127,6 +129,7 @@ export async function PATCH(request: NextRequest) {
       message: "Company profile saved",
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Company profile update failed:", error);
 
     return NextResponse.json(
@@ -134,4 +137,4 @@ export async function PATCH(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});

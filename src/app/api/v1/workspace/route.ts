@@ -9,8 +9,10 @@ import {
   recruiterProfiles,
 } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
+import { CentralAuthError } from "@/src/lib/auth/central-auth";
+import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
-export async function GET() {
+export const GET = withCentralAuthErrors(async function GET() {
   try {
     const auth = await requireApiUser();
 
@@ -41,6 +43,7 @@ export async function GET() {
       hasWorkspace: Boolean(membership),
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Recruiter workspace lookup failed:", error);
 
     return NextResponse.json(
@@ -48,9 +51,9 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   let createdCompanyId: string | undefined;
 
   try {
@@ -228,6 +231,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (error instanceof CentralAuthError) throw error;
+
     console.error("Recruiter workspace creation failed:", error);
 
     return NextResponse.json(
@@ -235,4 +240,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});
