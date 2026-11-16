@@ -7,6 +7,7 @@ import {
   jobs,
 } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
+import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 import {
   getPageRange,
   getTotalPages,
@@ -139,7 +140,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   const current = await requireApiUser();
 
   if (!current) {
@@ -272,4 +273,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});
