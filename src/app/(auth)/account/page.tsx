@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
@@ -31,17 +32,17 @@ function firstValue(value: string | string[] | undefined) {
 
 function safeDestination(value: string | string[] | undefined) {
   const destination = firstValue(value);
-
   return destination && ALLOWED_DESTINATIONS.has(destination)
     ? destination
     : "/start";
 }
 
-export default async function AccountPage({ searchParams }: AccountPageProps) {
+async function AccountContent({ searchParams }: AccountPageProps) {
   await connection();
 
   const params = await searchParams;
   const destination = safeDestination(params.next);
+
   const requestHeaders = await headers();
   const requestHost = requestHeaders.get("host")?.toLowerCase();
   const canonicalHost = new URL(HIREUO_APP_ORIGIN).host;
@@ -55,13 +56,26 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     accountUrl.searchParams.set("next", destination);
 
     const authError = firstValue(params.auth_error);
-    if (authError === "oauth_failed" || authError === "confirmation_failed") {
+
+    if (
+      authError === "oauth_failed" ||
+      authError === "confirmation_failed"
+    ) {
       accountUrl.searchParams.set("auth_error", authError);
     }
 
     redirect(accountUrl.toString());
   }
 
+  return (
+    <AccountForm
+      destination={destination}
+      authError={firstValue(params.auth_error) ?? ""}
+    />
+  );
+}
+
+export default function AccountPage({ searchParams }: AccountPageProps) {
   return (
     <Suspense
       fallback={
@@ -70,10 +84,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         </main>
       }
     >
-      <AccountForm
-        destination={destination}
-        authError={firstValue(params.auth_error) ?? ""}
-      />
+      <AccountContent searchParams={searchParams} />
     </Suspense>
   );
 }
