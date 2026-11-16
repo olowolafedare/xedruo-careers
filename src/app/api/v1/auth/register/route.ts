@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
             status === 429
               ? "Too many registration attempts. Please try again later."
               : status === 409
-                ? "An account with these details may already exist."
+                ? "These details are already linked to a Xedruo identity"
                 : "Registration could not be completed. Check your details and try again.",
         },
         { status },
