@@ -7,6 +7,8 @@ import {
   jobs,
 } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
+import { CentralAuthError } from "@/src/lib/auth/central-auth";
+import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
 const allowedStatuses = [
   "draft",
@@ -19,7 +21,7 @@ const allowedStatuses = [
 
 type JobStatus = (typeof allowedStatuses)[number];
 
-export async function PATCH(
+export const PATCH = withCentralAuthErrors(async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ jobId: string }> },
 ) {
@@ -104,6 +106,7 @@ export async function PATCH(
       message: "Job status updated",
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Job status update failed:", error);
 
     return NextResponse.json(
@@ -111,4 +114,4 @@ export async function PATCH(
       { status: 500 },
     );
   }
-}
+});
