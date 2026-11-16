@@ -8,6 +8,8 @@ import {
   jobs,
 } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
+import { CentralAuthError } from "@/src/lib/auth/central-auth";
+import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
 const allowedStatuses = [
   "submitted",
@@ -23,7 +25,7 @@ const allowedStatuses = [
 
 type ApplicationStatus = (typeof allowedStatuses)[number];
 
-export async function PATCH(
+export const PATCH = withCentralAuthErrors(async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ applicationId: string }> },
 ) {
@@ -105,6 +107,7 @@ export async function PATCH(
       message: "Application status updated",
     });
   } catch (error) {
+    if (error instanceof CentralAuthError) throw error;
     console.error("Application status update failed:", error);
 
     return NextResponse.json(
@@ -112,4 +115,4 @@ export async function PATCH(
       { status: 500 },
     );
   }
-}
+});
