@@ -1,4 +1,3 @@
-
 import "server-only";
 
 const AUTH_BASE_URL = process.env.XEDRUO_CENTRAL_AUTH_URL;

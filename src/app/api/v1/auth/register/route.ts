@@ -80,6 +80,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     if (error instanceof CentralAuthError) {
+      console.warn("HIREUO registration rejected by Central Auth:", {
+        status: error.status,
+        message: error.message.slice(0, 300),
+      });
+
       const status =
         error.status === 429
           ? 429

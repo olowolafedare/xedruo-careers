@@ -23,7 +23,7 @@ export default function AccountForm({
 
   const [xedruoId, setXedruoId] = useState("");
   const [name, setName] = useState("");
-  const [countryCode, setCountryCode] = useState("+234");
+  const [countryCode, setCountryCode] = useState("NG");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -170,20 +170,20 @@ export default function AccountForm({
                     required
                     value={countryCode}
                     onChange={(event) => setCountryCode(event.target.value)}
-                    placeholder="+234"
+                    placeholder="NG"
                     className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3"
                   />
                 </label>
 
                 <label className="block text-sm font-medium">
-                  Phone number
+                  Phone number (international)
                   <input
                     required
                     type="tel"
-                    autoComplete="tel-national"
+                    autoComplete="tel"
                     value={phoneNumber}
                     onChange={(event) => setPhoneNumber(event.target.value)}
-                    placeholder="8012345678"
+                    placeholder="+2349151045789"
                     className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
                   />
                 </label>
