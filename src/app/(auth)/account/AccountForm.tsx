@@ -22,6 +22,7 @@ export default function AccountForm({
   const [mode, setMode] = useState<AuthMode>("sign-in");
 
   const [xedruoId, setXedruoId] = useState("");
+  const [name, setName] = useState("");
   const [countryCode, setCountryCode] = useState("NG");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -73,6 +74,7 @@ export default function AccountForm({
           phoneNumber,
           countryCode,
           password,
+          displayName: name,
           email: email || undefined,
         }),
       });
@@ -150,22 +152,31 @@ export default function AccountForm({
 
           {mode === "sign-up" && (
             <>
+              <label className="block text-sm font-medium">
+                Full name
+                <input
+                  required
+                  autoComplete="name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
+                />
+              </label>
+
               <div className="grid grid-cols-[110px_1fr] gap-3">
                 <label className="block text-sm font-medium">
-                  Country code (ISO)
+                  Country code
                   <input
                     required
                     value={countryCode}
-                    onChange={(event) => setCountryCode(event.target.value.toUpperCase())}
+                    onChange={(event) => setCountryCode(event.target.value)}
                     placeholder="NG"
-                    pattern="[A-Z]{2}"
-                    maxLength={2}
                     className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3"
                   />
                 </label>
 
                 <label className="block text-sm font-medium">
-                  Phone number (international)
+                  Phone number
                   <input
                     required
                     type="tel"
@@ -173,7 +184,6 @@ export default function AccountForm({
                     value={phoneNumber}
                     onChange={(event) => setPhoneNumber(event.target.value)}
                     placeholder="+2349151045789"
-                    pattern="\+[1-9][0-9]{7,14}"
                     className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
                   />
                 </label>
@@ -206,8 +216,6 @@ export default function AccountForm({
                 <input
                   id="account-password"
                   required
-                  minLength={mode === "sign-up" ? 8 : undefined}
-                  maxLength={1024}
                   type={showPassword ? "text" : "password"}
                   autoComplete={
                     mode === "sign-up" ? "new-password" : "current-password"

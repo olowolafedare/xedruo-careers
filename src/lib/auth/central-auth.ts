@@ -131,6 +131,7 @@ export async function centralAuthRegister(input: {
   phoneNumber: string;
   countryCode: string;
   password: string;
+  displayName?: string;
   email?: string;
 }) {
   return authRequest<CentralAuthRegistrationResult>(
