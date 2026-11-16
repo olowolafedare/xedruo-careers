@@ -21,11 +21,6 @@ export async function POST(request: NextRequest) {
 
     const password = typeof body?.password === "string" ? body.password : "";
 
-    const displayName =
-      typeof body?.displayName === "string"
-        ? body.displayName.trim()
-        : undefined;
-
     const email =
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : undefined;
 
@@ -33,10 +28,10 @@ export async function POST(request: NextRequest) {
       !phoneNumber ||
       !countryCode ||
       !password ||
-      phoneNumber.length > 30 ||
-      countryCode.length > 8 ||
+      !/^\+[1-9][0-9]{7,14}$/.test(phoneNumber) ||
+      !/^[A-Z]{2}$/.test(countryCode) ||
+      password.length < 8 ||
       password.length > 1024 ||
-      (displayName !== undefined && displayName.length > 120) ||
       (email !== undefined && email.length > 254)
     ) {
       return NextResponse.json(
@@ -49,7 +44,6 @@ export async function POST(request: NextRequest) {
       phoneNumber,
       countryCode,
       password,
-      ...(displayName ? { displayName } : {}),
       ...(email ? { email } : {}),
     });
 
