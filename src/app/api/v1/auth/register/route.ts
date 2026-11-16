@@ -6,10 +6,11 @@ import {
   CentralAuthError,
 } from "../../../../../lib/auth/central-auth";
 
-import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
-import { createSession } from "../../../../../lib/auth/session-store";
 import { normalizeRegistrationPhone } from "../../../../../lib/auth/registration-phone";
 import { centralAuthErrorResponse } from "../../../../../lib/auth/central-auth-response";
+import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
+import { createSession } from "../../../../../lib/auth/session-store";
+import { completeRegistration } from "../../../../../lib/auth/registration-flow";
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,37 +70,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await centralAuthRegister({
-      phoneNumber: normalizedPhoneNumber,
-      countryCode,
-      password,
-      displayName,
-      ...(email ? { email } : {}),
-    });
-
-    const identity = await centralAuthMe(result.tokens.accessToken);
-
-    const account = await ensureLocalAccount({
-      id: identity.user.id,
-      email: identity.user.email,
-    });
-
-    const expiresAt = new Date(result.session.expiresAt);
-
-    if (!Number.isFinite(expiresAt.getTime()) || expiresAt <= new Date()) {
-      throw new Error("Central Auth returned an invalid session expiry.");
-    }
-
-    await createSession({
-      accountId: account.id,
-      accessToken: result.tokens.accessToken,
-      refreshToken: result.tokens.refreshToken,
-      accessTokenExpiresAt: new Date(
-        Date.now() + result.tokens.expiresIn * 1000,
-      ),
-      expiresAt,
-      userAgent: request.headers.get("user-agent"),
-    });
+    await completeRegistration(
+      {
+        phoneNumber: normalizedPhoneNumber,
+        countryCode,
+        password,
+        displayName,
+        ...(email ? { email } : {}),
+      },
+      {
+        register: centralAuthRegister,
+        getIdentity: centralAuthMe,
+        ensureAccount: ensureLocalAccount,
+        createSession,
+      },
+      request.headers.get("user-agent"),
+    );
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
