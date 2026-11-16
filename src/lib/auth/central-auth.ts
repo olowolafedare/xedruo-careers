@@ -30,11 +30,17 @@ async function authRequest<T>(
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(`${getAuthUrl()}${path}`, {
-    ...options,
-    headers,
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${getAuthUrl()}${path}`, {
+      ...options,
+      headers,
+      cache: "no-store",
+    });
+  } catch {
+    throw new CentralAuthError("Central Auth service is unavailable.", 502);
+  }
 
   const body = await response.json().catch(() => null);
 
@@ -131,7 +137,7 @@ export async function centralAuthRegister(input: {
   phoneNumber: string;
   countryCode: string;
   password: string;
-  displayName?: string;
+  displayName: string;
   email?: string;
 }) {
   return authRequest<CentralAuthRegistrationResult>(
