@@ -5,6 +5,7 @@ import {
   centralAuthMe,
   CentralAuthError,
 } from "../../../../../lib/auth/central-auth";
+import { centralAuthErrorResponse } from "../../../../../lib/auth/central-auth-response";
 
 import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
 import { createSession } from "../../../../../lib/auth/session-store";
@@ -62,24 +63,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof CentralAuthError) {
-      if (error.status === 401 || error.status === 403) {
-        return NextResponse.json(
-          { error: "Invalid Xedruo ID or password." },
-          { status: 401 },
-        );
-      }
-
-      if (error.status === 429) {
-        return NextResponse.json(
-          { error: "Too many attempts. Please try again later." },
-          { status: 429 },
-        );
-      }
-
-      return NextResponse.json(
-        { error: "Authentication service is temporarily unavailable." },
-        { status: 502 },
-      );
+      return centralAuthErrorResponse(error, {
+        401: "Invalid Xedruo ID or password.",
+        403: "Invalid Xedruo ID or password.",
+        429: "Too many sign-in attempts. Please wait before trying again.",
+      });
     }
 
     console.error("HIREUO login failed:", error);
