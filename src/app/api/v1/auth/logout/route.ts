@@ -30,7 +30,10 @@ export async function POST() {
       });
     }
 
-    console.error("HIREUO logout failed:", error);
+    console.error(
+      "HIREUO logout failed:",
+      error instanceof Error ? error.name : "Unknown error",
+    );
 
     return NextResponse.json(
       { error: "Unable to complete logout" },

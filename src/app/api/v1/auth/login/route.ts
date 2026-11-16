@@ -70,7 +70,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    console.error("HIREUO login failed:", error);
+    console.error(
+      "HIREUO login failed:",
+      error instanceof Error ? error.name : "Unknown error",
+    );
 
     return NextResponse.json(
       { error: "Unable to complete sign-in." },
