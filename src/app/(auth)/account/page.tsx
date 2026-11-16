@@ -23,7 +23,8 @@ type AccountPageProps = {
 };
 
 export const instant = false;
-const HIREUO_APP_ORIGIN = "https://xedruo-careers.vercel.app";
+const HIREUO_APP_ORIGIN =
+  process.env.HIREUO_APP_ORIGIN ?? "https://hireuo.xedruo.com";
 
 function firstValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
