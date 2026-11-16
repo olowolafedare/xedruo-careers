@@ -8,6 +8,7 @@ import {
 
 import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
 import { createSession } from "../../../../../lib/auth/session-store";
+import { normalizeRegistrationPhone } from "../../../../../lib/auth/registration-phone";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,27 +30,49 @@ export async function POST(request: NextRequest) {
     const email =
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : undefined;
 
-    if (
-      !phoneNumber ||
-      !countryCode ||
-      !password ||
-      phoneNumber.length > 30 ||
-      countryCode.length > 8 ||
-      password.length > 1024 ||
-      (displayName !== undefined && displayName.length > 120) ||
-      (email !== undefined && email.length > 254)
-    ) {
+    if (!password || password.length < 8 || password.length > 1024) {
       return NextResponse.json(
-        { error: "Please provide all required registration details." },
+        { error: "Password must be between 8 and 1024 characters." },
+        { status: 400 },
+      );
+    }
+
+    if (!countryCode || !phoneNumber) {
+      return NextResponse.json(
+        { error: "Choose a country and enter a phone number." },
+        { status: 400 },
+      );
+    }
+
+    if ((displayName !== undefined && displayName.length > 120) || (email !== undefined && email.length > 254)) {
+      return NextResponse.json(
+        { error: "Please check your name and email address." },
+        { status: 400 },
+      );
+    }
+
+    if (!displayName) {
+      return NextResponse.json(
+        { error: "Enter your display name." },
+        { status: 400 },
+      );
+    }
+
+    let normalizedPhoneNumber: string;
+    try {
+      normalizedPhoneNumber = normalizeRegistrationPhone(countryCode, phoneNumber);
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "Enter a valid phone number." },
         { status: 400 },
       );
     }
 
     const result = await centralAuthRegister({
-      phoneNumber,
+      phoneNumber: normalizedPhoneNumber,
       countryCode,
       password,
-      ...(displayName ? { displayName } : {}),
+      displayName,
       ...(email ? { email } : {}),
     });
 
@@ -82,7 +105,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof CentralAuthError) {
       console.warn("HIREUO registration rejected by Central Auth:", {
         status: error.status,
-        message: error.message.slice(0, 300),
       });
 
       const status =
@@ -99,13 +121,15 @@ export async function POST(request: NextRequest) {
               ? "Too many registration attempts. Please try again later."
               : status === 409
                 ? "These details are already linked to a Xedruo identity"
-                : "Registration could not be completed. Check your details and try again.",
+                : status === 400 || status === 422
+                  ? "Check your phone number, country, and password, then try again."
+                  : "The registration service is temporarily unavailable. Please try again later.",
         },
         { status },
       );
     }
 
-    console.error("HIREUO registration failed:", error);
+    console.error("HIREUO registration failed:", error instanceof Error ? error.name : "Unknown error");
 
     return NextResponse.json(
       { error: "Unable to complete registration." },
