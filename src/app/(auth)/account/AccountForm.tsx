@@ -44,7 +44,16 @@ export default function AccountForm({
 
   async function getApiError(response: Response) {
     const result = await response.json().catch(() => null);
-    return result?.error || "We couldn't complete your request.";
+    const message = result?.error || "We couldn't complete your request.";
+
+    if (response.status === 429) {
+      const retryAfter = response.headers.get("Retry-After");
+      if (retryAfter && /^\d+$/.test(retryAfter)) {
+        return `${message} Try again in ${retryAfter} seconds.`;
+      }
+    }
+
+    return message;
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
