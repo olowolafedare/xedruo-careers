@@ -4,6 +4,10 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  normalizeRegistrationPhone,
+  REGISTRATION_COUNTRIES,
+} from "../../../lib/auth/registration-phone";
 
 type AccountFormProps = {
   authError: string;
@@ -66,12 +70,17 @@ export default function AccountForm({
         return;
       }
 
+      const normalizedPhoneNumber = normalizeRegistrationPhone(
+        countryCode,
+        phoneNumber,
+      );
+
       const response = await fetch("/api/v1/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
         body: JSON.stringify({
-          phoneNumber,
+          phoneNumber: normalizedPhoneNumber,
           countryCode,
           password,
           displayName: name,
@@ -163,16 +172,21 @@ export default function AccountForm({
                 />
               </label>
 
-              <div className="grid grid-cols-[110px_1fr] gap-3">
+              <div className="grid grid-cols-[1fr_1.4fr] gap-3">
                 <label className="block text-sm font-medium">
-                  Country code
-                  <input
+                  Country
+                  <select
                     required
                     value={countryCode}
                     onChange={(event) => setCountryCode(event.target.value)}
-                    placeholder="NG"
                     className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3"
-                  />
+                  >
+                    {REGISTRATION_COUNTRIES.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.name} (+{country.dialCode})
+                      </option>
+                    ))}
+                  </select>
                 </label>
 
                 <label className="block text-sm font-medium">
@@ -183,7 +197,7 @@ export default function AccountForm({
                     autoComplete="tel"
                     value={phoneNumber}
                     onChange={(event) => setPhoneNumber(event.target.value)}
-                    placeholder="+2349151045789"
+                    placeholder={countryCode === "NG" ? "9151045789" : "Phone number"}
                     className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
                   />
                 </label>
@@ -216,6 +230,8 @@ export default function AccountForm({
                 <input
                   id="account-password"
                   required
+                  minLength={mode === "sign-up" ? 8 : undefined}
+                  maxLength={1024}
                   type={showPassword ? "text" : "password"}
                   autoComplete={
                     mode === "sign-up" ? "new-password" : "current-password"
