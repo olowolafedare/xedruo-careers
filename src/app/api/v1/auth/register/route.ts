@@ -13,16 +13,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null);
 
-    const challengeId =
-      typeof body?.challengeId === "string" ? body.challengeId.trim() : "";
-
     const phoneNumber =
       typeof body?.phoneNumber === "string" ? body.phoneNumber.trim() : "";
 
     const countryCode =
       typeof body?.countryCode === "string" ? body.countryCode.trim() : "";
 
-    const otp = typeof body?.otp === "string" ? body.otp.trim() : "";
     const password = typeof body?.password === "string" ? body.password : "";
 
     const displayName =
@@ -34,15 +30,11 @@ export async function POST(request: NextRequest) {
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : undefined;
 
     if (
-      !challengeId ||
       !phoneNumber ||
       !countryCode ||
-      !otp ||
       !password ||
-      challengeId.length > 256 ||
       phoneNumber.length > 30 ||
       countryCode.length > 8 ||
-      otp.length > 20 ||
       password.length > 1024 ||
       (displayName !== undefined && displayName.length > 120) ||
       (email !== undefined && email.length > 254)
@@ -54,10 +46,8 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await centralAuthRegister({
-      challengeId,
       phoneNumber,
       countryCode,
-      otp,
       password,
       ...(displayName ? { displayName } : {}),
       ...(email ? { email } : {}),
@@ -104,7 +94,7 @@ export async function POST(request: NextRequest) {
               ? "Too many registration attempts. Please try again later."
               : status === 409
                 ? "An account with these details may already exist."
-                : "Registration could not be completed. Check your details and OTP.",
+                : "Registration could not be completed. Check your details and try again.",
         },
         { status },
       );
