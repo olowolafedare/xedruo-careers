@@ -1,5 +1,5 @@
 import "server-only";
-import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHmac, hkdfSync, randomBytes } from "node:crypto";
 
 const ALGORITHM = "aes-256-gcm";
 
@@ -56,4 +56,19 @@ export function decryptToken(payload: string): string {
     decipher.update(Buffer.from(encryptedEncoded, "base64")),
     decipher.final(),
   ]).toString("utf8");
+}
+
+export function deriveSessionCookieToken(idempotencyKey: string): string {
+  const key = Buffer.from(hkdfSync(
+    "sha256",
+    getEncryptionKey(),
+    Buffer.from("HIREUO session cookie derivation"),
+    Buffer.from("v1"),
+    32,
+  ));
+
+  return createHmac("sha256", key)
+    .update("hireuo-session-cookie:v1\0", "utf8")
+    .update(idempotencyKey, "utf8")
+    .digest("base64url");
 }

@@ -37,6 +37,7 @@ export async function completeGoogleLink(
   code: string,
   expectedIdentityId: string,
   expectedAccountId: string,
+  expectedRegistrationKey: string,
   dependencies: {
     exchange(code: string): Promise<{
       tokens: { accessToken: string; refreshToken: string; expiresIn: number };
@@ -51,6 +52,7 @@ export async function completeGoogleLink(
       accessTokenExpiresAt: Date;
       expiresAt: Date;
       userAgent?: string | null;
+      idempotencyKey: string;
     }): Promise<void>;
   },
   userAgent?: string | null,
@@ -81,5 +83,6 @@ export async function completeGoogleLink(
     accessTokenExpiresAt: new Date(Date.now() + result.tokens.expiresIn * 1000),
     expiresAt,
     userAgent,
+    idempotencyKey: expectedRegistrationKey,
   });
 }
