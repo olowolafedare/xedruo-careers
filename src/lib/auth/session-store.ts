@@ -2,11 +2,11 @@ import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
-import { and, eq, gt, isNull } from "drizzle-orm";
+import { and, eq, gt, isNotNull, isNull, lte, or } from "drizzle-orm";
 
 import { getDb } from "../db";
 import { accounts, sessions } from "../db/schema";
-import { encryptToken, decryptToken } from "./token-crypto";
+import { deriveSessionCookieToken, encryptToken, decryptToken } from "./token-crypto";
 
 const COOKIE_NAME = "hireuo_session";
 
@@ -32,32 +32,88 @@ export async function createSession(input: {
   expiresAt: Date;
   userAgent?: string | null;
   ipAddress?: string | null;
+  idempotencyKey?: string;
 }) {
   if (input.expiresAt <= new Date()) {
     throw new Error("Cannot create an already expired session");
   }
 
-  const rawToken = randomBytes(32).toString("base64url");
+  const rawToken = input.idempotencyKey
+    ? deriveSessionCookieToken(input.idempotencyKey)
+    : randomBytes(32).toString("base64url");
+  const tokenHash = hashSessionToken(rawToken);
   const db = getDb();
 
-  await db.insert(sessions).values({
-    accountId: input.accountId,
-    sessionTokenHash: hashSessionToken(rawToken),
-    accessTokenEncrypted: encryptToken(input.accessToken),
-    refreshTokenEncrypted: encryptToken(input.refreshToken),
-    accessTokenExpiresAt: input.accessTokenExpiresAt,
-    expiresAt: input.expiresAt,
-    userAgent: input.userAgent ?? null,
-    ipAddress: input.ipAddress ?? null,
-  });
+  const now = new Date();
+  const [inserted] = await db
+    .insert(sessions)
+    .values({
+      accountId: input.accountId,
+      sessionTokenHash: tokenHash,
+      accessTokenEncrypted: encryptToken(input.accessToken),
+      refreshTokenEncrypted: encryptToken(input.refreshToken),
+      accessTokenExpiresAt: input.accessTokenExpiresAt,
+      expiresAt: input.expiresAt,
+      userAgent: input.userAgent ?? null,
+      ipAddress: input.ipAddress ?? null,
+    })
+    .onConflictDoUpdate({
+      target: sessions.sessionTokenHash,
+      set: {
+        accessTokenEncrypted: encryptToken(input.accessToken),
+        refreshTokenEncrypted: encryptToken(input.refreshToken),
+        accessTokenExpiresAt: input.accessTokenExpiresAt,
+        expiresAt: input.expiresAt,
+        revokedAt: null,
+        updatedAt: now,
+      },
+      where: or(isNotNull(sessions.revokedAt), lte(sessions.expiresAt, now)),
+    })
+    .returning({ id: sessions.id });
 
-  const cookieStore = await cookies();
+  let sessionExpiresAt = input.expiresAt;
+  if (!inserted) {
+    const [existing] = input.idempotencyKey
+      ? await db
+          .select({
+            id: sessions.id,
+            accountId: sessions.accountId,
+            revokedAt: sessions.revokedAt,
+            expiresAt: sessions.expiresAt,
+          })
+          .from(sessions)
+          .where(eq(sessions.sessionTokenHash, tokenHash))
+          .limit(1)
+      : [];
 
-  cookieStore.set(
-    COOKIE_NAME,
-    rawToken,
-    cookieOptions(input.expiresAt),
-  );
+    if (
+      !existing ||
+      existing.accountId !== input.accountId ||
+      existing.revokedAt ||
+      existing.expiresAt <= new Date()
+    ) {
+      throw new Error("Unable to create an idempotent HIREUO session.");
+    }
+    sessionExpiresAt = existing.expiresAt;
+  }
+
+  try {
+    const cookieStore = await cookies();
+
+    cookieStore.set(
+      COOKIE_NAME,
+      rawToken,
+      cookieOptions(sessionExpiresAt),
+    );
+  } catch (error) {
+    if (inserted) {
+      await db
+        .update(sessions)
+        .set({ revokedAt: new Date(), updatedAt: new Date() })
+        .where(eq(sessions.id, inserted.id));
+    }
+    throw error;
+  }
 }
 
 export async function getCurrentSession() {
