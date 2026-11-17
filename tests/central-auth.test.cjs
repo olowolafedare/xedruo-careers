@@ -35,9 +35,10 @@ const { completeRegistration, completeGoogleLink } = require(
 const { centralAuthErrorResponse } = require(
   "../src/lib/auth/central-auth-response.ts",
 );
-const { sealRegistration, openRegistration } = require(
+const { sealRegistration, openRegistration, registrationCookieOptions, REGISTRATION_COOKIE_PATH } = require(
   "../src/lib/auth/registration-cookie.ts",
 );
+const { encryptToken } = require("../src/lib/auth/token-crypto.ts");
 
 const originalFetch = globalThis.fetch;
 
@@ -129,6 +130,36 @@ test("registration continuation is encrypted and invalid or cleared state cannot
   assert.ok(opened.expiresAt > Date.now());
   assert.equal(openRegistration(undefined), null);
   assert.equal(openRegistration("tampered-or-cleared"), null);
+  const tampered = cookie.replace(/^[^.]/, cookie[0] === "A" ? "B" : "A");
+  assert.equal(openRegistration(tampered), null);
+  assert.equal(openRegistration(encryptToken(JSON.stringify({ ...state, expiresAt: Date.now() - 1 }))), null);
+});
+
+test("continuation cookie scope and security attributes cover only auth routes", () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = "production";
+  try {
+    const options = registrationCookieOptions();
+    assert.equal(options.path, "/api/v1/auth");
+    assert.equal("/api/v1/auth/google/start".startsWith(`${options.path}/`), true);
+    assert.equal("/api/v1/auth/google/callback".startsWith(`${options.path}/`), true);
+    assert.equal(options.httpOnly, true);
+    assert.equal(options.secure, true);
+    assert.equal(options.sameSite, "lax");
+    assert.equal("domain" in options, false);
+  } finally {
+    if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalNodeEnv;
+  }
+  assert.equal(REGISTRATION_COOKIE_PATH, "/api/v1/auth");
+});
+
+test("Wrangler redacts query strings and retains invocation logging", () => {
+  const config = JSON.parse(fs.readFileSync(path.join(__dirname, "../wrangler.jsonc"), "utf8"));
+  assert.equal(config.observability.enabled, true);
+  assert.equal(config.observability.redact_query_string, true);
+  assert.equal(config.observability.logs.enabled, true);
+  assert.equal(config.observability.logs.invocation_logs, true);
 });
 
 test("Google completion exchanges code server-side and binds session to the local account", async () => {
@@ -141,7 +172,7 @@ test("Google completion exchanges code server-side and binds session to the loca
     }
     return Response.json({ user: { id: "immutable-central-id", email: "ada@example.com" } });
   };
-  await completeGoogleLink("one-time-code", "immutable-central-id", "hireuo-account-id", {
+  await completeGoogleLink("one-time-code", "immutable-central-id", "hireuo-account-id", "registration-key", {
     exchange: centralAuthGoogleExchange,
     getIdentity: centralAuthMe,
     ensureAccount: async (identity) => { assert.equal(identity.id, "immutable-central-id"); return { id: "hireuo-account-id" }; },
@@ -153,13 +184,14 @@ test("Google completion exchanges code server-side and binds session to the loca
   assert.equal(sessions.length, 1);
   assert.equal(sessions[0].accountId, "hireuo-account-id");
   assert.equal(sessions[0].refreshToken, "refresh-secret");
+  assert.equal(sessions[0].idempotencyKey, "registration-key");
 });
 
 test("expired or consumed Google completion codes fail without creating a session", async () => {
   for (const status of [410, 409]) {
     let sessions = 0;
     globalThis.fetch = async () => Response.json({ error: "Code is no longer valid" }, { status });
-    await assert.rejects(completeGoogleLink("one-time-code", "central-id", "account-id", {
+    await assert.rejects(completeGoogleLink("one-time-code", "central-id", "account-id", "registration-key", {
       exchange: centralAuthGoogleExchange,
       getIdentity: centralAuthMe,
       ensureAccount: async () => ({ id: "account-id" }),
@@ -167,6 +199,81 @@ test("expired or consumed Google completion codes fail without creating a sessio
     }), (error) => error instanceof CentralAuthError && error.status === status);
     assert.equal(sessions, 0);
   }
+});
+
+test("identity mismatch and failed /me verification never create a session", async () => {
+  let sessions = 0;
+  let accountEnsures = 0;
+  const dependencies = {
+    exchange: async () => ({
+      tokens: { accessToken: "access-secret", refreshToken: "refresh-secret", expiresIn: 900 },
+      session: { expiresAt: "2030-01-01T00:00:00.000Z" },
+    }),
+    getIdentity: async () => ({ user: { id: "different-central-id", email: null } }),
+    ensureAccount: async () => { accountEnsures += 1; return { id: "hireuo-account-id" }; },
+    createSession: async () => { sessions += 1; },
+  };
+  await assert.rejects(
+    completeGoogleLink("one-time-code", "expected-central-id", "hireuo-account-id", "registration-key", dependencies),
+    /identity did not match/i,
+  );
+  assert.equal(sessions, 0);
+  assert.equal(accountEnsures, 0);
+
+  dependencies.getIdentity = async () => { throw new CentralAuthError("Unauthenticated", 401); };
+  await assert.rejects(
+    completeGoogleLink("one-time-code", "expected-central-id", "hireuo-account-id", "registration-key", dependencies),
+    (error) => error instanceof CentralAuthError && error.status === 401,
+  );
+  assert.equal(sessions, 0);
+  assert.equal(accountEnsures, 0);
+});
+
+test("session creation failure after exchange does not retry the consumed code", async () => {
+  let exchanges = 0;
+  let sessions = 0;
+  await assert.rejects(completeGoogleLink("one-time-code", "central-id", "account-id", "registration-key", {
+    exchange: async () => {
+      exchanges += 1;
+      return {
+        tokens: { accessToken: "access-secret", refreshToken: "refresh-secret", expiresIn: 900 },
+        session: { expiresAt: "2030-01-01T00:00:00.000Z" },
+      };
+    },
+    getIdentity: async () => ({ user: { id: "central-id", email: null } }),
+    ensureAccount: async () => ({ id: "account-id" }),
+    createSession: async () => { sessions += 1; throw new Error("cookie write failed"); },
+  }), /cookie write failed/);
+  assert.equal(exchanges, 1);
+  assert.equal(sessions, 1);
+});
+
+test("repeated and concurrent callbacks rely on one-time exchange and share one registration session key", async () => {
+  let exchangeConsumed = false;
+  let sessionCreates = 0;
+  const exchange = async () => {
+    if (exchangeConsumed) throw new CentralAuthError("Code already used", 409);
+    exchangeConsumed = true;
+    return {
+      tokens: { accessToken: "access-secret", refreshToken: "refresh-secret", expiresIn: 900 },
+      session: { expiresAt: "2030-01-01T00:00:00.000Z" },
+    };
+  };
+  const dependencies = {
+    exchange,
+    getIdentity: async () => ({ user: { id: "central-id", email: null } }),
+    ensureAccount: async () => ({ id: "account-id" }),
+    createSession: async ({ idempotencyKey }) => {
+      assert.equal(idempotencyKey, "registration-key");
+      sessionCreates += 1;
+    },
+  };
+  const outcomes = await Promise.allSettled([
+    completeGoogleLink("one-time-code", "central-id", "account-id", "registration-key", dependencies),
+    completeGoogleLink("one-time-code", "central-id", "account-id", "registration-key", dependencies),
+  ]);
+  assert.equal(outcomes.filter((result) => result.status === "fulfilled").length, 1);
+  assert.equal(sessionCreates, 1);
 });
 
 test("login retains Central Auth invalid-credential status", async () => {
