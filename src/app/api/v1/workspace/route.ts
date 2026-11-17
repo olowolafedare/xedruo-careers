@@ -55,6 +55,7 @@ export const GET = withCentralAuthErrors(async function GET() {
 
 export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   let createdCompanyId: string | undefined;
+  let authenticatedAccountId: string | undefined;
 
   try {
     const auth = await requireApiUser();
@@ -65,8 +66,16 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
         { status: 401 },
       );
     }
+    authenticatedAccountId = auth.account.id;
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json(
+        { error: "A valid JSON request body is required" },
+        { status: 400 },
+      );
+    }
 
     const name = typeof body.name === "string" ? body.name.trim() : "";
     const website =
@@ -81,6 +90,16 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       typeof body.contactPhone === "string"
         ? body.contactPhone.trim()
         : "";
+    const hasInvalidOptionalField =
+      (body.website !== undefined && typeof body.website !== "string") ||
+      (body.description !== undefined && typeof body.description !== "string");
+
+    if (hasInvalidOptionalField) {
+      return NextResponse.json(
+        { error: "Website and organization description must be text" },
+        { status: 400 },
+      );
+    }
 
     if (!name || name.length > 160) {
       return NextResponse.json(
@@ -100,7 +119,12 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       );
     }
 
-    if (!contactPhone || contactPhone.length > 30) {
+    if (
+      !contactPhone ||
+      contactPhone.length > 30 ||
+      !/^\+?[\d\s().-]+$/.test(contactPhone) ||
+      (contactPhone.match(/\d/g)?.length ?? 0) < 7
+    ) {
       return NextResponse.json(
         { error: "Enter a valid business contact phone number" },
         { status: 400 },
@@ -139,7 +163,10 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     const db = getDb();
 
     const [existingMembership] = await db
-      .select({ id: companyMemberships.id })
+      .select({
+        companyId: companyMemberships.companyId,
+        role: companyMemberships.role,
+      })
       .from(companyMemberships)
       .where(
         and(
@@ -150,6 +177,14 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       .limit(1);
 
     if (existingMembership) {
+      if (existingMembership.role === "owner") {
+        return NextResponse.json({
+          success: true,
+          companyId: existingMembership.companyId,
+          message: "Recruiter workspace already exists",
+        });
+      }
+
       return NextResponse.json(
         { error: "You already belong to an active recruiter workspace" },
         { status: 409 },
@@ -232,6 +267,48 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     }
 
     if (error instanceof CentralAuthError) throw error;
+
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "23505" &&
+      "constraint" in error &&
+      error.constraint ===
+        "hireuo_company_memberships_one_active_owner_per_account_uidx"
+    ) {
+      try {
+        if (authenticatedAccountId) {
+          const db = getDb();
+          const [membership] = await db
+            .select({ companyId: companyMemberships.companyId })
+            .from(companyMemberships)
+            .where(
+              and(
+                eq(companyMemberships.accountId, authenticatedAccountId),
+                eq(companyMemberships.status, "active"),
+                eq(companyMemberships.role, "owner"),
+              ),
+            )
+            .limit(1);
+
+          if (membership) {
+            return NextResponse.json({
+              success: true,
+              companyId: membership.companyId,
+              message: "Recruiter workspace already exists",
+            });
+          }
+        }
+      } catch (retryLookupError) {
+        console.error("Recruiter workspace retry lookup failed", {
+          errorName:
+            retryLookupError instanceof Error
+              ? retryLookupError.name
+              : "UnknownError",
+        });
+      }
+    }
 
     console.error("Recruiter workspace creation failed:", error);
 
