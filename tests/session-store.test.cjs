@@ -34,14 +34,9 @@ function makeHarness() {
   const db = {
     insert: () => ({
       values: (value) => ({
-        onConflictDoUpdate: ({ set }) => ({
+        onConflictDoNothing: () => ({
           returning: async () => {
-            const existing = rows.get(value.sessionTokenHash);
-            if (existing) {
-              if (!existing.revokedAt && existing.expiresAt > new Date()) return [];
-              Object.assign(existing, set);
-              return [{ id: existing.id }];
-            }
+            if (rows.has(value.sessionTokenHash)) return [];
             const row = { ...value, id: `session-${rows.size + 1}`, revokedAt: null };
             rows.set(value.sessionTokenHash, row);
             return [{ id: row.id }];
@@ -132,16 +127,16 @@ test("a failed cookie write revokes a newly inserted session", async () => {
   assert.ok([...harness.rows.values()][0].revokedAt instanceof Date);
 });
 
-test("a fresh session after a newly exchanged code can safely replace a revoked orphan", async () => {
+test("a revoked orphan is not resurrected by a later callback", async () => {
   const harness = makeHarness();
   harness.setCookieError(new Error("cookie write failed"));
   await assert.rejects(harness.sessionStore.createSession(sessionInput("registration-key")));
   harness.setCookieError(null);
-  const retry = sessionInput("registration-key");
-  retry.accessToken = "fresh-access-token";
-  retry.refreshToken = "fresh-refresh-token";
-  await harness.sessionStore.createSession(retry);
+  await assert.rejects(
+    harness.sessionStore.createSession(sessionInput("registration-key")),
+    /Unable to create an idempotent HIREUO session/,
+  );
   assert.equal(harness.rows.size, 1);
-  assert.equal([...harness.rows.values()][0].revokedAt, null);
-  assert.equal(harness.writes.length, 1);
+  assert.ok([...harness.rows.values()][0].revokedAt instanceof Date);
+  assert.equal(harness.writes.length, 0);
 });
