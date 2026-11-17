@@ -41,23 +41,64 @@ type SafeUploadError = {
   code?: string;
   statusCode?: number;
   requestId?: string;
+  cause?: {
+    name: string;
+    message: string;
+    code?: string;
+  };
 };
+
+function redactErrorMessage(message: string): string {
+  return message
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/\+?\d[\d\s().-]{7,}\d/g, "[redacted-phone]")
+    .replace(/candidate-resumes\/[^\s"']+/g, "candidate-resumes/[redacted]")
+    .replace(/\b(password|token|secret|authorization|access.?key)\b\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
+    .replace(/https?:\/\/[^\s"']+/gi, "[redacted-url]")
+    .slice(0, 300);
+}
 
 function getSafeUploadError(error: unknown): SafeUploadError {
   const value =
     error && typeof error === "object"
       ? (error as Record<string, unknown>)
       : {};
-  const rawMessage = error instanceof Error ? error.message : "Unknown error";
-  const message = rawMessage
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
-    .replace(/\+?\d[\d\s().-]{7,}\d/g, "[redacted-phone]")
-    .replace(/candidate-resumes\/[^\s"']+/g, "candidate-resumes/[redacted]")
-    .slice(0, 300);
+  const message = redactErrorMessage(
+    error instanceof Error ? error.message : "Unknown error",
+  );
+  const originalCause = value.cause;
+  const safeCause =
+    originalCause && typeof originalCause === "object"
+      ? (originalCause as Record<string, unknown>)
+      : null;
 
   return {
     name: error instanceof Error ? error.name : "UnknownError",
     message,
+    ...(originalCause !== undefined
+      ? {
+          cause: {
+            name:
+              safeCause && typeof safeCause.name === "string"
+                ? safeCause.name
+                : originalCause instanceof Error
+                  ? originalCause.name
+                  : "UnknownCause",
+            message: redactErrorMessage(
+              safeCause && typeof safeCause.message === "string"
+                ? safeCause.message
+                : originalCause instanceof Error
+                  ? originalCause.message
+                  : typeof originalCause === "string"
+                    ? originalCause
+                    : "Cause details unavailable",
+            ),
+            ...(safeCause && typeof safeCause.code === "string"
+              ? { code: safeCause.code }
+              : {}),
+          },
+        }
+      : {}),
     ...(typeof value.code === "string" ? { code: value.code } : {}),
     ...(typeof value.$metadata === "object" && value.$metadata !== null &&
     typeof (value.$metadata as Record<string, unknown>).httpStatusCode === "number"
