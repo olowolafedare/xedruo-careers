@@ -4,7 +4,7 @@ import { centralAuthGoogleExchange, centralAuthMe, CentralAuthError } from "../.
 import { ensureLocalAccount } from "../../../../../../lib/auth/account-store";
 import { createSession } from "../../../../../../lib/auth/session-store";
 import { completeGoogleLink } from "../../../../../../lib/auth/registration-flow";
-import { getHireuoOrigin, openRegistration, REGISTRATION_COOKIE } from "../../../../../../lib/auth/registration-cookie";
+import { getHireuoOrigin, openRegistration, REGISTRATION_COOKIE, REGISTRATION_COOKIE_PATH } from "../../../../../../lib/auth/registration-cookie";
 
 function redirectTo(path: string, clearRegistration = false) {
   const response = NextResponse.redirect(new URL(path, getHireuoOrigin()));
@@ -15,7 +15,7 @@ function redirectTo(path: string, clearRegistration = false) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      path: "/",
+      path: REGISTRATION_COOKIE_PATH,
       maxAge: 0,
     });
   }
@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       code,
       registration.centralIdentityId,
       registration.accountId,
+      registration.continuationToken,
       {
         exchange: centralAuthGoogleExchange,
         getIdentity: centralAuthMe,

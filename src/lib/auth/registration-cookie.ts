@@ -4,6 +4,7 @@ import { decryptToken, encryptToken } from "./token-crypto";
 
 export const REGISTRATION_COOKIE = "hireuo_registration_continuation";
 export const REGISTRATION_COOKIE_MAX_AGE = 10 * 60;
+export const REGISTRATION_COOKIE_PATH = "/api/v1/auth";
 
 type RegistrationCookie = {
   accountId: string;
@@ -41,7 +42,7 @@ export function registrationCookieOptions() {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
-    path: "/",
+    path: REGISTRATION_COOKIE_PATH,
     maxAge: REGISTRATION_COOKIE_MAX_AGE,
   };
 }
