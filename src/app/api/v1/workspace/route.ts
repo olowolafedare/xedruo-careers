@@ -12,6 +12,23 @@ import { requireApiUser } from "@/src/lib/auth/require-api-user";
 import { CentralAuthError } from "@/src/lib/auth/central-auth";
 import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
+function isUniqueConstraintError(error: unknown, constraint: string) {
+  let current = error;
+
+  for (let depth = 0; depth < 4 && current; depth += 1) {
+    if (typeof current !== "object") return false;
+
+    const value = current as Record<string, unknown>;
+    if (value.code === "23505" && value.constraint === constraint) {
+      return true;
+    }
+
+    current = value.cause;
+  }
+
+  return false;
+}
+
 export const GET = withCentralAuthErrors(async function GET() {
   try {
     const auth = await requireApiUser();
@@ -269,13 +286,10 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     if (error instanceof CentralAuthError) throw error;
 
     if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "23505" &&
-      "constraint" in error &&
-      error.constraint ===
-        "hireuo_company_memberships_one_active_owner_per_account_uidx"
+      isUniqueConstraintError(
+        error,
+        "hireuo_company_memberships_one_active_owner_per_account_uidx",
+      )
     ) {
       try {
         if (authenticatedAccountId) {

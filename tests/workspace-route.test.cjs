@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const Module = require("node:module");
@@ -188,7 +190,7 @@ test("retries return the existing owner workspace instead of creating a duplicat
   state.selectResults = [[], [{ companyId: "existing-company", role: "owner" }]];
 
   const firstResponse = await aliasRoute.POST(request(validInput));
-  const firstPayload = await firstResponse.json();
+  await firstResponse.json();
   const retryResponse = await aliasRoute.POST(request(validInput));
   const retryPayload = await retryResponse.json();
 
