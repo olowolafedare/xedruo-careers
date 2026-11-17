@@ -29,7 +29,6 @@ export default function AccountForm({
   const [name, setName] = useState("");
   const [countryCode, setCountryCode] = useState("NG");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -93,7 +92,6 @@ export default function AccountForm({
           countryCode,
           password,
           displayName: name,
-          email: email || undefined,
         }),
       });
 
@@ -101,8 +99,17 @@ export default function AccountForm({
         throw new Error(await getApiError(response));
       }
 
-      router.replace(destination);
-      router.refresh();
+      const startResponse = await fetch("/api/v1/auth/google/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+      });
+      if (!startResponse.ok) throw new Error(await getApiError(startResponse));
+      const { authorizationUrl } = await startResponse.json();
+      if (typeof authorizationUrl !== "string" || !authorizationUrl.startsWith("https://")) {
+        throw new Error("We couldn't start Google linking. Please try again.");
+      }
+      window.location.assign(authorizationUrl);
     } catch (cause) {
       setError(
         cause instanceof Error
@@ -212,16 +219,6 @@ export default function AccountForm({
                 </label>
               </div>
 
-              <label className="block text-sm font-medium">
-                Email address (optional)
-                <input
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
-                />
-              </label>
             </>
           )}
 
