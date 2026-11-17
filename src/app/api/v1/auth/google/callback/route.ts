@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { centralAuthGoogleExchange, centralAuthMe, CentralAuthError } from "../../../../../../lib/auth/central-auth";
+import { ensureLocalAccount } from "../../../../../../lib/auth/account-store";
+import { createSession } from "../../../../../../lib/auth/session-store";
+import { completeGoogleLink } from "../../../../../../lib/auth/registration-flow";
+import { getHireuoOrigin, openRegistration, REGISTRATION_COOKIE } from "../../../../../../lib/auth/registration-cookie";
+
+function redirectTo(path: string) {
+  const response = NextResponse.redirect(new URL(path, getHireuoOrigin()));
+  response.headers.set("Cache-Control", "no-store");
+  response.headers.set("Referrer-Policy", "no-referrer");
+  response.cookies.set(REGISTRATION_COOKIE, "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+  return response;
+}
+
+export async function GET(request: NextRequest) {
+  let stage = "callback_validation";
+  try {
+    const code = request.nextUrl.searchParams.get("code");
+    const registration = openRegistration(request.cookies.get(REGISTRATION_COOKIE)?.value);
+    if (!code || !registration) return redirectTo("/account?auth_error=oauth_failed");
+
+    stage = "code_exchange_and_session";
+    await completeGoogleLink(
+      code,
+      registration.centralIdentityId,
+      registration.accountId,
+      {
+        exchange: centralAuthGoogleExchange,
+        getIdentity: centralAuthMe,
+        ensureAccount: ensureLocalAccount,
+        createSession,
+      },
+      request.headers.get("user-agent"),
+    );
+
+    return redirectTo("/start");
+  } catch (error) {
+    if (error instanceof CentralAuthError) {
+      console.warn("HIREUO Google callback rejected by Central Auth:", { stage, status: error.status });
+    } else {
+      console.error("HIREUO Google callback failed:", { stage, errorName: error instanceof Error ? error.name : "UnknownError" });
+    }
+    return redirectTo("/account?auth_error=oauth_failed");
+  }
+}
