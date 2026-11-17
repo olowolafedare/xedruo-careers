@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
-import { and, eq, gt, isNotNull, isNull, lte, or } from "drizzle-orm";
+import { and, eq, gt, isNull } from "drizzle-orm";
 
 import { getDb } from "../db";
 import { accounts, sessions } from "../db/schema";
@@ -44,7 +44,6 @@ export async function createSession(input: {
   const tokenHash = hashSessionToken(rawToken);
   const db = getDb();
 
-  const now = new Date();
   const [inserted] = await db
     .insert(sessions)
     .values({
@@ -57,18 +56,7 @@ export async function createSession(input: {
       userAgent: input.userAgent ?? null,
       ipAddress: input.ipAddress ?? null,
     })
-    .onConflictDoUpdate({
-      target: sessions.sessionTokenHash,
-      set: {
-        accessTokenEncrypted: encryptToken(input.accessToken),
-        refreshTokenEncrypted: encryptToken(input.refreshToken),
-        accessTokenExpiresAt: input.accessTokenExpiresAt,
-        expiresAt: input.expiresAt,
-        revokedAt: null,
-        updatedAt: now,
-      },
-      where: or(isNotNull(sessions.revokedAt), lte(sessions.expiresAt, now)),
-    })
+    .onConflictDoNothing({ target: sessions.sessionTokenHash })
     .returning({ id: sessions.id });
 
   let sessionExpiresAt = input.expiresAt;
