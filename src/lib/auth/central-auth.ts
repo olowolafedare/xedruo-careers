@@ -37,7 +37,7 @@ function safeEndpoint(url: URL | null, fallbackPath: string) {
 function collectSensitiveRequestValues(options: RequestInit, headers: Headers) {
   const values = new Set<string>();
   const inspect = (value: unknown, key = "") => {
-    if (/phone|email|password|token|secret|authorization|credential|cookie|display.?name/i.test(key)) {
+    if (/phone|email|password|token|secret|authorization|credential|cookie|display.?name|(?:^|_)code$/i.test(key)) {
       if (typeof value === "string" && value.length >= 3) values.add(value);
       return;
     }
@@ -97,7 +97,7 @@ function redactBodyPreview(body: string, sensitiveValues: readonly string[]) {
   try {
     const parsed: unknown = JSON.parse(body);
     const redactValue = (value: unknown, key = ""): unknown => {
-      if (/phone|email|password|token|secret|authorization|credential|cookie|identity|display.?name/i.test(key)) {
+      if (/phone|email|password|token|secret|authorization|credential|cookie|identity|display.?name|(?:^|_)code$/i.test(key)) {
         return "[redacted]";
       }
       if (Array.isArray(value)) return value.map((item) => redactValue(item));
@@ -315,6 +315,22 @@ export async function centralAuthLogout(accessToken: string) {
 }
 
 export interface CentralAuthRegistrationResult {
+  user: {
+    id: string;
+    xedruoId: string;
+    status: "pending_google_link";
+  };
+  registration: {
+    status: "pending_google_link";
+    continuationToken: string;
+  };
+}
+
+export interface CentralAuthGoogleStartResult {
+  authorizationUrl: string;
+}
+
+export interface CentralAuthGoogleExchangeResult {
   tokens: CentralAuthTokens;
   session: {
     id: string;
@@ -327,13 +343,30 @@ export async function centralAuthRegister(input: {
   countryCode: string;
   password: string;
   displayName: string;
-  email?: string;
 }) {
+  const { phoneNumber, countryCode, password, displayName } = input;
   return authRequest<CentralAuthRegistrationResult>(
     "/v1/auth/registration",
     {
       method: "POST",
-      body: JSON.stringify(input),
+      body: JSON.stringify({ phoneNumber, countryCode, password, displayName }),
     },
   );
+}
+
+export async function centralAuthGoogleStart(input: {
+  continuationToken: string;
+  returnTo: string;
+}) {
+  return authRequest<CentralAuthGoogleStartResult>("/v1/oauth/google/start", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function centralAuthGoogleExchange(code: string) {
+  return authRequest<CentralAuthGoogleExchangeResult>("/v1/oauth/google/exchange", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
 }
