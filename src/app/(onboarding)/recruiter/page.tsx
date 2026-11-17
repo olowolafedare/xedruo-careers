@@ -4,6 +4,42 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+const WORKSPACE_API_PATH = "/api/v1/workspace";
+
+type WorkspaceApiResponse = {
+  hasWorkspace?: boolean;
+  error?: string;
+};
+
+async function readWorkspaceResponse(
+  response: Response,
+  stage: "workspace lookup" | "workspace creation",
+): Promise<WorkspaceApiResponse> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.toLowerCase().includes("json")) {
+    console.error("Recruiter onboarding received a non-JSON API response", {
+      stage,
+      path: WORKSPACE_API_PATH,
+      status: response.status,
+      contentType: contentType.slice(0, 100) || null,
+    });
+    throw new Error("The server returned an unexpected response. Please try again.");
+  }
+
+  try {
+    return (await response.json()) as WorkspaceApiResponse;
+  } catch {
+    console.error("Recruiter onboarding received invalid JSON from its API", {
+      stage,
+      path: WORKSPACE_API_PATH,
+      status: response.status,
+      contentType: contentType.slice(0, 100),
+    });
+    throw new Error("The server returned an invalid response. Please try again.");
+  }
+}
+
 export default function RecruiterOnboardingPage() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -22,7 +58,7 @@ export default function RecruiterOnboardingPage() {
 
     async function checkWorkspace() {
       try {
-        const response = await fetch("/api/v1/recruiter/workspace", {
+        const response = await fetch(WORKSPACE_API_PATH, {
           credentials: "same-origin",
           cache: "no-store",
         });
@@ -34,7 +70,7 @@ export default function RecruiterOnboardingPage() {
           return;
         }
 
-        const payload = await response.json();
+        const payload = await readWorkspaceResponse(response, "workspace lookup");
 
         if (!response.ok) {
           throw new Error(payload.error ?? "Could not check your recruiter workspace.");
@@ -75,7 +111,7 @@ export default function RecruiterOnboardingPage() {
     setSaving(true);
 
     try {
-      const response = await fetch("/api/v1/recruiter/workspace", {
+      const response = await fetch(WORKSPACE_API_PATH, {
         method: "POST",
         credentials: "same-origin",
         headers: {
@@ -95,7 +131,7 @@ export default function RecruiterOnboardingPage() {
         return;
       }
 
-      const payload = await response.json();
+      const payload = await readWorkspaceResponse(response, "workspace creation");
 
       if (!response.ok) {
         throw new Error(payload.error ?? "Could not create your recruiter workspace.");
