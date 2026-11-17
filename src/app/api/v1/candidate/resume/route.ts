@@ -35,6 +35,45 @@ const ALLOWED_TYPES = {
 
 type ResumeExtension = keyof typeof ALLOWED_TYPES;
 
+type SafeUploadError = {
+  name: string;
+  message: string;
+  code?: string;
+  statusCode?: number;
+  requestId?: string;
+};
+
+function getSafeUploadError(error: unknown): SafeUploadError {
+  const value =
+    error && typeof error === "object"
+      ? (error as Record<string, unknown>)
+      : {};
+  const rawMessage = error instanceof Error ? error.message : "Unknown error";
+  const message = rawMessage
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/\+?\d[\d\s().-]{7,}\d/g, "[redacted-phone]")
+    .replace(/candidate-resumes\/[^\s"']+/g, "candidate-resumes/[redacted]")
+    .slice(0, 300);
+
+  return {
+    name: error instanceof Error ? error.name : "UnknownError",
+    message,
+    ...(typeof value.code === "string" ? { code: value.code } : {}),
+    ...(typeof value.$metadata === "object" && value.$metadata !== null &&
+    typeof (value.$metadata as Record<string, unknown>).httpStatusCode === "number"
+      ? {
+          statusCode: (value.$metadata as Record<string, number>).httpStatusCode,
+        }
+      : {}),
+    ...(typeof value.$metadata === "object" && value.$metadata !== null &&
+    typeof (value.$metadata as Record<string, unknown>).requestId === "string"
+      ? {
+          requestId: (value.$metadata as Record<string, string>).requestId,
+        }
+      : {}),
+  };
+}
+
 function detectResumeType(
   filename: string,
   mimeType: string,
@@ -85,6 +124,7 @@ function detectResumeType(
 
 export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   let uploadedKey: string | null = null;
+  let stage = "authentication";
 
   try {
     const auth = await requireApiUser();
@@ -96,6 +136,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       );
     }
 
+    stage = "multipart parsing";
     const formData = await request.formData();
     const file = formData.get("resume");
 
@@ -113,6 +154,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       );
     }
 
+    stage = "file validation";
     const originalName = file.name.trim();
 
     if (
@@ -144,6 +186,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     const objectKey =
       `candidate-resumes/${auth.account.id}/${randomUUID()}.${type}`;
 
+    stage = "R2 upload";
     await uploadPrivateFile({
       key: objectKey,
       body: bytes,
@@ -152,6 +195,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
 
     uploadedKey = objectKey;
 
+    stage = "document database insert";
     const db = getDb();
 
     const [document] = await db
@@ -184,13 +228,19 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       try {
         await deletePrivateFile(uploadedKey);
       } catch (cleanupError) {
-        console.error("R2 orphan cleanup failed:", cleanupError);
+        console.error("Candidate resume upload diagnostic", {
+          stage: "R2 cleanup",
+          error: getSafeUploadError(cleanupError),
+        });
       }
     }
 
     if (error instanceof CentralAuthError) throw error;
 
-    console.error("Candidate resume upload failed:", error);
+    console.error("Candidate resume upload diagnostic", {
+      stage,
+      error: getSafeUploadError(error),
+    });
 
     return NextResponse.json(
       { error: "Unable to upload resume. Please try again." },
