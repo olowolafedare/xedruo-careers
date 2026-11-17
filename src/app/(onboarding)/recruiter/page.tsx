@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const WORKSPACE_API_PATH = "/api/v1/workspace";
+const WORKSPACE_API_PATH = "/api/v1/recruiter/workspace";
 
 type WorkspaceApiResponse = {
   hasWorkspace?: boolean;

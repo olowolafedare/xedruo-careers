@@ -163,6 +163,7 @@ export const companyMemberships = pgTable(
   (table) => [
     uniqueIndex("hireuo_company_memberships_company_account_uidx").on(table.companyId, table.accountId),
     uniqueIndex("hireuo_company_memberships_one_active_owner_uidx").on(table.companyId).where(sql`${table.role} = 'owner' AND ${table.status} = 'active'`),
+    uniqueIndex("hireuo_company_memberships_one_active_owner_per_account_uidx").on(table.accountId).where(sql`${table.role} = 'owner' AND ${table.status} = 'active'`),
     index("hireuo_company_memberships_account_status_idx").on(table.accountId, table.status),
     index("hireuo_company_memberships_company_status_idx").on(table.companyId, table.status),
   ],
