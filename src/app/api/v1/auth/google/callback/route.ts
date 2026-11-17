@@ -6,17 +6,19 @@ import { createSession } from "../../../../../../lib/auth/session-store";
 import { completeGoogleLink } from "../../../../../../lib/auth/registration-flow";
 import { getHireuoOrigin, openRegistration, REGISTRATION_COOKIE } from "../../../../../../lib/auth/registration-cookie";
 
-function redirectTo(path: string) {
+function redirectTo(path: string, clearRegistration = false) {
   const response = NextResponse.redirect(new URL(path, getHireuoOrigin()));
   response.headers.set("Cache-Control", "no-store");
   response.headers.set("Referrer-Policy", "no-referrer");
-  response.cookies.set(REGISTRATION_COOKIE, "", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  if (clearRegistration) {
+    response.cookies.set(REGISTRATION_COOKIE, "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
+  }
   return response;
 }
 
@@ -41,7 +43,7 @@ export async function GET(request: NextRequest) {
       request.headers.get("user-agent"),
     );
 
-    return redirectTo("/start");
+    return redirectTo("/start", true);
   } catch (error) {
     if (error instanceof CentralAuthError) {
       console.warn("HIREUO Google callback rejected by Central Auth:", { stage, status: error.status });
