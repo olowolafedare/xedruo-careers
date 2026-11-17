@@ -28,6 +28,124 @@ function getAuthUrl() {
   return url.toString().replace(/\/+$/, "");
 }
 
+function safeEndpoint(url: URL | null, fallbackPath: string) {
+  return url
+    ? { origin: url.origin, path: url.pathname }
+    : { origin: "unconfigured", path: fallbackPath.split("?", 1)[0] };
+}
+
+function collectSensitiveRequestValues(options: RequestInit, headers: Headers) {
+  const values = new Set<string>();
+  const inspect = (value: unknown, key = "") => {
+    if (/phone|email|password|token|secret|authorization|credential|cookie|display.?name/i.test(key)) {
+      if (typeof value === "string" && value.length >= 3) values.add(value);
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item) => inspect(item));
+    } else if (value && typeof value === "object") {
+      Object.entries(value).forEach(([childKey, childValue]) => inspect(childValue, childKey));
+    }
+  };
+
+  if (typeof options.body === "string") {
+    try {
+      inspect(JSON.parse(options.body));
+    } catch {
+      // Bodies from these callers are JSON; ignore anything else for diagnostics.
+    }
+  }
+
+  const authorization = headers.get("Authorization");
+  if (authorization) {
+    values.add(authorization);
+    const [, credential] = authorization.split(/\s+/, 2);
+    if (credential) values.add(credential);
+  }
+
+  return [...values].sort((left, right) => right.length - left.length);
+}
+
+function redactText(value: string, sensitiveValues: readonly string[] = []) {
+  let redacted = value;
+  for (const sensitiveValue of sensitiveValues) {
+    redacted = redacted.replace(
+      new RegExp(sensitiveValue.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"),
+      "[redacted]",
+    );
+  }
+
+  return redacted
+    .replace(/https?:\/\/[^\s"'<>]+/gi, (candidate) => {
+      try {
+        const url = new URL(candidate);
+        return `${url.origin}${url.pathname}`;
+      } catch {
+        return "[redacted-url]";
+      }
+    })
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[redacted-email]")
+    .replace(/\bBearer\s+[^\s,;]+/gi, "Bearer [redacted]")
+    .replace(/\b(password|access[_-]?token|refresh[_-]?token|token|secret|authorization)\b\s*[:=]\s*(?:"[^"]*"|'[^']*'|[^\s,;}]+)/gi, "$1=[redacted]")
+    .replace(/(?<!\w)\+?\d[\d\s().-]{5,}\d(?!\w)/g, "[redacted-number]")
+    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "[redacted-ip]");
+}
+
+function redactBodyPreview(body: string, sensitiveValues: readonly string[]) {
+  let preview = body;
+
+  try {
+    const parsed: unknown = JSON.parse(body);
+    const redactValue = (value: unknown, key = ""): unknown => {
+      if (/phone|email|password|token|secret|authorization|credential|cookie|identity|display.?name/i.test(key)) {
+        return "[redacted]";
+      }
+      if (Array.isArray(value)) return value.map((item) => redactValue(item));
+      if (value && typeof value === "object") {
+        return Object.fromEntries(
+          Object.entries(value).map(([childKey, childValue]) => [
+            childKey,
+            redactValue(childValue, childKey),
+          ]),
+        );
+      }
+      return typeof value === "string" ? redactText(value, sensitiveValues) : value;
+    };
+    preview = JSON.stringify(redactValue(parsed));
+  } catch {
+    preview = redactText(body, sensitiveValues);
+  }
+
+  return preview.slice(0, 400);
+}
+
+function describeFetchFailure(error: unknown, sensitiveValues: readonly string[]) {
+  const describe = (value: unknown) => {
+    if (value instanceof Error) {
+      return { name: value.name, message: redactText(value.message, sensitiveValues) };
+    }
+    if (typeof value === "string") return { message: redactText(value, sensitiveValues) };
+    if (value && typeof value === "object" && "message" in value) {
+      const name = "name" in value && typeof value.name === "string"
+        ? value.name
+        : undefined;
+      const message = typeof value.message === "string"
+        ? redactText(value.message, sensitiveValues)
+        : "[unavailable]";
+      return { ...(name ? { name } : {}), message };
+    }
+    return value === undefined ? undefined : { type: typeof value };
+  };
+
+  if (error instanceof Error) {
+    return {
+      error: describe(error),
+      ...(error.cause !== undefined ? { cause: describe(error.cause) } : {}),
+    };
+  }
+  return { error: describe(error) };
+}
+
 async function authRequest<T>(
   path: string,
   options: RequestInit = {},
@@ -38,20 +156,63 @@ async function authRequest<T>(
     headers.set("Content-Type", "application/json");
   }
 
+  const sensitiveValues = collectSensitiveRequestValues(options, headers);
+  const requestMetadata = {
+    method: (options.method ?? "GET").toUpperCase(),
+    contentType: headers.get("Content-Type"),
+    requestHeaderNames: [...headers.keys()].sort(),
+  };
+
   let response: Response;
+  let requestUrl: URL | null = null;
 
   try {
-    response = await fetch(`${getAuthUrl()}${path}`, {
+    const target = `${getAuthUrl()}${path}`;
+    requestUrl = new URL(target);
+    response = await fetch(target, {
       ...options,
       headers,
       cache: "no-store",
-      redirect: "error",
+      redirect: "manual",
     });
-  } catch {
+  } catch (error) {
+    console.error("HIREUO Central Auth fetch exception:", {
+      ...safeEndpoint(requestUrl, path),
+      ...requestMetadata,
+      ...describeFetchFailure(error, sensitiveValues),
+    });
     throw new CentralAuthError("Central Auth service is unavailable.", 502);
   }
 
-  const body = await response.json().catch(() => null);
+  const responseBody = await response.text().catch(() => "");
+  const contentType = response.headers.get("Content-Type");
+  const responseMetadata = {
+    ...safeEndpoint(requestUrl, path),
+    ...requestMetadata,
+    status: response.status,
+    contentType,
+    cfRay: response.headers.get("CF-Ray"),
+    server: response.headers.get("Server"),
+  };
+
+  if (!response.ok) {
+    console.warn("HIREUO Central Auth upstream error response:", {
+      ...responseMetadata,
+      bodyPreview: redactBodyPreview(responseBody, sensitiveValues),
+    });
+  } else {
+    console.info("HIREUO Central Auth upstream response:", responseMetadata);
+  }
+
+  let body: { message?: unknown; error?: unknown } | null = null;
+  try {
+    const parsed: unknown = responseBody ? JSON.parse(responseBody) : null;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      body = parsed as { message?: unknown; error?: unknown };
+    }
+  } catch {
+    body = null;
+  }
 
   if (!response.ok) {
     const rateLimitHeaders: Record<string, string> = {};
@@ -70,7 +231,9 @@ async function authRequest<T>(
     }
 
     throw new CentralAuthError(
-      body?.message || body?.error || "Central Auth request failed.",
+      (typeof body?.message === "string" && body.message) ||
+        (typeof body?.error === "string" && body.error) ||
+        "Central Auth request failed.",
       response.status,
       response.headers.get("Retry-After"),
       rateLimitHeaders,

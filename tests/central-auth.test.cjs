@@ -95,6 +95,7 @@ test("successful registration provisions the local account and session", async (
     email: "ada@example.com",
   });
   assert.equal(requests[0].init.headers.get("Authorization"), null);
+  assert.equal(requests[0].init.redirect, "manual");
   assert.equal(requests[0].init.headers.get("CF-Connecting-IP"), null);
   assert.equal(requests[0].init.headers.get("X-Forwarded-For"), null);
   assert.equal(JSON.stringify(requests[0].init.body).includes("challengeId"), false);
@@ -117,6 +118,23 @@ test("login retains Central Auth invalid-credential status", async () => {
     centralAuthLogin("XED-123", "wrong-password"),
     (error) => error instanceof CentralAuthError && error.status === 401,
   );
+});
+
+test("redirects are returned manually rather than rejected or followed", async () => {
+  let capturedInit;
+  globalThis.fetch = async (_url, init) => {
+    capturedInit = init;
+    return new Response(null, {
+      status: 302,
+      headers: { Location: "https://auth.example.test/canonical" },
+    });
+  };
+
+  await assert.rejects(
+    centralAuthLogin("XED-123", "safe-test-password"),
+    (error) => error instanceof CentralAuthError && error.status === 302,
+  );
+  assert.equal(capturedInit.redirect, "manual");
 });
 
 test("login, refresh, logout, and session validation use the Central Auth contracts", async () => {
@@ -200,9 +218,67 @@ test("upstream failures retain their status and return a safe message", async ()
   assert.match((await response.json()).error, /temporarily unavailable/i);
 });
 
+test("HTTP 502 diagnostics include safe response metadata and redact personal fields", async () => {
+  globalThis.fetch = async () =>
+    Response.json(
+      {
+        error: "Invalid registration request",
+        phoneNumber: "+2349151045789",
+        email: "ada@example.com",
+        accessToken: "secret-access-token",
+      },
+      {
+        status: 502,
+        headers: {
+          "Content-Type": "application/json",
+          "CF-Ray": "abc123-LHR",
+          Server: "cloudflare",
+        },
+      },
+    );
+
+  const originalWarn = console.warn;
+  let diagnostic;
+  console.warn = (_message, details) => {
+    diagnostic = details;
+  };
+
+  try {
+    await assert.rejects(
+      centralAuthRegister({
+        phoneNumber: "+2349151045789",
+        countryCode: "NG",
+        password: "never-log-this-password",
+        displayName: "Ada",
+        email: "ada@example.com",
+      }),
+      (error) => error instanceof CentralAuthError && error.status === 502,
+    );
+  } finally {
+    console.warn = originalWarn;
+  }
+
+  assert.equal(diagnostic.origin, "https://auth.example.test");
+  assert.equal(diagnostic.path, "/v1/auth/registration");
+  assert.equal(diagnostic.status, 502);
+  assert.equal(diagnostic.contentType, "application/json");
+  assert.equal(diagnostic.cfRay, "abc123-LHR");
+  assert.equal(diagnostic.server, "cloudflare");
+  assert.match(diagnostic.bodyPreview, /Invalid registration request/);
+  assert.doesNotMatch(diagnostic.bodyPreview, /\+2349151045789|ada@example\.com|secret-access-token/);
+});
+
 test("network failures are classified as Central Auth service unavailable", async () => {
-  globalThis.fetch = async () => {
-    throw new TypeError("socket details should not reach the response");
+  const originalError = new TypeError(
+    "fetch failed for https://auth.example.test/v1/auth/login?token=secret-token",
+    { cause: new Error("ECONNRESET user@private.example +2349151045789") },
+  );
+  globalThis.fetch = async () => { throw originalError; };
+
+  const originalErrorLog = console.error;
+  let diagnostic;
+  console.error = (_message, details) => {
+    diagnostic = details;
   };
 
   let upstreamError;
@@ -210,11 +286,18 @@ test("network failures are classified as Central Auth service unavailable", asyn
     await centralAuthLogin("XED-123", "some-password");
   } catch (error) {
     upstreamError = error;
+  } finally {
+    console.error = originalErrorLog;
   }
 
   assert.ok(upstreamError instanceof CentralAuthError);
   assert.equal(upstreamError.status, 502);
+  assert.equal(diagnostic.origin, "https://auth.example.test");
+  assert.equal(diagnostic.path, "/v1/auth/login");
+  assert.equal(diagnostic.error.name, "TypeError");
+  assert.equal(diagnostic.cause.name, "Error");
+  assert.doesNotMatch(JSON.stringify(diagnostic), /secret-token|user@private\.example|\+2349151045789/);
   const response = centralAuthErrorResponse(upstreamError);
   assert.equal(response.status, 502);
-  assert.doesNotMatch((await response.json()).error, /socket details/i);
+  assert.doesNotMatch((await response.json()).error, /ECONNRESET|secret-token/i);
 });
