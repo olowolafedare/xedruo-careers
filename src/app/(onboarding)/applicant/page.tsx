@@ -261,7 +261,7 @@ export default function ApplicantOnboardingPage() {
           )}
           <Link
             href="/"
-            className="mt-6 inline-flex rounded-xl bg-rosybrown px-5 py-3 text-sm font-medium text-white bg-rosybrown"
+            className="mt-6 inline-flex rounded-xl bg-rosybrown px-5 py-3 text-sm font-medium text-black bg-rosybrown"
           >
             Return to HIREUO
           </Link>
@@ -471,7 +471,7 @@ export default function ApplicantOnboardingPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center justify-center rounded-xl bg-rosybrown px-6 py-3 text-sm font-semibold text-white transition bg-rosybrown disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-xl bg-rosybrown px-6 py-3 text-sm font-semibold text-black transition bg-rosybrown disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving ? "Saving profile..." : "Save and continue"}
             </button>

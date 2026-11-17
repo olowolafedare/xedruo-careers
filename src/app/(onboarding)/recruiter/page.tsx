@@ -234,7 +234,7 @@ export default function RecruiterOnboardingPage() {
           )}
           <button
             disabled={saving}
-            className="rounded-xl bg-rosybrown px-6 py-3 font-semibold text-white disabled:opacity-60"
+            className="rounded-xl bg-rosybrown px-6 py-3 font-semibold text-black disabled:opacity-60"
           >
             {saving ? "Setting up…" : "Create workspace and continue"}
           </button>

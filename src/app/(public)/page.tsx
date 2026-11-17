@@ -185,7 +185,7 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-            <div className="mt-5 flex items-center justify-between rounded-2xl bg-rosybrown p-4 text-white">
+            <div className="mt-5 flex items-center justify-between rounded-2xl bg-rosybrown p-4 text-black">
               <p className="text-sm font-semibold">
                 Your next chapter starts with one step
               </p>
@@ -280,7 +280,7 @@ export default function HomePage() {
       </section>
 
       <section className="px-5 pb-20 sm:px-8 sm:pb-24">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 rounded-3xl bg-rosybrown px-7 py-12 text-white sm:px-12 sm:py-16 md:flex-row md:items-center">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 rounded-3xl bg-rosybrown px-7 py-12 text-black sm:px-12 sm:py-16 md:flex-row md:items-center">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold text-amber-300">
               YOUR NEXT CHAPTER STARTS HERE
@@ -292,13 +292,13 @@ export default function HomePage() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link
               href="/jobs"
-              className="rounded-xl bg-rosybrown px-5 py-3.5 text-center font-semibold text-blue-100 bg-amber-50"
+              className="rounded-xl bg-rosybrown px-5 py-3.5 text-center font-semibold text-blue-300 bg-amber-300"
             >
               Browse jobs
             </Link>
             <Link
               href="/recruiter"
-              className="rounded-xl /20 px-5 py-3.5 text-center font-semibold text-blue-100 bg-amber-50"
+              className="rounded-xl /20 px-5 py-3.5 text-center font-semibold text-blue-300 bg-amber-300"
             >
               Start hiring
             </Link>

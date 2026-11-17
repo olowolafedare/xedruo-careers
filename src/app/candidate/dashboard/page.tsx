@@ -103,7 +103,7 @@ export default async function CandidateDashboardPage() {
         </div>
         <Link
           href="/jobs"
-          className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white transition bg-rosybrown sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-black transition bg-rosybrown sm:self-auto"
         >
           Explore jobs <ArrowRight size={16} />
         </Link>
@@ -170,20 +170,20 @@ export default async function CandidateDashboardPage() {
             Review your profile <ArrowRight size={15} />
           </Link>
         </div>
-        <div className="rounded-2xl bg-rosybrown p-6 text-white sm:p-7">
+        <div className="rounded-2xl bg-rosybrown p-6 text-black sm:p-7">
           <span className="grid size-10 place-items-center rounded-xl bg-rosybrown">
             <Search size={19} />
           </span>
           <h2 className="mt-5 text-lg font-semibold">
             Ready for a new opportunity?
           </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-100">
+          <p className="mt-2 text-sm leading-6 text-amber-300">
             Explore current openings and find a role that matches where you want
             to go
           </p>
           <Link
             href="/jobs"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-white/80"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-black/80"
           >
             Browse opportunities <ArrowRight size={15} />
           </Link>
