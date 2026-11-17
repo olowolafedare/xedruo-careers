@@ -111,7 +111,7 @@ export default async function RecruiterDashboardPage() {
         {["owner", "admin", "hr_manager"].includes(membership.role) && (
           <Link
             href="/recruiter/jobs/new"
-            className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white bg-rosybrown sm:self-auto"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-black bg-rosybrown sm:self-auto"
           >
             <Plus size={16} /> Create a job
           </Link>
@@ -202,7 +202,7 @@ export default async function RecruiterDashboardPage() {
           )}
         </div>
 
-        <div className="rounded-2xl bg-rosybrown p-6 text-white">
+        <div className="rounded-2xl bg-rosybrown p-6 text-black">
           <span className="grid size-10 place-items-center rounded-xl bg-rosybrown">
             <Users size={19} />
           </span>
