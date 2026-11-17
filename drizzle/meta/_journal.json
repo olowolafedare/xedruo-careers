@@ -29,6 +29,13 @@
       "when": 1794662623170,
       "tag": "0003_unknown_penance",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794905204000,
+      "tag": "0004_workspace_owner_retry_guard",
+      "breakpoints": true
     }
   ]
 }
