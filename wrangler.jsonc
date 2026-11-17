@@ -19,6 +19,9 @@
       "invocation_logs": true
     }
   },
+  "vars": {
+    "HIREUO_APP_ORIGIN": "https://hireuo.xedruo.com"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
