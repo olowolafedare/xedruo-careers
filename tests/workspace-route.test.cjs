@@ -187,16 +187,17 @@ test("invalid workspace details return JSON 400 without database writes", async 
 
 test("retries return the existing owner workspace instead of creating a duplicate", async () => {
   resetState();
-  state.selectResults = [[], [{ companyId: "existing-company", role: "owner" }]];
+  state.selectResults = [[], [{ companyId: "company-1", role: "owner" }]];
 
   const firstResponse = await aliasRoute.POST(request(validInput));
-  await firstResponse.json();
+  const firstPayload = await firstResponse.json();
   const retryResponse = await aliasRoute.POST(request(validInput));
   const retryPayload = await retryResponse.json();
 
   assert.equal(firstResponse.status, 201);
   assert.equal(retryResponse.status, 200);
-  assert.equal(retryPayload.companyId, "existing-company");
+  assert.equal(firstPayload.companyId, "company-1");
+  assert.equal(retryPayload.companyId, firstPayload.companyId);
   assert.equal(state.companies.length, 1);
 });
 
