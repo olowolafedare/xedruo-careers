@@ -17,6 +17,7 @@ require.extensions[".ts"] = (module, filename) => {
 };
 
 process.env.XEDRUO_CENTRAL_AUTH_URL = "https://auth.example.test";
+process.env.HIREUO_SESSION_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString("base64");
 
 const {
   CentralAuthError,
@@ -25,12 +26,17 @@ const {
   centralAuthLogout,
   centralAuthRefresh,
   centralAuthRegister,
+  centralAuthGoogleStart,
+  centralAuthGoogleExchange,
 } = require("../src/lib/auth/central-auth.ts");
-const { completeRegistration } = require(
+const { completeRegistration, completeGoogleLink } = require(
   "../src/lib/auth/registration-flow.ts",
 );
 const { centralAuthErrorResponse } = require(
   "../src/lib/auth/central-auth-response.ts",
+);
+const { sealRegistration, openRegistration } = require(
+  "../src/lib/auth/registration-cookie.ts",
 );
 
 const originalFetch = globalThis.fetch;
@@ -39,18 +45,19 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
-test("successful registration provisions the local account and session", async () => {
+test("pending registration provisions the immutable local identity without a session", async () => {
   const requests = [];
   const accountInputs = [];
-  const createdSessions = [];
   const centralAuthResult = {
-    tokens: {
-      accessToken: "access-token",
-      refreshToken: "refresh-token",
-      tokenType: "Bearer",
-      expiresIn: 900,
+    user: {
+      id: "immutable-central-id",
+      xedruoId: "XED-123",
+      status: "pending_google_link",
     },
-    session: { id: "session-id", expiresAt: "2030-01-01T00:00:00.000Z" },
+    registration: {
+      status: "pending_google_link",
+      continuationToken: "continuation-secret",
+    },
   };
 
   globalThis.fetch = async (url, init) => {
@@ -58,41 +65,30 @@ test("successful registration provisions the local account and session", async (
     if (String(url).endsWith("/v1/auth/registration")) {
       return Response.json(centralAuthResult, { status: 201 });
     }
-    return Response.json({
-      user: { id: "identity-id", email: "ada@example.com" },
-    });
   };
 
-  await completeRegistration(
+  const result = await completeRegistration(
     {
       phoneNumber: "+2349151045789",
       countryCode: "NG",
       password: "correct-horse-battery",
       displayName: "Ada",
-      email: "ada@example.com",
     },
     {
       register: centralAuthRegister,
-      getIdentity: centralAuthMe,
       ensureAccount: async (identity) => {
         accountInputs.push(identity);
         return { id: "hireuo-account-id" };
       },
-      createSession: async (session) => createdSessions.push(session),
     },
-    "integration-test-agent",
   );
 
-  assert.deepEqual(requests.map(({ url }) => url), [
-    "https://auth.example.test/v1/auth/registration",
-    "https://auth.example.test/v1/auth/me",
-  ]);
+  assert.deepEqual(requests.map(({ url }) => url), ["https://auth.example.test/v1/auth/registration"]);
   assert.deepEqual(JSON.parse(requests[0].init.body), {
     phoneNumber: "+2349151045789",
     countryCode: "NG",
     password: "correct-horse-battery",
     displayName: "Ada",
-    email: "ada@example.com",
   });
   assert.equal(requests[0].init.headers.get("Authorization"), null);
   assert.equal(requests[0].init.redirect, "manual");
@@ -100,14 +96,77 @@ test("successful registration provisions the local account and session", async (
   assert.equal(requests[0].init.headers.get("X-Forwarded-For"), null);
   assert.equal(JSON.stringify(requests[0].init.body).includes("challengeId"), false);
   assert.equal(JSON.stringify(requests[0].init.body).includes("otp"), false);
-  assert.equal(requests[1].init.headers.get("Authorization"), "Bearer access-token");
-  assert.deepEqual(accountInputs, [{ id: "identity-id", email: "ada@example.com" }]);
-  assert.equal(createdSessions.length, 1);
-  assert.equal(createdSessions[0].accountId, "hireuo-account-id");
-  assert.equal(createdSessions[0].accessToken, "access-token");
-  assert.equal(createdSessions[0].refreshToken, "refresh-token");
-  assert.equal(createdSessions[0].expiresAt.toISOString(), "2030-01-01T00:00:00.000Z");
-  assert.equal(createdSessions[0].userAgent, "integration-test-agent");
+  assert.deepEqual(accountInputs, [{ id: "immutable-central-id", email: null }]);
+  assert.equal(result.accountId, "hireuo-account-id");
+  assert.equal(result.centralIdentityId, "immutable-central-id");
+  assert.equal(result.continuationToken, "continuation-secret");
+  assert.equal(requests[0].init.body.includes("email"), false);
+});
+
+test("Google start sends the continuation and exact callback URL", async () => {
+  let captured;
+  globalThis.fetch = async (url, init) => {
+    captured = { url: String(url), init };
+    return Response.json({ authorizationUrl: "https://accounts.example.test/authorize" });
+  };
+  await centralAuthGoogleStart({ continuationToken: "continuation-secret", returnTo: "https://hireuo.example.test/api/v1/auth/google/callback" });
+  assert.equal(captured.url, "https://auth.example.test/v1/oauth/google/start");
+  assert.deepEqual(JSON.parse(captured.init.body), { continuationToken: "continuation-secret", returnTo: "https://hireuo.example.test/api/v1/auth/google/callback" });
+});
+
+test("registration continuation is encrypted and invalid or cleared state cannot be resumed", () => {
+  const state = {
+    accountId: "hireuo-account-id",
+    centralIdentityId: "immutable-central-id",
+    continuationToken: "continuation-secret",
+  };
+  const cookie = sealRegistration(state);
+  assert.equal(cookie.includes("continuation-secret"), false);
+  const opened = openRegistration(cookie);
+  assert.equal(opened.accountId, state.accountId);
+  assert.equal(opened.centralIdentityId, state.centralIdentityId);
+  assert.equal(opened.continuationToken, state.continuationToken);
+  assert.ok(opened.expiresAt > Date.now());
+  assert.equal(openRegistration(undefined), null);
+  assert.equal(openRegistration("tampered-or-cleared"), null);
+});
+
+test("Google completion exchanges code server-side and binds session to the local account", async () => {
+  const requests = [];
+  const sessions = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), init });
+    if (String(url).endsWith("/v1/oauth/google/exchange")) {
+      return Response.json({ tokens: { accessToken: "access-secret", refreshToken: "refresh-secret", tokenType: "Bearer", expiresIn: 900 }, session: { id: "session", expiresAt: "2030-01-01T00:00:00.000Z" } });
+    }
+    return Response.json({ user: { id: "immutable-central-id", email: "ada@example.com" } });
+  };
+  await completeGoogleLink("one-time-code", "immutable-central-id", "hireuo-account-id", {
+    exchange: centralAuthGoogleExchange,
+    getIdentity: centralAuthMe,
+    ensureAccount: async (identity) => { assert.equal(identity.id, "immutable-central-id"); return { id: "hireuo-account-id" }; },
+    createSession: async (session) => sessions.push(session),
+  }, "test-agent");
+  assert.deepEqual(requests.map(({ url }) => url), ["https://auth.example.test/v1/oauth/google/exchange", "https://auth.example.test/v1/auth/me"]);
+  assert.deepEqual(JSON.parse(requests[0].init.body), { code: "one-time-code" });
+  assert.equal(requests[1].init.headers.get("Authorization"), "Bearer access-secret");
+  assert.equal(sessions.length, 1);
+  assert.equal(sessions[0].accountId, "hireuo-account-id");
+  assert.equal(sessions[0].refreshToken, "refresh-secret");
+});
+
+test("expired or consumed Google completion codes fail without creating a session", async () => {
+  for (const status of [410, 409]) {
+    let sessions = 0;
+    globalThis.fetch = async () => Response.json({ error: "Code is no longer valid" }, { status });
+    await assert.rejects(completeGoogleLink("one-time-code", "central-id", "account-id", {
+      exchange: centralAuthGoogleExchange,
+      getIdentity: centralAuthMe,
+      ensureAccount: async () => ({ id: "account-id" }),
+      createSession: async () => { sessions += 1; },
+    }), (error) => error instanceof CentralAuthError && error.status === status);
+    assert.equal(sessions, 0);
+  }
 });
 
 test("login retains Central Auth invalid-credential status", async () => {
