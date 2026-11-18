@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import {
   centralAuthApplicationGoogleStart,
@@ -12,7 +12,7 @@ import {
 } from "../../../../../../../lib/auth/application-google-login-cookie";
 import { getHireuoOrigin } from "../../../../../../../lib/auth/registration-cookie";
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     const callbackUri = new URL(
       "/api/v1/auth/google/login/callback",
