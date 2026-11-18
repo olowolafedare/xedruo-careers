@@ -27,6 +27,10 @@ export const membershipStatusEnum = pgEnum(
   "membership_status",
   ["invited", "active", "suspended", "removed"],
 );
+export const sessionAuthModeEnum = pgEnum(
+  "hireuo_session_auth_mode",
+  ["central_auth", "local_application_google"],
+);
 // HIREUO accounts: linked to, but independent from, Xedruo Central Auth.
 export const accounts = pgTable(
   "hireuo_accounts",
@@ -54,13 +58,15 @@ export const sessions = pgTable(
     // SHA-256 hash of the opaque browser cookie
     sessionTokenHash: text("session_token_hash").notNull().unique(),
 
-    // AES-256-GCM encrypted Central Auth tokens
-    accessTokenEncrypted: text("access_token_encrypted").notNull(),
-    refreshTokenEncrypted: text("refresh_token_encrypted").notNull(),
+    authMode: sessionAuthModeEnum("auth_mode").notNull().default("central_auth"),
+
+    // AES-256-GCM encrypted Central Auth tokens; null for local application sessions
+    accessTokenEncrypted: text("access_token_encrypted"),
+    refreshTokenEncrypted: text("refresh_token_encrypted"),
 
     accessTokenExpiresAt: timestamp("access_token_expires_at", {
       withTimezone: true,
-    }).notNull(),
+    }),
 
     expiresAt: timestamp("expires_at", {
       withTimezone: true,
