@@ -42,6 +42,12 @@ const { sealRegistration, openRegistration, registrationCookieOptions, REGISTRAT
   "../src/lib/auth/registration-cookie.ts",
 );
 const { encryptToken } = require("../src/lib/auth/token-crypto.ts");
+const {
+  APPLICATION_GOOGLE_LOGIN_COOKIE,
+  createApplicationGoogleLoginTransaction,
+  openApplicationGoogleLoginTransaction,
+  applicationGoogleLoginCookieOptions,
+} = require("../src/lib/auth/application-google-login-cookie.ts");
 
 const originalFetch = globalThis.fetch;
 
@@ -469,6 +475,22 @@ test("network failures are classified as Central Auth service unavailable", asyn
   const response = centralAuthErrorResponse(upstreamError);
   assert.equal(response.status, 502);
   assert.doesNotMatch((await response.json()).error, /ECONNRESET|secret-token/i);
+});
+
+test("application Google pending transaction is short-lived, encrypted and cleared by expiry", () => {
+  const created = createApplicationGoogleLoginTransaction();
+  assert.equal(created.sealed.includes(created.transaction.nonce), false);
+  assert.equal(openApplicationGoogleLoginTransaction(created.sealed).nonce, created.transaction.nonce);
+  assert.equal(openApplicationGoogleLoginTransaction(undefined), null);
+  assert.equal(openApplicationGoogleLoginTransaction("tampered"), null);
+  const expired = encryptToken(JSON.stringify({ nonce: "x".repeat(32), expiresAt: Date.now() - 1 }));
+  assert.equal(openApplicationGoogleLoginTransaction(expired), null);
+  const options = applicationGoogleLoginCookieOptions();
+  assert.equal(options.httpOnly, true);
+  assert.equal(options.sameSite, "lax");
+  assert.equal(options.path, "/api/v1/auth/google/login");
+  assert.equal("domain" in options, false);
+  assert.equal(APPLICATION_GOOGLE_LOGIN_COOKIE, "hireuo_application_google_login");
 });
 
 test("application Google login start and exchange use the server-side API key", async () => {
