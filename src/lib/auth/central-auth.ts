@@ -370,3 +370,43 @@ export async function centralAuthGoogleExchange(code: string) {
     body: JSON.stringify({ code }),
   });
 }
+
+export interface CentralAuthApplicationGoogleExchangeResult {
+  identity: {
+    id: string;
+  };
+}
+
+function getApplicationApiKey() {
+  const apiKey = process.env.XEDRUO_CENTRAL_AUTH_API_KEY;
+  if (!apiKey) {
+    throw new Error("XEDRUO_CENTRAL_AUTH_API_KEY is not configured.");
+  }
+  return apiKey;
+}
+
+export async function centralAuthApplicationGoogleStart(callbackUri: string) {
+  return authRequest<CentralAuthGoogleStartResult>(
+    "/v1/oauth/google/application/start",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getApplicationApiKey()}`,
+      },
+      body: JSON.stringify({ callbackUri }),
+    },
+  );
+}
+
+export async function centralAuthApplicationGoogleExchange(code: string) {
+  return authRequest<CentralAuthApplicationGoogleExchangeResult>(
+    "/v1/oauth/google/application/exchange",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getApplicationApiKey()}`,
+      },
+      body: JSON.stringify({ code }),
+    },
+  );
+}
