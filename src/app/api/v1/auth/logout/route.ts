@@ -15,7 +15,10 @@ export async function POST() {
     const current = await getCurrentSession();
 
     try {
-      if (current) {
+      if (
+        current?.session.authMode === "central_auth" &&
+        current.session.accessToken
+      ) {
         await centralAuthLogout(current.session.accessToken);
       }
     } finally {
