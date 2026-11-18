@@ -18,13 +18,16 @@ export async function POST() {
       "/api/v1/auth/google/login/callback",
       getHireuoOrigin(),
     ).toString();
-    const result = await centralAuthApplicationGoogleStart(callbackUri);
+    const { transaction, sealed } = createApplicationGoogleLoginTransaction();
+    const result = await centralAuthApplicationGoogleStart(
+      callbackUri,
+      transaction.state,
+    );
     const authorizationUrl = new URL(result.authorizationUrl);
     if (authorizationUrl.protocol !== "https:") {
       throw new Error("Invalid Google authorization URL protocol.");
     }
 
-    const { sealed } = createApplicationGoogleLoginTransaction();
     const response = NextResponse.json(
       { authorizationUrl: authorizationUrl.toString() },
       { headers: { "Cache-Control": "no-store" } },
