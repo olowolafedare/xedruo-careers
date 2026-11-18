@@ -99,7 +99,7 @@ test("logout revokes the HIREUO session even when Central Auth logout fails", as
       centralAuthErrorResponse: (error) => Response.json({ status: error.status }, { status: error.status }),
     },
     "../../../../../lib/auth/session-store": {
-      getCurrentSession: async () => ({ session: { accessToken: "access" } }),
+      getCurrentSession: async () => ({ session: { authMode: "central_auth", accessToken: "access" } }),
       revokeCurrentSession: async () => { revoked += 1; },
     },
   });

@@ -28,6 +28,7 @@ function makeHarness() {
       sessionTokenHash: "sessions.sessionTokenHash",
       revokedAt: "sessions.revokedAt",
       expiresAt: "sessions.expiresAt",
+      authMode: "sessions.authMode",
     },
   };
   const condition = (field, value) => ({ field, value });
@@ -125,6 +126,20 @@ test("a failed cookie write revokes a newly inserted session", async () => {
   );
   assert.equal(harness.rows.size, 1);
   assert.ok([...harness.rows.values()][0].revokedAt instanceof Date);
+});
+
+test("local application Google session stores no fabricated Central tokens", async () => {
+  const harness = makeHarness();
+  await harness.sessionStore.createSession({
+    accountId: "hireuo-account-id",
+    authMode: "local_application_google",
+    expiresAt: new Date(Date.now() + 60 * 60_000),
+  });
+  const stored = [...harness.rows.values()][0];
+  assert.equal(stored.authMode, "local_application_google");
+  assert.equal(stored.accessTokenEncrypted, null);
+  assert.equal(stored.refreshTokenEncrypted, null);
+  assert.equal(stored.accessTokenExpiresAt, null);
 });
 
 test("a revoked orphan is not resurrected by a later callback", async () => {
