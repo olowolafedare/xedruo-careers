@@ -17,6 +17,7 @@ require.extensions[".ts"] = (module, filename) => {
 };
 
 process.env.XEDRUO_CENTRAL_AUTH_URL = "https://auth.example.test";
+process.env.XEDRUO_CENTRAL_AUTH_API_KEY = "xca_live_0123456789ab.test-secret";
 process.env.HIREUO_SESSION_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString("base64");
 
 const {
@@ -28,6 +29,8 @@ const {
   centralAuthRegister,
   centralAuthGoogleStart,
   centralAuthGoogleExchange,
+  centralAuthApplicationGoogleStart,
+  centralAuthApplicationGoogleExchange,
 } = require("../src/lib/auth/central-auth.ts");
 const { completeRegistration, completeGoogleLink } = require(
   "../src/lib/auth/registration-flow.ts",
@@ -466,4 +469,29 @@ test("network failures are classified as Central Auth service unavailable", asyn
   const response = centralAuthErrorResponse(upstreamError);
   assert.equal(response.status, 502);
   assert.doesNotMatch((await response.json()).error, /ECONNRESET|secret-token/i);
+});
+
+test("application Google login start and exchange use the server-side API key", async () => {
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), init });
+    if (String(url).endsWith("/application/start")) {
+      return Response.json({ authorizationUrl: "https://accounts.example.test/authorize" });
+    }
+    return Response.json({ identity: { id: "immutable-central-id" } });
+  };
+
+  await centralAuthApplicationGoogleStart("https://hireuo.example.test/api/v1/auth/google/login/callback");
+  await centralAuthApplicationGoogleExchange("completion-code-value-123456");
+
+  assert.deepEqual(requests.map(({ url }) => url), [
+    "https://auth.example.test/v1/oauth/google/application/start",
+    "https://auth.example.test/v1/oauth/google/application/exchange",
+  ]);
+  assert.equal(requests[0].init.headers.get("Authorization"), "Bearer xca_live_0123456789ab.test-secret");
+  assert.equal(requests[1].init.headers.get("Authorization"), "Bearer xca_live_0123456789ab.test-secret");
+  assert.deepEqual(JSON.parse(requests[0].init.body), {
+    callbackUri: "https://hireuo.example.test/api/v1/auth/google/login/callback",
+  });
+  assert.deepEqual(JSON.parse(requests[1].init.body), { code: "completion-code-value-123456" });
 });
