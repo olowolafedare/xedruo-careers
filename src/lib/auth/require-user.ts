@@ -39,6 +39,25 @@ export async function requireUser(returnTo = "/start") {
     return redirectToAccount();
     }
 
+  if (current.session.authMode === "local_application_google") {
+    return {
+      account: current.account,
+      user: {
+        id: current.account.xedruoIdentityId,
+        email: current.account.email ?? null,
+      },
+      session: {
+        id: current.session.id,
+        expiresAt: current.session.expiresAt,
+      },
+    };
+  }
+
+  if (!current.session.accessToken || !current.session.refreshToken || !current.session.accessTokenExpiresAt) {
+    await revokeCurrentSession();
+    return redirectToAccount();
+  }
+
   let accessToken = current.session.accessToken;
   let refreshed = false;
 
