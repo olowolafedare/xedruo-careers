@@ -385,7 +385,10 @@ function getApplicationApiKey() {
   return apiKey;
 }
 
-export async function centralAuthApplicationGoogleStart(callbackUri: string) {
+export async function centralAuthApplicationGoogleStart(
+  callbackUri: string,
+  state: string,
+) {
   return authRequest<CentralAuthGoogleStartResult>(
     "/v1/oauth/google/application/start",
     {
@@ -393,7 +396,7 @@ export async function centralAuthApplicationGoogleStart(callbackUri: string) {
       headers: {
         Authorization: `Bearer ${getApplicationApiKey()}`,
       },
-      body: JSON.stringify({ callbackUri }),
+      body: JSON.stringify({ callbackUri, state }),
     },
   );
 }
