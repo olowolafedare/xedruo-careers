@@ -55,6 +55,29 @@ export default function AccountForm({
     return message;
   }
 
+  async function continueWithGoogle() {
+    setBusy(true);
+    setError("");
+    try {
+      const response = await fetch("/api/v1/auth/google/login/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+      });
+      if (!response.ok) {
+        throw new Error(await getApiError(response));
+      }
+      const { authorizationUrl } = await response.json();
+      if (typeof authorizationUrl !== "string" || !authorizationUrl.startsWith("https://")) {
+        throw new Error("We couldn't start Google sign-in. Please try again.");
+      }
+      window.location.assign(authorizationUrl);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "We couldn't complete Google sign-in.");
+      setBusy(false);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -275,6 +298,24 @@ export default function AccountForm({
                 : "Create account"}
           </button>
         </form>
+
+        {!isAdminLogin && mode === "sign-in" && (
+          <>
+            <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+              <span className="h-px flex-1 bg-slate-300" />
+              <span>or</span>
+              <span className="h-px flex-1 bg-slate-300" />
+            </div>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={continueWithGoogle}
+              className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-900 disabled:opacity-60"
+            >
+              Continue with Google
+            </button>
+          </>
+        )}
 
         {!isAdminLogin && (
           <button
