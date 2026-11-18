@@ -24,11 +24,14 @@ function cookieOptions(expiresAt: Date) {
   };
 }
 
+export type SessionAuthMode = "central_auth" | "local_application_google";
+
 export async function createSession(input: {
   accountId: string;
-  accessToken: string;
-  refreshToken: string;
-  accessTokenExpiresAt: Date;
+  authMode?: SessionAuthMode;
+  accessToken?: string;
+  refreshToken?: string;
+  accessTokenExpiresAt?: Date;
   expiresAt: Date;
   userAgent?: string | null;
   ipAddress?: string | null;
@@ -36,6 +39,14 @@ export async function createSession(input: {
 }) {
   if (input.expiresAt <= new Date()) {
     throw new Error("Cannot create an already expired session");
+  }
+
+  const authMode = input.authMode ?? "central_auth";
+  if (
+    authMode === "central_auth" &&
+    (!input.accessToken || !input.refreshToken || !input.accessTokenExpiresAt)
+  ) {
+    throw new Error("Central Auth sessions require access and refresh tokens.");
   }
 
   const rawToken = input.idempotencyKey
@@ -48,10 +59,17 @@ export async function createSession(input: {
     .insert(sessions)
     .values({
       accountId: input.accountId,
+      authMode,
       sessionTokenHash: tokenHash,
-      accessTokenEncrypted: encryptToken(input.accessToken),
-      refreshTokenEncrypted: encryptToken(input.refreshToken),
-      accessTokenExpiresAt: input.accessTokenExpiresAt,
+      accessTokenEncrypted: authMode === "central_auth"
+        ? encryptToken(input.accessToken as string)
+        : null,
+      refreshTokenEncrypted: authMode === "central_auth"
+        ? encryptToken(input.refreshToken as string)
+        : null,
+      accessTokenExpiresAt: authMode === "central_auth"
+        ? input.accessTokenExpiresAt
+        : null,
       expiresAt: input.expiresAt,
       userAgent: input.userAgent ?? null,
       ipAddress: input.ipAddress ?? null,
@@ -137,13 +155,21 @@ export async function getCurrentSession() {
     .set({ lastUsedAt: now })
     .where(eq(sessions.id, result.session.id));
 
+  const authMode = (result.session.authMode ?? "central_auth") as SessionAuthMode;
   return {
     account: result.account,
     session: {
       id: result.session.id,
-      accessToken: decryptToken(result.session.accessTokenEncrypted),
-      refreshToken: decryptToken(result.session.refreshTokenEncrypted),
-      accessTokenExpiresAt: result.session.accessTokenExpiresAt,
+      authMode,
+      accessToken: authMode === "central_auth" && result.session.accessTokenEncrypted
+        ? decryptToken(result.session.accessTokenEncrypted)
+        : null,
+      refreshToken: authMode === "central_auth" && result.session.refreshTokenEncrypted
+        ? decryptToken(result.session.refreshTokenEncrypted)
+        : null,
+      accessTokenExpiresAt: authMode === "central_auth"
+        ? result.session.accessTokenExpiresAt
+        : null,
       expiresAt: result.session.expiresAt,
     },
   };
@@ -203,6 +229,7 @@ export async function updateSessionTokens(input: {
     .where(
       and(
         eq(sessions.id, input.sessionId),
+        eq(sessions.authMode, "central_auth"),
         isNull(sessions.revokedAt),
         gt(sessions.expiresAt, now),
       ),
