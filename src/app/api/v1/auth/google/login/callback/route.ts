@@ -9,6 +9,7 @@ import { createSession } from "../../../../../../../lib/auth/session-store";
 import {
   APPLICATION_GOOGLE_LOGIN_COOKIE,
   clearApplicationGoogleLoginCookieOptions,
+  matchesApplicationGoogleLoginState,
   openApplicationGoogleLoginTransaction,
 } from "../../../../../../../lib/auth/application-google-login-cookie";
 import { getHireuoOrigin } from "../../../../../../../lib/auth/registration-cookie";
@@ -24,6 +25,7 @@ function redirectTo(path: string) {
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code")?.trim() ?? "";
+  const state = request.nextUrl.searchParams.get("state");
   const pending = openApplicationGoogleLoginTransaction(
     request.cookies.get(APPLICATION_GOOGLE_LOGIN_COOKIE)?.value,
   );
@@ -37,14 +39,12 @@ export async function GET(request: NextRequest) {
     return response;
   };
 
-  if (!pending || !code) {
+  if (!pending || !code || !matchesApplicationGoogleLoginState(pending.state, state)) {
     return clearPendingCookie(redirectTo("/account?auth_error=oauth_failed"));
   }
 
   try {
-    // Consume the HIREUO pending transaction before upstream exchange. This
-    // provides short-lived callback gating, but not full completion-code-to-
-    // browser binding because Central Auth's application contract has no state echo.
+    // Central Auth echoes this app-generated state only on the matching flow.
     const result = await centralAuthApplicationGoogleExchange(code);
     const identityId = typeof result.identity?.id === "string"
       ? result.identity.id.trim()
