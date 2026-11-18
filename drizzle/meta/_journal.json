@@ -36,6 +36,13 @@
       "when": 1794905204000,
       "tag": "0004_workspace_owner_retry_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794997199685,
+      "tag": "0005_lying_stone_men",
+      "breakpoints": true
     }
   ]
 }
