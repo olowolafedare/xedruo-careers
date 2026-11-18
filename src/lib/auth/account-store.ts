@@ -7,7 +7,7 @@ import { accounts } from "../db/schema";
 
 type CentralIdentity = {
   id: string;
-  email: string | null;
+  email?: string | null;
 };
 
 export async function ensureLocalAccount(identity: CentralIdentity) {
@@ -22,12 +22,12 @@ export async function ensureLocalAccount(identity: CentralIdentity) {
     .insert(accounts)
     .values({
       xedruoIdentityId: identity.id,
-      email,
+      ...(email ? { email } : {}),
     })
     .onConflictDoUpdate({
       target: accounts.xedruoIdentityId,
       set: {
-        email,
+        ...(email ? { email } : {}),
         updatedAt: new Date(),
       },
     })
