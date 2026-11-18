@@ -12,6 +12,7 @@ export const GET = withCentralAuthErrors(async function GET() {
     return NextResponse.json(
       { error: "Authentication required" },
       { status: 401 },
+      
     );
   }
 
