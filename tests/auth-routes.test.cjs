@@ -5,6 +5,8 @@ const path = require("node:path");
 const { test } = require("node:test");
 const ts = require("typescript");
 
+process.env.HIREUO_SESSION_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString("base64");
+
 require.extensions[".ts"] = (module, filename) => {
   const source = fs.readFileSync(filename, "utf8");
   const output = ts.transpileModule(source, {
@@ -60,6 +62,75 @@ test("password login only creates a session for the verified Central Auth identi
   const mismatch = await POST(request);
   assert.equal(mismatch.status, 401);
   assert.equal(sessions.length, 1);
+});
+
+test("application Google callback exchanges only a completion code with the matching pending state", async () => {
+  const { createApplicationGoogleLoginTransaction } = require(
+    "../src/lib/auth/application-google-login-cookie.ts",
+  );
+  const { sealed, transaction } = createApplicationGoogleLoginTransaction();
+  const exchanges = [];
+  const accounts = [];
+  const sessions = [];
+  const cookieWrites = [];
+  const responseWithCookies = (response) => {
+    response.cookies = { set: (...args) => cookieWrites.push(args) };
+    return response;
+  };
+  const { GET } = loadWithMocks(
+    "../src/app/api/v1/auth/google/login/callback/route.ts",
+    {
+      "next/server": {
+        NextResponse: {
+          redirect: (url) => responseWithCookies(new Response(null, {
+            status: 307,
+            headers: { location: String(url) },
+          })),
+        },
+      },
+      "../../../../../../../lib/auth/central-auth": {
+        centralAuthApplicationGoogleExchange: async (code) => {
+          exchanges.push(code);
+          return { identity: { id: "immutable-central-id" } };
+        },
+        CentralAuthError: class CentralAuthError extends Error {},
+      },
+      "../../../../../../../lib/auth/account-store": {
+        ensureLocalAccount: async (identity) => {
+          accounts.push(identity);
+          return { id: "hireuo-account-id" };
+        },
+      },
+      "../../../../../../../lib/auth/session-store": {
+        createSession: async (session) => sessions.push(session),
+      },
+      "../../../../../../../lib/auth/registration-cookie": {
+        getHireuoOrigin: () => "https://hireuo.example.test",
+      },
+    },
+  );
+
+  const makeRequest = (state) => ({
+    nextUrl: new URL(`https://hireuo.example.test/api/v1/auth/google/login/callback?code=completion-code&state=${encodeURIComponent(state ?? "")}`),
+    cookies: { get: () => ({ value: sealed }) },
+    headers: new Headers({ "user-agent": "test-agent" }),
+  });
+
+  const rejected = await GET(makeRequest("attacker-state-value-0000000000"));
+  assert.equal(rejected.status, 307);
+  assert.deepEqual(exchanges, []);
+  assert.deepEqual(accounts, []);
+  assert.deepEqual(sessions, []);
+
+  const accepted = await GET(makeRequest(transaction.state));
+  assert.equal(accepted.status, 307);
+  assert.equal(exchanges.length, 1);
+  assert.deepEqual(accounts, [{ id: "immutable-central-id", email: null }]);
+  assert.equal(sessions.length, 1);
+  assert.equal(sessions[0].accountId, "hireuo-account-id");
+  assert.equal(sessions[0].authMode, "local_application_google");
+  assert.equal(cookieWrites.length, 2);
+  assert.equal(cookieWrites[1][1], "");
 });
 
 test("session validation rejects mismatched Central Auth identities and revokes the local session", async () => {

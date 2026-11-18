@@ -46,6 +46,7 @@ const {
   APPLICATION_GOOGLE_LOGIN_COOKIE,
   createApplicationGoogleLoginTransaction,
   openApplicationGoogleLoginTransaction,
+  matchesApplicationGoogleLoginState,
   applicationGoogleLoginCookieOptions,
 } = require("../src/lib/auth/application-google-login-cookie.ts");
 
@@ -479,11 +480,14 @@ test("network failures are classified as Central Auth service unavailable", asyn
 
 test("application Google pending transaction is short-lived, encrypted and cleared by expiry", () => {
   const created = createApplicationGoogleLoginTransaction();
-  assert.equal(created.sealed.includes(created.transaction.nonce), false);
-  assert.equal(openApplicationGoogleLoginTransaction(created.sealed).nonce, created.transaction.nonce);
+  assert.equal(created.sealed.includes(created.transaction.state), false);
+  assert.equal(openApplicationGoogleLoginTransaction(created.sealed).state, created.transaction.state);
+  assert.equal(matchesApplicationGoogleLoginState(created.transaction.state, created.transaction.state), true);
+  assert.equal(matchesApplicationGoogleLoginState(created.transaction.state, "attacker-state-value-0000000000"), false);
+  assert.equal(matchesApplicationGoogleLoginState(created.transaction.state, null), false);
   assert.equal(openApplicationGoogleLoginTransaction(undefined), null);
   assert.equal(openApplicationGoogleLoginTransaction("tampered"), null);
-  const expired = encryptToken(JSON.stringify({ nonce: "x".repeat(32), expiresAt: Date.now() - 1 }));
+  const expired = encryptToken(JSON.stringify({ state: "x".repeat(32), expiresAt: Date.now() - 1 }));
   assert.equal(openApplicationGoogleLoginTransaction(expired), null);
   const options = applicationGoogleLoginCookieOptions();
   assert.equal(options.httpOnly, true);
@@ -503,7 +507,10 @@ test("application Google login start and exchange use the server-side API key", 
     return Response.json({ identity: { id: "immutable-central-id" } });
   };
 
-  await centralAuthApplicationGoogleStart("https://hireuo.example.test/api/v1/auth/google/login/callback");
+  await centralAuthApplicationGoogleStart(
+    "https://hireuo.example.test/api/v1/auth/google/login/callback",
+    "application-state-value-0123456789",
+  );
   await centralAuthApplicationGoogleExchange("completion-code-value-123456");
 
   assert.deepEqual(requests.map(({ url }) => url), [
@@ -514,6 +521,7 @@ test("application Google login start and exchange use the server-side API key", 
   assert.equal(requests[1].init.headers.get("Authorization"), "Bearer xca_live_0123456789ab.test-secret");
   assert.deepEqual(JSON.parse(requests[0].init.body), {
     callbackUri: "https://hireuo.example.test/api/v1/auth/google/login/callback",
+    state: "application-state-value-0123456789",
   });
   assert.deepEqual(JSON.parse(requests[1].init.body), { code: "completion-code-value-123456" });
 });
