@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
 import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 const XEDRION_COMPANY_ASSISTANT_URL =
   "https://xedrion-ai.xedruo.com/api/company-assistant";
 
