@@ -43,6 +43,13 @@
       "when": 1794997199685,
       "tag": "0005_lying_stone_men",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795097698071,
+      "tag": "0006_job_expiration",
+      "breakpoints": true
     }
   ]
 }

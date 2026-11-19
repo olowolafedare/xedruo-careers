@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "HIREUO ", template: "%s | HIREUO Careers" },
+  title: { default: "Xedruo Career", template: "%s | Xedruo Career" },
   description:
     "Discover career opportunities, build your candidate profile, and manage hiring from one workspace",
 };
