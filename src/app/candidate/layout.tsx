@@ -42,7 +42,7 @@ export default async function CandidateLayout({
           <span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-lg font-bold text-white">
             H
           </span>
-          <span className="text-lg font-bold tracking-tight">HIREUO</span>
+          <span className="text-lg font-bold tracking-tight">Xedruo Career</span>
         </Link>
         <nav aria-label="Candidate navigation" className="mt-9 space-y-1">
           {navigation.map(({ href, label, icon: Icon }) => (
@@ -81,7 +81,7 @@ export default async function CandidateLayout({
               <span className="grid size-8 place-items-center rounded-lg bg-amber-900 text-sm text-white">
                 H
               </span>
-              HIREUO
+              Xedruo Career
             </Link>
             <p className="hidden text-sm text-slate-500 lg:block">
               A clearer way to manage your career journey
