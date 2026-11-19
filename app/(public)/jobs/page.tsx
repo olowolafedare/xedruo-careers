@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { and, desc, eq, gt, ilike } from "drizzle-orm";
+import { and, desc, eq, gt, ilike, or } from "drizzle-orm";
 import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
 
 import { getDb } from "@/src/lib/db";
@@ -28,13 +28,13 @@ function escapeLike(value: string) {
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; location?: string; type?: string }>;
+  searchParams: Promise<{ q?: string; location?: string; country?: string; state?: string; type?: string; workplace?: string }>;
 }) {
   const params = await searchParams;
 
   const query = params.q?.trim().slice(0, 100) ?? "";
   const location = params.location?.trim().slice(0, 100) ?? "";
-  const type = params.type ?? "";
+  const country = params.country?.trim().slice(0, 100) ?? "";\n  const state = params.state?.trim().slice(0, 100) ?? "";\n  const type = params.type ?? "";\n  const workplace = params.workplace ?? "";
 
   const conditions = [
     eq(jobs.status, "published"),
@@ -42,7 +42,7 @@ export default async function JobsPage({
   ];
 
   if (query) {
-    conditions.push(ilike(jobs.title, `%${escapeLike(query)}%`));
+    conditions.push(or(ilike(jobs.title, `%${escapeLike(query)}%`), ilike(companies.name, `%${escapeLike(query)}%`))!);
   }
 
   if (location) {
@@ -132,7 +132,7 @@ export default async function JobsPage({
 
         <form
           action="/jobs"
-          className="mt-8 grid gap-3 rounded-2xl bg-rosybrown p-4 sm:grid-cols-[1fr_1fr_180px_auto] sm:p-5"
+          className="mt-8 grid gap-3 rounded-2xl bg-rosybrown p-4 sm:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_1fr_180px_180px_auto] sm:p-5"
         >
           <label className="relative">
             <span className="sr-only">Job title</span>
@@ -163,18 +163,35 @@ export default async function JobsPage({
           </label>
 
           <label>
-            <span className="sr-only">Employment type</span>
-            <select
-              name="type"
-              defaultValue={type}
-              className="w-full rounded-xl bg-rosybrown px-3 py-3 text-sm"
-            >
+            <span className="sr-only">Country</span>
+            <input name="country" defaultValue={country} placeholder="Country" className="w-full rounded-xl px-3 py-3 text-sm" />
+          </label>
+
+          <label>
+            <span className="sr-only">State</span>
+            <input name="state" defaultValue={state} placeholder="State" className="w-full rounded-xl px-3 py-3 text-sm" />
+          </label>
+
+          <label>
+            <span className="sr-only">Job type</span>
+            <select name="type" defaultValue={type} className="w-full rounded-xl bg-rosybrown px-3 py-3 text-sm">
               <option value="">All job types</option>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Internship</option>
-              <option>Remote</option>
+              <option value="full_time">Full-time</option>
+              <option value="part_time">Part-time</option>
+              <option value="contract">Contract</option>
+              <option value="internship">Internship</option>
+              <option value="temporary">Temporary</option>
+              <option value="freelance">Freelance</option>
+            </select>
+          </label>
+
+          <label>
+            <span className="sr-only">Work arrangement</span>
+            <select name="workplace" defaultValue={workplace} className="w-full rounded-xl bg-rosybrown px-3 py-3 text-sm">
+              <option value="">Any arrangement</option>
+              <option value="remote">Remote</option>
+              <option value="hybrid">Hybrid</option>
+              <option value="onsite">Full onsite</option>
             </select>
           </label>
 
