@@ -213,10 +213,21 @@ async function JobsPageContent({
 }
 
 
-export default function JobsPage() {
+export default function JobsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    q?: string;
+    location?: string;
+    country?: string;
+    state?: string;
+    type?: string;
+    workplace?: string;
+  }>;
+}) {
   return (
     <Suspense fallback={<main className="min-h-screen bg-rosybrown px-5 py-14 text-slate-600">Loading jobs…</main>}>
-      <JobsPageContent searchParams={Promise.resolve({})} />
+      <JobsPageContent searchParams={searchParams} />
     </Suspense>
   );
 }
