@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Users,
   BriefcaseBusiness,
+  MessageCircle,
 } from "lucide-react";
 import { requireRecruiter } from "./_lib/context";
 
@@ -16,6 +17,7 @@ const navigation = [
   { href: "/recruiter/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/recruiter/jobs", label: "Jobs", icon: BriefcaseBusiness },
   { href: "/recruiter/applicants", label: "Applicants", icon: Users },
+  { href: "/recruiter/messages", label: "Messages", icon: MessageCircle },
   { href: "/recruiter/pipeline", label: "Pipeline", icon: Activity },
   { href: "/recruiter/interviews", label: "Interviews", icon: CalendarDays },
   { href: "/recruiter/assessments", label: "Assessments", icon: ClipboardList },
@@ -32,7 +34,7 @@ export default async function RecruiterLayout({
 }) {
   await connection();
   const { company, membership } = await requireRecruiter();
-  const canManage = ["owner", "admin", "manager"].includes(membership.role);
+  const canManage = ["owner", "admin", "hr_manager", "recruiter"].includes(membership.role);
 
   return (
     <div className="min-h-screen bg-rosybrown text-slate-900">

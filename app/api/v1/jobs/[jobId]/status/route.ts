@@ -81,7 +81,7 @@ export const PATCH = withCentralAuthErrors(async function PATCH(
 
     if (
       !membership ||
-      !["owner", "admin", "hr_manager"].includes(membership.role)
+      !["owner", "admin", "hr_manager", "recruiter"].includes(membership.role)
     ) {
       return NextResponse.json(
         { error: "You are not allowed to update this job" },

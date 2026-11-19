@@ -67,7 +67,7 @@ export default async function RecruiterJobsPage({
     redirect(`/recruiter/jobs?page=${totalPages}`);
   }
 
-  const canManageJobs = ["owner", "admin", "hr_manager"].includes(
+  const canManageJobs = ["owner", "admin", "hr_manager", "recruiter"].includes(
     membership.role,
   );
 

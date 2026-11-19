@@ -103,12 +103,21 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       .select({
         id: jobs.id,
         status: jobs.status,
+        expiresAt: jobs.expiresAt,
+        applicationDeadline: jobs.applicationDeadline,
       })
       .from(jobs)
       .where(eq(jobs.id, jobId))
       .limit(1);
 
-    if (!job || job.status !== "published") {
+    const now = new Date();
+    if (
+      !job ||
+      job.status !== "published" ||
+      !job.expiresAt ||
+      job.expiresAt <= now ||
+      (job.applicationDeadline !== null && job.applicationDeadline <= now)
+    ) {
       return NextResponse.json(
         { error: "This job is no longer accepting applications" },
         { status: 404 },
