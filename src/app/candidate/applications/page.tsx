@@ -1,6 +1,7 @@
 export const instant = false;
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { BriefcaseBusiness, MapPin } from "lucide-react";
 import { desc, eq } from "drizzle-orm";
 import { requireUser } from "@/src/lib/auth/require-user";
@@ -21,7 +22,7 @@ const stageStyle: Record<string, string> = {
   withdrawn: "bg-rosybrown text-slate-600",
 };
 
-export default async function ApplicationsPage() {
+async function ApplicationsContent() {
   const { account } = await requireUser("/candidate/applications");
   const db = getDb();
 
@@ -133,5 +134,14 @@ export default async function ApplicationsPage() {
         </section>
       )}
     </div>
+  );
+}
+
+
+export default function ApplicationsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-64 animate-pulse rounded-2xl bg-rosybrown" aria-label="Loading applications" />}>
+      <ApplicationsContent />
+    </Suspense>
   );
 }
