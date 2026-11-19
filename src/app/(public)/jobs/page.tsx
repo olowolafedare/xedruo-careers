@@ -9,7 +9,7 @@ import {
   formatEmploymentType,
   formatJobLocation,
   formatWorkplaceType,
-} from "@/src/lib/Xedruo Career-jobs";
+} from "@/src/lib/hireuo-jobs";
 
 export const metadata = { title: "Find a job | Xedruo Career" };
 export const instant = false;
