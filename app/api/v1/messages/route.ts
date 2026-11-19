@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, desc, eq, or } from "drizzle-orm";
+import { and, desc, eq, isNull, or } from "drizzle-orm";
 import { getDb } from "@/src/lib/db";
 import { applications, companyMemberships, jobs, messages, notifications } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
@@ -10,6 +10,7 @@ export const GET = withCentralAuthErrors(async function GET(request: NextRequest
   if (!current) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   try {
     const db = getDb();
+    await db.update(messages).set({ readAt: new Date() }).where(and(eq(messages.recipientAccountId, current.account.id), isNull(messages.readAt)));
     const rows = await db.select({
       id: messages.id,
       applicationId: messages.applicationId,
@@ -103,7 +104,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       message: `You have a new message about ${application.jobTitle}.`,
       entityType: "application",
       entityId: applicationId,
-      actionUrl: "/candidate/messages",
+      actionUrl: senderIsCandidate ? "/recruiter/messages" : "/candidate/messages",
     });
     return NextResponse.json({ message: saved }, { status: 201 });
   } catch (error) {
