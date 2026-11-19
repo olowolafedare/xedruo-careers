@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
+type Contact = { applicationId: string; jobTitle: string; accountId: string };
+
 type Message = {
   id: string;
   applicationId: string;
@@ -16,6 +18,7 @@ type Message = {
 
 export function MessagesInbox({ audience }: { audience: "candidate" | "employer" }) {
   const [items, setItems] = useState<Message[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState<string | null>(null);
@@ -24,10 +27,11 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
   async function load() {
     setError("");
     try {
-      const response = await fetch("/api/v1/messages", { credentials: "same-origin", cache: "no-store" });
+      const response = await fetch("/api/v1/messages?audience=" + audience, { credentials: "same-origin", cache: "no-store" });
       const payload = await response.json().catch(() => null);
       if (!response.ok) throw new Error(payload?.error ?? "Messages could not be loaded.");
       setItems(Array.isArray(payload?.messages) ? payload.messages : []);
+      setContacts(Array.isArray(payload?.contacts) ? payload.contacts : []);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Messages could not be loaded.");
     } finally {
@@ -81,6 +85,27 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Messages</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">Keep application conversations in one place. Messages are limited to the candidate and the employer team for that application.</p>
       </header>
+      {contacts.length > 0 && (
+        <section className="space-y-3">
+          <div>
+            <h2 className="text-lg font-semibold">Start a conversation</h2>
+            <p className="mt-1 text-sm text-slate-500">Choose an application to contact the other side.</p>
+          </div>
+          {contacts.map((contact) => {
+            const key = "new:" + contact.applicationId + ":" + contact.accountId;
+            return (
+              <form key={key} onSubmit={(event) => void send(event, contact.applicationId, contact.accountId, key)} className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-end">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold">{contact.jobTitle}</p>
+                  <p className="mt-1 text-xs text-slate-500">Application conversation</p>
+                  <textarea aria-label={"Message about " + contact.jobTitle} value={drafts[key] ?? ""} onChange={(event) => setDrafts((current) => ({ ...current, [key]: event.target.value }))} maxLength={5000} rows={2} placeholder="Write your first message…" className="mt-3 w-full resize-y rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500" />
+                </div>
+                <button disabled={sending === key || !(drafts[key] ?? "").trim()} className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">{sending === key ? "Sending…" : "Start chat"}</button>
+              </form>
+            );
+          })}
+        </section>
+      )}
       {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p>}
       {loading ? <p className="rounded-2xl border border-slate-200 p-6 text-sm text-slate-500">Loading conversations…</p> : conversations.length === 0 ? (
         <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
