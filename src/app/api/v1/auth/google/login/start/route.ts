@@ -13,21 +13,29 @@ import {
 import { getHireuoOrigin } from "../../../../../../../lib/auth/registration-cookie";
 
 export async function POST() {
+  let stage = "resolve-callback-origin";
   try {
     const callbackUri = new URL(
       "/api/v1/auth/google/login/callback",
       getHireuoOrigin(),
     ).toString();
+
+    stage = "create-login-transaction";
     const { transaction, sealed } = createApplicationGoogleLoginTransaction();
+
+    stage = "request-central-auth";
     const result = await centralAuthApplicationGoogleStart(
       callbackUri,
       transaction.state,
     );
+
+    stage = "validate-authorization-url";
     const authorizationUrl = new URL(result.authorizationUrl);
     if (authorizationUrl.protocol !== "https:") {
       throw new Error("Invalid Google authorization URL protocol.");
     }
 
+    stage = "set-login-cookie";
     const response = NextResponse.json(
       { authorizationUrl: authorizationUrl.toString() },
       { headers: { "Cache-Control": "no-store" } },
@@ -46,6 +54,7 @@ export async function POST() {
       });
     }
     console.error("HIREUO Google application-login start failed:", {
+      stage,
       errorName: error instanceof Error ? error.name : "UnknownError",
     });
     return NextResponse.json(
