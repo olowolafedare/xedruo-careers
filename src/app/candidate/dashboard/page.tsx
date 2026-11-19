@@ -19,6 +19,10 @@ import {
   candidateProfiles,
 } from "@/src/lib/db/schema";
 
+// This authenticated dashboard reads cookies and user-specific database data.
+// Render it as a blocking route instead of prerendering it at build time.
+export const instant = false;
+
 const shortcuts = [
   {
     title: "Applications",
