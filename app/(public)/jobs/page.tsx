@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { and, desc, eq, gt, ilike, or } from "drizzle-orm";
+import { and, desc, eq, gt, ilike, lte, or } from "drizzle-orm";
 import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
 
 import { getDb } from "@/src/lib/db";
@@ -77,6 +77,11 @@ export default async function JobsPage({
 
   try {
     const db = getDb();
+    const now = new Date();
+    await db
+      .update(jobs)
+      .set({ status: "closed", updatedAt: now })
+      .where(and(eq(jobs.status, "published"), lte(jobs.expiresAt, now)));
 
     results = await db
       .select({
