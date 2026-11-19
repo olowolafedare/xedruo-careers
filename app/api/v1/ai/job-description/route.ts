@@ -2,16 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
 import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const XEDRION_COMPANY_ASSISTANT_URL =
+  "https://xedrion-ai.xedruo.com/api/company-assistant";
+
 export const POST = withCentralAuthErrors(async function POST(request: NextRequest) {
   const user = await requireApiUser();
   if (!user) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  // This is the server-to-server key configured on the Xedrion AI Worker as
+  // XEDRION_COMPANY_API_KEY. Keep the matching value in this app's server secrets.
+  const apiKey = process.env.XEDRION_COMPANY_API_KEY?.trim();
   if (!apiKey) {
     return NextResponse.json(
-      { error: "AI job description generation is not configured yet. Add OPENAI_API_KEY to the server environment." },
+      { error: "Xedrion AI is not connected yet. Configure XEDRION_COMPANY_API_KEY in the Career app server environment." },
       { status: 503 },
     );
   }
@@ -26,42 +34,65 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
   const title = typeof body.title === "string" ? body.title.trim().slice(0, 200) : "";
   const prompt = typeof body.prompt === "string" ? body.prompt.trim().slice(0, 4000) : "";
   if (!title || !prompt) {
-    return NextResponse.json({ error: "Provide a job title and a short description of the role." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Provide a job title and a short description of the role." },
+      { status: 400 },
+    );
   }
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      temperature: 0.4,
-      messages: [
-        {
-          role: "system",
-          content: "Write a clear, inclusive, realistic job description. Return only the job description with concise sections for role summary, responsibilities, qualifications, experience and skills. Do not invent salary, location, benefits or company facts.",
-        },
-        {
-          role: "user",
-          content: `Job title: ${title}\nEmployer's notes: ${prompt}`,
-        },
-      ],
-    }),
-  });
+  const query = [
+    "Create a professional, inclusive and practical job description for an employer using Xedruo Career.",
+    "Return only the finished job description, with clear sections for role summary, responsibilities, required qualifications, experience and skills.",
+    "Do not invent salary, benefits, location, company details, application deadlines or requirements that the employer has not supplied.",
+    "Use the employer's notes as the source of truth. Improve clarity and structure without changing the intended role.",
+    "",
+    `Job title: ${title}`,
+    `Employer's notes: ${prompt}`,
+  ].join("\n");
+
+  let response: Response;
+  try {
+    response = await fetch(XEDRION_COMPANY_ASSISTANT_URL, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        conversation: [],
+      }),
+      signal: AbortSignal.timeout(35000),
+      cache: "no-store",
+    });
+  } catch (error) {
+    console.error("Xedrion AI request failed:", error);
+    return NextResponse.json(
+      { error: "Could not reach Xedrion AI. Please try again or write the description manually." },
+      { status: 502 },
+    );
+  }
+
+  const result = await response.json().catch(() => null) as
+    | { answer?: unknown; error?: unknown }
+    | null;
 
   if (!response.ok) {
-    console.error("AI job description provider returned", response.status);
-    return NextResponse.json({ error: "AI generation is temporarily unavailable. Please write or edit the description manually." }, { status: 502 });
+    console.error("Xedrion AI returned an error:", response.status);
+    const message =
+      typeof result?.error === "string"
+        ? result.error
+        : "Xedrion AI could not generate the job description.";
+    return NextResponse.json({ error: message }, { status: response.status >= 500 ? 502 : response.status });
   }
 
-  const result = await response.json() as {
-    choices?: Array<{ message?: { content?: string | null } }>;
-  };
-  const description = result.choices?.[0]?.message?.content?.trim();
+  const description =
+    typeof result?.answer === "string" ? result.answer.trim() : "";
   if (!description) {
-    return NextResponse.json({ error: "The AI provider returned an empty description." }, { status: 502 });
+    return NextResponse.json(
+      { error: "Xedrion AI returned an empty response. Please try again." },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({ description });
