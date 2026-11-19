@@ -4,8 +4,6 @@ import { and, eq, gt, lte } from "drizzle-orm";
 import { getDb } from "@/src/lib/db";
 import { jobs, notifications } from "@/src/lib/db/schema";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET?.trim();
   const authorization = request.headers.get("authorization");
