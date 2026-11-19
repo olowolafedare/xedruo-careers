@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -61,6 +61,9 @@ export default function CandidateProfilePage() {
   const [candidate, setCandidate] = useState<CandidateProfile | null>(null);
   const [location, setLocation] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
+  const [resumeName, setResumeName] = useState("");
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [resumeError, setResumeError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -113,6 +116,7 @@ export default function CandidateProfilePage() {
 
           if (active && resumeData.success && resumeData.resume?.url) {
             setResumeUrl(resumeData.resume.url);
+            setResumeName(resumeData.resume.originalName);
           }
         }
       } catch (err) {
@@ -134,6 +138,38 @@ export default function CandidateProfilePage() {
       active = false;
     };
   }, []);
+
+  async function uploadResume(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const fileInput = form.elements.namedItem("resume");
+    const file = fileInput instanceof HTMLInputElement ? fileInput.files?.[0] : undefined;
+    if (!file) return;
+    setUploadingResume(true);
+    setResumeError("");
+    try {
+      const body = new FormData();
+      body.append("resume", file);
+      const response = await fetch("/api/v1/candidate/resume", {
+        method: "POST",
+        credentials: "same-origin",
+        body,
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.success) throw new Error(payload?.error ?? "Resume upload failed.");
+      const latest = await fetch("/api/v1/candidate/resume", { credentials: "same-origin", cache: "no-store" });
+      const latestPayload = await latest.json().catch(() => null) as ResumeResponse;
+      if (latest.ok && latestPayload.resume) {
+        setResumeUrl(latestPayload.resume.url);
+        setResumeName(latestPayload.resume.originalName);
+      }
+      form.reset();
+    } catch (cause) {
+      setResumeError(cause instanceof Error ? cause.message : "Resume upload failed.");
+    } finally {
+      setUploadingResume(false);
+    }
+  }
 
   const details = [
     {
@@ -269,9 +305,18 @@ export default function CandidateProfilePage() {
               <h2 className="font-semibold">Resume</h2>
             </div>
 
+            <form onSubmit={uploadResume} className="mt-5 space-y-3">
+              <label className="block text-sm font-medium text-slate-700">
+                Upload or replace your CV (PDF, DOC or DOCX, max 5 MB)
+                <input name="resume" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required className="mt-2 block w-full rounded-xl border border-slate-200 p-3 text-sm" />
+              </label>
+              {resumeError && <p role="alert" className="text-sm text-red-700">{resumeError}</p>}
+              <button disabled={uploadingResume} className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{uploadingResume ? "Uploading…" : "Upload CV"}</button>
+            </form>
+
             <p className="mt-4 text-sm text-slate-600">
               {resumeUrl
-                ? "A resume is saved to your profile"
+                ? `Current CV: ${resumeName || "Uploaded document"}`
                 : "No resume uploaded"}
             </p>
 
