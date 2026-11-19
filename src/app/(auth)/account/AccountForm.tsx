@@ -161,12 +161,12 @@ export default function AccountForm({
           {isAdminLogin ? "HIREUO STAFF" : "HIREUO"}
         </Link>
 
-        <h1 className="mt-5 text-3xl font-bold text-slate-950">
+        <h1 className="mt-5 text-1xl font-bold text-slate-950">
           {isAdminLogin
             ? "Staff sign in"
             : mode === "sign-up"
-              ? "Create your HIREUO account"
-              : "Sign in to HIREUO"}
+              ? "Create HIREUO account"
+              : "Sign in"}
         </h1>
 
         {isAdminLogin && (
@@ -181,8 +181,9 @@ export default function AccountForm({
           </p>
         )}
 
-        <form onSubmit={submit} className="mt-7 space-y-4">
-          {mode === "sign-in" && (
+        {(isAdminLogin || mode === "sign-up") && (
+          <form onSubmit={submit} className="mt-7 space-y-4">
+          {isAdminLogin && mode === "sign-in" && (
             <>
               <label className="block text-sm font-medium">
                 Xedruo ID
@@ -245,8 +246,7 @@ export default function AccountForm({
             </>
           )}
 
-          {(mode === "sign-in" ||
-            mode === "sign-up") && (
+          {(isAdminLogin || mode === "sign-up") && (
             <div>
               <label
                 htmlFor="account-password"
@@ -297,15 +297,11 @@ export default function AccountForm({
                 ? "Sign in"
                 : "Create account"}
           </button>
-        </form>
+          </form>
+        )}
 
         {!isAdminLogin && mode === "sign-in" && (
           <>
-            <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-slate-500">
-              <span className="h-px flex-1 bg-slate-300" />
-              <span>or</span>
-              <span className="h-px flex-1 bg-slate-300" />
-            </div>
             <button
               type="button"
               disabled={busy}
