@@ -108,7 +108,7 @@ export default async function RecruiterDashboardPage() {
             Manage your openings and keep candidate conversations moving
           </p>
         </div>
-        {["owner", "admin", "hr_manager"].includes(membership.role) && (
+        {["owner", "admin", "hr_manager", "recruiter"].includes(membership.role) && (
           <Link
             href="/recruiter/jobs/new"
             className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-black bg-rosybrown sm:self-auto"
@@ -190,7 +190,7 @@ export default async function RecruiterDashboardPage() {
               <p className="mt-1 text-sm text-slate-500">
                 Create your first opening to get started
               </p>
-              {["owner", "admin", "hr_manager"].includes(membership.role) && (
+              {["owner", "admin", "hr_manager", "recruiter"].includes(membership.role) && (
                 <Link
                   href="/recruiter/jobs/new"
                   className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-amber-600"
