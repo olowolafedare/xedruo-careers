@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Contact = { applicationId: string; jobTitle: string; accountId: string };
 
@@ -24,7 +24,7 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
   const [sending, setSending] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  async function load() {
+  const load = useCallback(async () => {
     setError("");
     try {
       const response = await fetch("/api/v1/messages?audience=" + audience, { credentials: "same-origin", cache: "no-store" });
@@ -37,9 +37,9 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
     } finally {
       setLoading(false);
     }
-  }
+  }, [audience]);
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => { void load(); }, [load]);
 
   const conversations = useMemo(() => {
     const groups = new Map<string, Message[]>();
