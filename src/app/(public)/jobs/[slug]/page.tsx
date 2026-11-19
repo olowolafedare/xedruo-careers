@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { ArrowLeft, BriefcaseBusiness, MapPin } from "lucide-react";
 
 import { getDb } from "@/src/lib/db";
@@ -51,6 +51,7 @@ export default async function JobDetailPage({
       and(
         isId ? eq(jobs.id, slug) : eq(jobs.slug, slug),
         eq(jobs.status, "published"),
+        gt(jobs.expiresAt, new Date()),
       ),
     )
     .limit(1);

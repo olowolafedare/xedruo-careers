@@ -32,7 +32,7 @@ export default async function RecruiterLayout({
 }) {
   await connection();
   const { company, membership } = await requireRecruiter();
-  const canManage = ["owner", "admin", "manager"].includes(membership.role);
+  const canManage = ["owner", "admin", "hr_manager", "recruiter"].includes(membership.role);
 
   return (
     <div className="min-h-screen bg-rosybrown text-slate-900">
