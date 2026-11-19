@@ -44,6 +44,7 @@ export const GET = withCentralAuthErrors(async function GET(request: NextRequest
         .innerJoin(companyMemberships, and(
           eq(companyMemberships.companyId, jobs.companyId),
           eq(companyMemberships.status, "active"),
+          inArray(companyMemberships.role, ["owner", "admin", "hr_manager", "recruiter"]),
         ))
         .where(eq(applications.candidateAccountId, current.account.id));
     } else {
@@ -52,6 +53,7 @@ export const GET = withCentralAuthErrors(async function GET(request: NextRequest
         .where(and(
           eq(companyMemberships.accountId, current.account.id),
           eq(companyMemberships.status, "active"),
+          inArray(companyMemberships.role, ["owner", "admin", "hr_manager", "recruiter"]),
         ));
       const companyIds = memberships.map((membership) => membership.companyId);
       if (companyIds.length) {
@@ -96,14 +98,14 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     if (!application) return NextResponse.json({ error: "Application not found." }, { status: 404 });
 
     const senderIsCandidate = application.candidateAccountId === current.account.id;
-    const [senderMembership] = await db.select({ id: companyMemberships.id })
+    const [senderMembership] = await db.select({ id: companyMemberships.id, role: companyMemberships.role })
       .from(companyMemberships)
       .where(and(
         eq(companyMemberships.companyId, application.companyId),
         eq(companyMemberships.accountId, current.account.id),
         eq(companyMemberships.status, "active"),
       )).limit(1);
-    const [recipientMembership] = await db.select({ id: companyMemberships.id })
+    const [recipientMembership] = await db.select({ id: companyMemberships.id, role: companyMemberships.role })
       .from(companyMemberships)
       .where(and(
         eq(companyMemberships.companyId, application.companyId),
@@ -111,9 +113,10 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
         eq(companyMemberships.status, "active"),
       )).limit(1);
 
+    const allowedRoles = ["owner", "admin", "hr_manager", "recruiter"];
     const authorized = senderIsCandidate
-      ? Boolean(recipientMembership)
-      : Boolean(senderMembership) && recipientAccountId === application.candidateAccountId;
+      ? Boolean(recipientMembership && allowedRoles.includes(recipientMembership.role))
+      : Boolean(senderMembership && allowedRoles.includes(senderMembership.role)) && recipientAccountId === application.candidateAccountId;
     if (!authorized) return NextResponse.json({ error: "You are not a participant in this application conversation." }, { status: 403 });
 
     const [saved] = await db.insert(messages).values({
