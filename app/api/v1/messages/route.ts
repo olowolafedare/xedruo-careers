@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, desc, eq, isNull, or } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, or } from "drizzle-orm";
 import { getDb } from "@/src/lib/db";
 import { applications, companyMemberships, jobs, messages, notifications } from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
@@ -32,7 +32,39 @@ export const GET = withCentralAuthErrors(async function GET(request: NextRequest
       counterpartAccountId: row.senderAccountId === current.account.id ? row.recipientAccountId : row.senderAccountId,
       isOwnMessage: row.senderAccountId === current.account.id,
     }));
-    return NextResponse.json({ messages: result });
+    const audience = request.nextUrl.searchParams.get("audience") === "employer" ? "employer" : "candidate";
+    let contacts: { applicationId: string; jobTitle: string; accountId: string }[] = [];
+    if (audience === "candidate") {
+      contacts = await db.select({
+        applicationId: applications.id,
+        jobTitle: jobs.title,
+        accountId: companyMemberships.accountId,
+      }).from(applications)
+        .innerJoin(jobs, eq(applications.jobId, jobs.id))
+        .innerJoin(companyMemberships, and(
+          eq(companyMemberships.companyId, jobs.companyId),
+          eq(companyMemberships.status, "active"),
+        ))
+        .where(eq(applications.candidateAccountId, current.account.id));
+    } else {
+      const memberships = await db.select({ companyId: companyMemberships.companyId })
+        .from(companyMemberships)
+        .where(and(
+          eq(companyMemberships.accountId, current.account.id),
+          eq(companyMemberships.status, "active"),
+        ));
+      const companyIds = memberships.map((membership) => membership.companyId);
+      if (companyIds.length) {
+        contacts = await db.select({
+          applicationId: applications.id,
+          jobTitle: jobs.title,
+          accountId: applications.candidateAccountId,
+        }).from(applications)
+          .innerJoin(jobs, eq(applications.jobId, jobs.id))
+          .where(inArray(jobs.companyId, companyIds));
+      }
+    }
+    return NextResponse.json({ messages: result, contacts });
   } catch (error) {
     console.error("Unable to load messages:", error);
     return NextResponse.json({ error: "Unable to load messages" }, { status: 500 });
