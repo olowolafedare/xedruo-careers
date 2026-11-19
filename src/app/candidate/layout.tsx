@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { connection } from "next/server";
 import {
   Bookmark,
   BriefcaseBusiness,
@@ -34,7 +33,6 @@ export default async function CandidateLayout({
 }: {
   children: ReactNode;
 }) {
-  await connection();
   return (
     <div className="min-h-screen bg-rosybrown text-slate-900">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col bg-rosybrown px-5 py-6 lg:flex">
