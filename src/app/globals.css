@@ -39,13 +39,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .text-amber-950, .text-amber-900, .text-amber-800,
 .text-amber-700, .text-amber-600, .text-amber-500,
 .text-sky-700 { color: #155eef !important; }
-.hover\\:text-amber-600:hover, .hover\\:text-amber-700:hover { color: #0b45b5 !important; }
-.hover\\:bg-amber-50:hover { background-color: #dbeafe !important; }
-.focus-visible\\:outline-amber-600:focus-visible { outline-color: #155eef !important; }
+.hover\:text-amber-600:hover, .hover\:text-amber-700:hover { color: #0b45b5 !important; }
+.hover\:bg-amber-50:hover { background-color: #dbeafe !important; }
+.focus-visible\:outline-amber-600:focus-visible { outline-color: #155eef !important; }
 .bg-rosybrown.text-white, .bg-rosybrown .text-white {
   background-color: #155eef !important;
 }
-.shadow-amber-600\\/20 { --tw-shadow-color: rgb(21 94 239 / 20%) !important; }
+.shadow-amber-600\/20 { --tw-shadow-color: rgb(21 94 239 / 20%) !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
