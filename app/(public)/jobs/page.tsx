@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { and, desc, eq, gt, ilike, lte, or } from "drizzle-orm";
 import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
 
@@ -25,7 +26,7 @@ function escapeLike(value: string) {
   return value.replace(/[\\%_]/g, "\\$&");
 }
 
-export default async function JobsPage({
+async function JobsPageContent({
   searchParams,
 }: {
   searchParams: Promise<{
@@ -208,5 +209,14 @@ export default async function JobsPage({
         <p className="mt-5 text-xs text-slate-500">Showing up to 100 recent published roles</p>
       </div>
     </main>
+  );
+}
+
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-rosybrown px-5 py-14 text-slate-600">Loading jobs…</main>}>
+      <JobsPageContent searchParams={Promise.resolve({})} />
+    </Suspense>
   );
 }
