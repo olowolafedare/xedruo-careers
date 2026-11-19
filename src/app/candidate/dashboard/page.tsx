@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import { Suspense } from "react";
 import {
   ArrowRight,
   Bookmark,
@@ -56,7 +57,7 @@ const shortcuts = [
   },
 ];
 
-export default async function CandidateDashboardPage() {
+async function CandidateDashboardContent() {
   const { account } = await requireUser("/candidate/dashboard");
   const db = getDb();
 
@@ -194,5 +195,14 @@ export default async function CandidateDashboardPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+
+export default function CandidateDashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-64 animate-pulse rounded-2xl bg-rosybrown" aria-label="Loading candidate dashboard" />}>
+      <CandidateDashboardContent />
+    </Suspense>
   );
 }
