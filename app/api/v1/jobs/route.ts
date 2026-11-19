@@ -199,6 +199,20 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
 
   const employmentType = String(body.employment_type ?? "");
   const workplaceType = String(body.workplace_type ?? "");
+  const responsibilities = typeof body.responsibilities === "string" ? body.responsibilities.trim() : "";
+  const requirements = typeof body.requirements === "string" ? body.requirements.trim() : "";
+  const experienceLevel = typeof body.experience_level === "string" ? body.experience_level : "";
+  const allowedExperienceLevels = ["entry", "junior", "mid", "senior", "lead", "executive"] as const;
+  const parseOptionalAmount = (value: unknown) => {
+    if (value === null || value === undefined || value === "") return null;
+    const amount = Number(value);
+    return Number.isSafeInteger(amount) && amount >= 0 ? amount : Number.NaN;
+  };
+  const salaryMin = parseOptionalAmount(body.salary_min);
+  const salaryMax = parseOptionalAmount(body.salary_max);
+  const salaryCurrency = typeof body.salary_currency === "string" ? body.salary_currency.trim().toUpperCase() : "";
+  const openings = body.openings === undefined || body.openings === "" ? 1 : Number(body.openings);
+  const deadlineValue = typeof body.application_deadline === "string" && body.application_deadline ? new Date(body.application_deadline) : null;
 
   if (
     !companyId ||
@@ -211,7 +225,16 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     ) ||
     !allowedWorkplaceTypes.includes(
       workplaceType as (typeof allowedWorkplaceTypes)[number],
-    )
+    ) ||
+    responsibilities.length > 12000 ||
+    requirements.length > 12000 ||
+    (experienceLevel !== "" && !allowedExperienceLevels.includes(experienceLevel as (typeof allowedExperienceLevels)[number])) ||
+    Number.isNaN(salaryMin) ||
+    Number.isNaN(salaryMax) ||
+    (salaryMin !== null && salaryMax !== null && salaryMax < salaryMin) ||
+    (salaryCurrency !== "" && !/^[A-Z]{3}$/.test(salaryCurrency)) ||
+    !Number.isInteger(openings) || openings < 1 || openings > 1000 ||
+    (deadlineValue !== null && Number.isNaN(deadlineValue.getTime()))
   ) {
     return NextResponse.json(
       { error: "Please provide valid job details" },
@@ -258,11 +281,15 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
         title,
         slug: createJobSlug(title),
         description,
+        responsibilities: responsibilities || null,
+        requirements: requirements || null,
         location: location || null,
-        employmentType:
-          employmentType as (typeof allowedEmploymentTypes)[number],
-        workplaceType:
-          workplaceType as (typeof allowedWorkplaceTypes)[number],
+        salaryMin,
+        salaryMax,
+        salaryCurrency: salaryCurrency || null,
+        experienceLevel: experienceLevel ? experienceLevel as (typeof allowedExperienceLevels)[number] : null,
+        openings,
+        applicationDeadline: deadlineValue,
         status: "draft",
       })
       .returning({
