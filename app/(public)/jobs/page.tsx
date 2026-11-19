@@ -56,7 +56,9 @@ export default async function JobsPage({
       | "full_time"
       | "part_time"
       | "contract"
-      | "internship"));
+      | "internship"
+      | "temporary"
+      | "freelance"));
   }
 
   let results: {
