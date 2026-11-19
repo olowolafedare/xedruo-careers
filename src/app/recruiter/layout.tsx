@@ -41,7 +41,7 @@ export default async function RecruiterLayout({
           <span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-lg font-bold text-white">
             H
           </span>
-          <span className="text-lg font-bold tracking-tight">HIREUO</span>
+          <span className="text-lg font-bold tracking-tight">Xedruo Career</span>
         </Link>
         <div className="mb-3 mt-9 rounded-xl bg-rosybrown px-3 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
@@ -88,7 +88,7 @@ export default async function RecruiterLayout({
               <span className="grid size-8 place-items-center rounded-lg bg-amber-900 text-sm text-white">
                 H
               </span>
-              HIREUO
+              Xedruo Career
             </Link>
             <p className="hidden text-sm text-slate-500 lg:block">
               Recruiting workspace{" "}
