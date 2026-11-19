@@ -9,9 +9,9 @@ import {
   formatEmploymentType,
   formatJobLocation,
   formatWorkplaceType,
-} from "@/src/lib/hireuo-jobs";
+} from "@/src/lib/Xedruo Career-jobs";
 
-export const metadata = { title: "Find a job | HIREUO" };
+export const metadata = { title: "Find a job | Xedruo Career" };
 export const instant = false;
 
 const employmentTypes: Record<string, string> = {
@@ -100,7 +100,7 @@ export default async function JobsPage({
       <header className="bg-rosybrown">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
           <Link href="/" className="font-extrabold tracking-tight">
-            HIREUO
+            Xedruo Career
           </Link>
 
           <Link
