@@ -1,116 +1,56 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import {
-  Bookmark,
-  BriefcaseBusiness,
-  CalendarDays,
-  ClipboardCheck,
-  LayoutDashboard,
-  UserRound,
-} from "lucide-react";
+import { Bell, BriefcaseBusiness, Home, MessageCircle, UserRound } from "lucide-react";
 
 const navigation = [
-  { href: "/candidate/dashboard", label: "Overview", icon: LayoutDashboard },
-  {
-    href: "/candidate/applications",
-    label: "Applications",
-    icon: BriefcaseBusiness,
-  },
-  { href: "/candidate/saved-jobs", label: "Saved jobs", icon: Bookmark },
-  { href: "/candidate/interviews", label: "Interviews", icon: CalendarDays },
-  {
-    href: "/candidate/assessments",
-    label: "Assessments",
-    icon: ClipboardCheck,
-  },
-  { href: "/candidate/profile", label: "My profile", icon: UserRound },
+  { href: "/candidate/dashboard", label: "Home", icon: Home },
+  { href: "/candidate/applications", label: "My Jobs", icon: BriefcaseBusiness },
+  { href: "/candidate/messages", label: "Messages", icon: MessageCircle },
+  { href: "/candidate/notifications", label: "Notifications", icon: Bell },
+  { href: "/candidate/profile", label: "Profile", icon: UserRound },
 ];
 
 export const instant = false;
 
-export default async function CandidateLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function CandidateLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-rosybrown text-slate-900">
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col bg-rosybrown px-5 py-6 lg:flex">
+    <div className="min-h-screen bg-white text-slate-900">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-blue-100 bg-white px-5 py-6 lg:flex">
         <Link href="/" className="flex items-center gap-3 px-2">
-          <span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-lg font-bold text-white">
-            H
-          </span>
-          <span className="text-lg font-bold tracking-tight">Xedruo Career</span>
+          <span className="grid size-10 place-items-center rounded-xl bg-[#1746D1] text-lg font-bold text-white">x</span>
+          <span className="text-lg font-bold tracking-tight text-[#1746D1]">Xedruo Career</span>
         </Link>
         <nav aria-label="Candidate navigation" className="mt-9 space-y-1">
           {navigation.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition bg-rosybrown hover:text-amber-700"
-            >
-              <Icon size={18} strokeWidth={1.8} />
-              {label}
+            <Link key={href} href={href} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition hover:bg-blue-50 hover:text-[#1746D1]">
+              <Icon size={19} strokeWidth={1.8} />{label}
             </Link>
           ))}
         </nav>
-        <div className="mt-auto rounded-2xl bg-rosybrown p-4">
-          <p className="text-sm font-semibold text-amber-950">
-            Ready for a new opportunity?
-          </p>
-          <Link
-            href="/jobs"
-            className="mt-3 inline-flex text-sm font-semibold text-amber-700"
-          >
-            Browse jobs{" "}
-            <span aria-hidden="true" className="ml-1">
-              →
-            </span>
-          </Link>
+        <div className="mt-auto rounded-2xl bg-[#1746D1] p-4 text-white">
+          <p className="text-sm font-semibold">Ready for a new opportunity?</p>
+          <Link href="/jobs" className="mt-3 inline-flex text-sm font-semibold text-white underline underline-offset-4">Browse jobs →</Link>
         </div>
       </aside>
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-10 bg-rosybrown backdrop-blur">
+        <header className="sticky top-0 z-10 border-b border-blue-100 bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-            <Link
-              href="/"
-              className="flex items-center gap-2 font-bold lg:hidden"
-            >
-              <span className="grid size-8 place-items-center rounded-lg bg-amber-900 text-sm text-white">
-                H
-              </span>
-              Xedruo Career
+            <Link href="/" className="flex items-center gap-2 font-bold text-[#1746D1] lg:hidden">
+              <span className="grid size-8 place-items-center rounded-lg bg-[#1746D1] text-sm text-white">x</span>Xedruo Career
             </Link>
-            <p className="hidden text-sm text-slate-500 lg:block">
-              A clearer way to manage your career journey
-            </p>
-            <Link
-              href="/jobs"
-              className="text-sm font-semibold text-amber-600 lg:hidden"
-            >
-              Find jobs
-            </Link>
+            <p className="hidden text-sm text-slate-500 lg:block">Your career workspace</p>
+            <Link href="/jobs" className="text-sm font-semibold text-[#1746D1] lg:hidden">Find jobs</Link>
           </div>
-          <nav
-            aria-label="Mobile candidate navigation"
-            className="flex gap-1 overflow-x-auto px-4 py-2 lg:hidden"
-          >
-            {navigation.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-slate-600 bg-rosybrown hover:text-amber-700"
-              >
-                <Icon size={15} />
-                {label}
-              </Link>
-            ))}
-          </nav>
         </header>
-        <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-6xl px-5 py-8 sm:px-8 sm:py-10">
-          {children}
-        </main>
+        <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-6xl px-5 py-8 pb-28 sm:px-8 sm:py-10 sm:pb-28">{children}</main>
       </div>
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-blue-100 bg-white/95 px-1 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur lg:hidden">
+        {navigation.map(({ href, label, icon: Icon }) => (
+          <Link key={href} href={href} className="flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[10px] font-semibold text-slate-600 hover:text-[#1746D1]">
+            <Icon size={20} strokeWidth={1.9} /><span className="truncate">{label}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
