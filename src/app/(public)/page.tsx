@@ -41,13 +41,13 @@ export default function HomePage() {
           <Link
             href="/"
             className="flex items-center gap-2.5"
-            aria-label="HIREUO home"
+            aria-label="Xedruo Career home"
           >
             <span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-lg font-black text-white">
               H
             </span>
             <span className="text-xl font-extrabold tracking-tight">
-              HIREUO
+              Xedruo Career
             </span>
           </Link>
           <div className="hidden items-center gap-8 md:flex">
@@ -311,7 +311,7 @@ export default function HomePage() {
             href="/"
             className="font-extrabold tracking-tight text-slate-900"
           >
-            HIREUO
+            Xedruo Career
           </Link>
           <p>
             © <FooterYear />{" "}
