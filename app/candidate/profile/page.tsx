@@ -208,7 +208,7 @@ export default function CandidateProfilePage() {
             </div>
           </div>
           <Link
-            href="/recruiter/dashboard"
+            href="/recruiter"
             className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-800"
           >
             Hire talent <ArrowRight size={15} />
