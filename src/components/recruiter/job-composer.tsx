@@ -57,9 +57,17 @@ export function JobComposer({ companyId }: { companyId: string }) {
         organization_id: companyId,
         title: form.get("title"),
         description,
+        responsibilities: form.get("responsibilities"),
+        requirements: form.get("requirements"),
         city: form.get("city"),
         employment_type: form.get("employment_type"),
         workplace_type: form.get("workplace_type"),
+        salary_min: form.get("salary_min"),
+        salary_max: form.get("salary_max"),
+        salary_currency: form.get("salary_currency"),
+        experience_level: form.get("experience_level"),
+        openings: form.get("openings"),
+        application_deadline: form.get("application_deadline"),
       }),
     }).catch(() => null);
 
@@ -89,12 +97,38 @@ export function JobComposer({ companyId }: { companyId: string }) {
         <label className="text-sm font-semibold">
           Work arrangement *
           <select name="workplace_type" className={fieldClass} required defaultValue="onsite">
-            <option value="onsite">Full onsite</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option>
+            <option value="onsite">Onsite</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option>
           </select>
         </label>
         <label className="text-sm font-semibold sm:col-span-2">
           Job location
           <input name="city" className={fieldClass} maxLength={160} placeholder="City, state or country" />
+        </label>
+        <label className="text-sm font-semibold">
+          Experience level
+          <select name="experience_level" className={fieldClass} defaultValue="">
+            <option value="">Not specified</option><option value="entry">Entry level</option><option value="junior">Junior</option><option value="mid">Mid-level</option><option value="senior">Senior</option><option value="lead">Lead</option><option value="executive">Executive</option>
+          </select>
+        </label>
+        <label className="text-sm font-semibold">
+          Number of openings *
+          <input name="openings" type="number" min="1" max="1000" defaultValue="1" required className={fieldClass} />
+        </label>
+        <label className="text-sm font-semibold">
+          Minimum salary
+          <input name="salary_min" type="number" min="0" step="1" className={fieldClass} placeholder="e.g. 200000" />
+        </label>
+        <label className="text-sm font-semibold">
+          Maximum salary
+          <input name="salary_max" type="number" min="0" step="1" className={fieldClass} placeholder="e.g. 350000" />
+        </label>
+        <label className="text-sm font-semibold">
+          Salary currency
+          <input name="salary_currency" maxLength={3} minLength={3} className={fieldClass} placeholder="NGN, USD, GBP" />
+        </label>
+        <label className="text-sm font-semibold">
+          Application deadline
+          <input name="application_deadline" type="date" className={fieldClass} min={new Date().toISOString().slice(0, 10)} />
         </label>
       </div>
 
@@ -107,6 +141,16 @@ export function JobComposer({ companyId }: { companyId: string }) {
         </button>
       </section>
 
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="block text-sm font-semibold">
+          Key responsibilities
+          <textarea name="responsibilities" className={fieldClass + " min-h-36 resize-y leading-6"} maxLength={12000} placeholder="What will the successful candidate be responsible for?" />
+        </label>
+        <label className="block text-sm font-semibold">
+          Required qualifications and skills
+          <textarea name="requirements" className={fieldClass + " min-h-36 resize-y leading-6"} maxLength={12000} placeholder="List the essential qualifications, experience and skills." />
+        </label>
+      </div>
       <label className="block text-sm font-semibold">
         Review and edit job description *
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} className={fieldClass + " min-h-64 resize-y leading-6"} required placeholder="Write the role description or generate a first draft with Xedrion AI." />
