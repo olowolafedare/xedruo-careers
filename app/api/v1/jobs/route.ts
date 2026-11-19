@@ -281,6 +281,8 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
         title,
         slug: createJobSlug(title),
         description,
+        employmentType: employmentType as (typeof allowedEmploymentTypes)[number],
+        workplaceType: workplaceType as (typeof allowedWorkplaceTypes)[number],
         responsibilities: responsibilities || null,
         requirements: requirements || null,
         location: location || null,
