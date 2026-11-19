@@ -20,7 +20,7 @@ export default async function AdminLayout({
           <span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-lg font-bold text-white">
             H
           </span>
-          <span className="text-lg font-bold tracking-tight">HIREUO</span>
+          <span className="text-lg font-bold tracking-tight">Xedruo Career</span>
         </Link>
         <p className="mb-3 mt-9 px-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
           Staff portal
@@ -41,7 +41,7 @@ export default async function AdminLayout({
       <div className="lg:pl-64">
         <header className="flex h-16 items-center justify-between bg-rosybrown px-5 sm:px-8">
           <Link href="/admin" className="font-bold lg:hidden">
-            HIREUO Staff
+            Xedruo Career Staff
           </Link>
           <p className="hidden text-sm text-slate-500 lg:block">
             Platform administration
