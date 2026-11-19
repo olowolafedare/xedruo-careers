@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+"use client";
+
+import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -6,318 +8,172 @@ import {
   CheckCircle2,
   FileText,
   Search,
-  ShieldCheck,
   Sparkles,
   Users,
 } from "lucide-react";
-import FooterYear from "@/src/components/shared/FooterYear";
 
-const features = [
+const accountHref = "/account?next=%2Fcandidate%2Fdashboard";
+
+const highlights = [
   {
-    title: "Discover opportunities",
-    description: "Search roles from teams looking for your skills",
     icon: Search,
+    title: "Discover opportunities",
+    description: "Find roles that align with your skills and ambitions.",
+    tone: "bg-[#EAF0FF] text-[#1746D1]",
   },
   {
-    title: "Showcase your talent",
-    description: "Build a profile and keep your applications organised",
     icon: FileText,
+    title: "Present your strengths",
+    description: "Build your professional profile and manage applications.",
+    tone: "bg-[#EAF7F0] text-[#16804A]",
   },
   {
-    title: "Recruit with confidence",
-    description: "Manage roles and candidates from one workspace",
     icon: Users,
+    title: "Connect with employers",
+    description: "Explore new possibilities and grow your career network.",
+    tone: "bg-[#F2ECFF] text-[#7045C5]",
   },
 ];
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen overflow-hidden bg-rosybrown text-slate-900">
-      <header className="sticky top-0 z-50 bg-rosybrown backdrop-blur-xl">
+    <main className="min-h-[100svh] overflow-hidden bg-[#1746D1] text-white">
+      <header className="relative z-10 border-b border-white/15">
         <nav
           aria-label="Main navigation"
-          className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8"
+          className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-14"
         >
-          <Link
-            href="/"
-            className="flex items-center gap-2.5"
-            aria-label="Xedruo Career home"
-          >
-            <span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-lg font-black text-white">
-              H
+          <Link href="/" aria-label="Xedruo Career home" className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-xl bg-white text-xl font-black text-[#1746D1] shadow-sm">
+              x
             </span>
-            <span className="text-xl font-extrabold tracking-tight">
-              Xedruo Career
+            <span className="text-lg font-extrabold tracking-tight sm:text-xl">
+              xedruo <span className="font-medium text-white/80">career</span>
             </span>
           </Link>
-          <div className="hidden items-center gap-8 md:flex">
-            <Link
-              href="/jobs"
-              className="text-sm font-medium text-slate-600 hover:text-amber-600"
-            >
-              Find jobs
-            </Link>
-            <a
-              href="#how-it-works"
-              className="text-sm font-medium text-slate-600 hover:text-amber-600"
-            >
-              How it works
-            </a>
-            <a
-              href="#for-employers"
-              className="text-sm font-medium text-slate-600 hover:text-amber-600"
-            >
-              For employers
-            </a>
+
+          <div className="hidden items-center gap-8 text-sm font-medium text-white/90 md:flex">
+            <Link href="/jobs" className="transition hover:text-white">Find jobs</Link>
+            <a href="#opportunities" className="transition hover:text-white">Career growth</a>
+            <a href="#employers" className="transition hover:text-white">For employers</a>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+
+          <div className="flex items-center gap-3">
             <Link
-              href="/admin"
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 bg-rosybrown"
+              href={accountHref}
+              className="hidden rounded-full px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:inline-flex"
             >
-              <ShieldCheck size={16} />
-              <span className="hidden sm:inline">Staff portal</span>
+              Sign in
             </Link>
             <Link
-              href="#for-employers"
-              className="inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-2.5 text-sm font-semibold text-white shadow-sm bg-rosybrown"
+              href={accountHref}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#1746D1] shadow-lg shadow-blue-950/15 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
-              Get started
-              <ArrowRight size={16} />
+              Get started <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         </nav>
       </header>
 
-      <section className="relative isolate overflow-hidden bg-rosybrown">
-        <div
-          aria-hidden="true"
-          className="absolute -right-28 -top-32 -z-10 size-120 rounded-full bg-rosybrown blur-3xl"
-        />
-        <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-rosybrown px-3.5 py-2 text-sm font-semibold text-amber-700 shadow-sm">
-              <Sparkles size={15} />
-              Your next chapter starts here
-            </div>
-            <h1 className="mt-7 max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl">
-              Great opportunities
-              <span className="block text-amber-600">Exceptional talent</span>
-              <span className="block">One platform</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-              A clearer way for people to find meaningful work and for teams to
-              find the right people
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/jobs"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-rosybrown px-6 py-4 font-semibold text-white shadow-lg shadow-amber-600/20 bg-rosybrown"
-              >
-                Explore opportunities
-                <ArrowRight size={18} />
-              </Link>
-              <Link
-                href="/recruiter"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-rosybrown px-6 py-4 font-semibold text-slate-800 bg-rosybrown"
-              >
-                I&apos;m hiring
-                <ArrowUpRight size={18} />
-              </Link>
-            </div>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-500">
-              <span className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-amber-600" />A clearer
-                hiring journey
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-amber-600" />
-                Built for talent and teams
-              </span>
-            </div>
+      <section className="mx-auto grid min-h-[calc(100svh-76px)] max-w-[1440px] items-center gap-12 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16 lg:px-14 lg:py-14">
+        <div className="max-w-[610px]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-2 text-[11px] font-bold tracking-[0.14em] text-white/95">
+            <Sparkles size={14} aria-hidden="true" />
+            YOUR NEXT CHAPTER STARTS HERE
           </div>
-          <div className="mx-auto w-full max-w-xl rounded-3xl bg-rosybrown p-6 shadow-xl shadow-amber-950/5 sm:p-8">
-            <div className="flex items-center justify-between pb-5">
+
+          <h1 className="mt-7 max-w-[620px] text-[clamp(2.8rem,5.2vw,4.65rem)] font-extrabold leading-[1.04] tracking-[-0.045em] text-white">
+            Elevate your career with Xedruo Career.
+          </h1>
+
+          <p className="mt-6 max-w-[540px] text-base leading-7 text-blue-50 sm:text-lg sm:leading-8">
+            Discover opportunities that match your ambition. Connect with employers,
+            showcase your strengths and move your career forward.
+          </p>
+
+          <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <Link
+              href={accountHref}
+              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-white px-7 text-base font-bold text-[#1746D1] shadow-xl shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            >
+              Get started <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+            <Link
+              href="/jobs"
+              className="inline-flex min-h-12 items-center justify-center gap-2 px-2 text-sm font-semibold text-white/95 transition hover:text-white"
+            >
+              Explore opportunities <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs font-medium text-blue-100 sm:text-sm">
+            <span className="inline-flex items-center gap-2">
+              <CheckCircle2 size={16} aria-hidden="true" /> One Xedruo account
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <CheckCircle2 size={16} aria-hidden="true" /> Career and hiring tools
+            </span>
+          </div>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-[540px]" id="opportunities">
+          <div aria-hidden="true" className="absolute -inset-5 rounded-[34px] bg-white/10 blur-2xl" />
+          <div className="relative rounded-[26px] border border-white/70 bg-white p-5 text-slate-900 shadow-[0_28px_80px_rgba(5,24,87,0.28)] sm:p-7">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">
-                  Career workspace
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#1746D1]">
+                  Your career workspace
                 </p>
-                <h2 className="mt-2 text-xl font-bold">
-                  Make your next move count
+                <h2 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
+                  Make your next move count.
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Opportunities worth exploring
+                  Everything you need to move forward.
                 </p>
               </div>
-              <span className="grid size-11 place-items-center rounded-2xl bg-rosybrown text-amber-600">
-                <BriefcaseBusiness size={23} />
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#EAF0FF] text-[#1746D1]">
+                <BriefcaseBusiness size={23} aria-hidden="true" />
               </span>
             </div>
-            <div className="mt-5 space-y-3">
-              {[
-                {
-                  icon: Search,
-                  title: "Find your next role",
-                  copy: "Discover opportunities that fit you",
-                },
-                {
-                  icon: FileText,
-                  title: "Put your experience forward",
-                  copy: "Present your skills and achievements",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Move forward with confidence",
-                  copy: "Keep your career journey organised",
-                },
-              ].map(({ icon: Icon, title, copy }) => (
+
+            <div className="mt-6 space-y-3">
+              {highlights.map(({ icon: Icon, title, description, tone }) => (
                 <div
                   key={title}
-                  className="flex items-center gap-3 rounded-2xl bg-rosybrown p-4"
+                  className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 transition hover:border-blue-100 hover:bg-[#FBFCFF]"
                 >
-                  <span className="grid size-11 place-items-center rounded-xl bg-rosybrown text-amber-600 shadow-sm">
-                    <Icon size={20} />
+                  <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${tone}`}>
+                    <Icon size={20} aria-hidden="true" />
                   </span>
-                  <div>
-                    <p className="font-semibold">{title}</p>
-                    <p className="mt-1 text-xs text-slate-500">{copy}</p>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-slate-900">{title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">{description}</p>
                   </div>
+                  <ArrowUpRight className="ml-auto shrink-0 text-slate-300" size={17} aria-hidden="true" />
                 </div>
               ))}
             </div>
-            <div className="mt-5 flex items-center justify-between rounded-2xl bg-rosybrown p-4 text-black">
-              <p className="text-sm font-semibold">
-                Your next chapter starts with one step
-              </p>
-              <ArrowRight size={18} />
+
+            <div
+              id="employers"
+              className="mt-5 flex flex-col gap-3 rounded-2xl bg-[#F3F6FF] p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="text-sm font-bold text-slate-900">Building a team?</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  Find and connect with the right talent.
+                </p>
+              </div>
+              <Link
+                href={accountHref}
+                className="inline-flex items-center gap-2 text-sm font-bold text-[#1746D1] hover:underline"
+              >
+                Start hiring <ArrowRight size={15} aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
-
-      <section className=" bg-rosybrown" id="for-employers">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-600">
-              One platform, two journeys
-            </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Where would you like to begin?
-            </h2>
-            <p className="mt-4 leading-7 text-slate-600">
-              Choose your path and take the next step
-            </p>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
-            <Link
-              href="/account?next=%2Fapplicant"
-              className="group rounded-3xl bg-rosybrown p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-amber-50 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-amber-600 sm:p-9"
-            >
-              <span className="grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
-                <Search size={24} />
-              </span>
-              <h3 className="mt-6 text-2xl font-bold">I want to find a role</h3>
-              <p className="mt-3 leading-7 text-slate-600">
-                Discover opportunities, showcase your experience, and manage
-                your applications
-              </p>
-              <span className="mt-7 inline-flex items-center gap-2 font-semibold text-amber-600">
-                Continue as a candidate
-                <ArrowRight size={18} />
-              </span>
-            </Link>
-            <Link
-              href="/account?next=%2Frecruiter"
-              className="group rounded-3xl bg-rosybrown p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-amber-50 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-amber-600 sm:p-9"
-            >
-              <span className="grid size-12 place-items-center rounded-2xl bg-rosybrown text-sky-700">
-                <Users size={24} />
-              </span>
-              <h3 className="mt-6 text-2xl font-bold">I want to hire</h3>
-              <p className="mt-3 leading-7 text-slate-600">
-                Publish jobs, review candidates, and manage your recruitment
-                pipeline
-              </p>
-              <span className="mt-7 inline-flex items-center gap-2 font-semibold text-amber-600">
-                Continue as a recruiter
-                <ArrowRight size={18} />
-              </span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="how-it-works"
-        className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24"
-      >
-        <div className="max-w-2xl">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-amber-600">
-            Designed for progress
-          </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Everything starts with the right connection
-          </h2>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {features.map(({ title, description, icon: Icon }, index) => (
-            <article key={title} className="rounded-2xl bg-rosybrown p-7">
-              <div className="flex items-center justify-between">
-                <span className="grid size-12 place-items-center rounded-xl bg-rosybrown text-amber-600">
-                  <Icon size={22} />
-                </span>
-                <span className="text-sm font-bold tracking-widest text-slate-300">
-                  0{index + 1}
-                </span>
-              </div>
-              <h3 className="mt-6 text-xl font-bold">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                {description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="px-5 pb-20 sm:px-8 sm:pb-24">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 rounded-3xl bg-rosybrown px-7 py-12 text-black sm:px-12 sm:py-16 md:flex-row md:items-center">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold text-amber-300">
-              YOUR NEXT CHAPTER STARTS HERE
-            </p>
-            <h2 className="mt-4 text-3xl font-extrabold sm:text-4xl text-rose-300">
-              Ready to make your next move?
-            </h2>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/jobs"
-              className="rounded-xl bg-rosybrown px-5 py-3.5 text-center font-semibold text-blue-300 bg-amber-300"
-            >
-              Browse jobs
-            </Link>
-            <Link
-              href="/recruiter"
-              className="rounded-xl /20 px-5 py-3.5 text-center font-semibold text-blue-300 bg-amber-300"
-            >
-              Start hiring
-            </Link>
-          </div>
-        </div>
-      </section>
-      <footer className=" ">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-500 sm:px-8 md:flex-row md:items-center md:justify-between">
-          <Link
-            href="/"
-            className="font-extrabold tracking-tight text-slate-900"
-          >
-            Xedruo Career
-          </Link>
-          <p>
-            © <FooterYear />{" "}
-          </p>
-        </div>
-      </footer>
     </main>
   );
 }
