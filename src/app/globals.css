@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   color-scheme: light;
@@ -23,6 +24,61 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+html.dark {
+  color-scheme: dark;
+  --background: #0b1220;
+  --foreground: #e2e8f0;
+  --muted: #1e293b;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+html.dark body {
+  background: var(--background);
+  color: var(--foreground);
+}
+html.dark .theme-toggle-moon { display: none; }
+.theme-toggle-sun { display: none; }
+html.dark .theme-toggle-sun { display: block; }
+
+/* Apply dark surfaces and readable foregrounds to shared Tailwind utilities. */
+html.dark [class~="bg-white"],
+html.dark [class~="bg-white/95"],
+html.dark [class~="bg-white/90"],
+html.dark [class~="bg-slate-50"],
+html.dark [class~="bg-slate-100"],
+html.dark [class~="bg-blue-50"],
+html.dark [class~="bg-[#F3F6FF]"],
+html.dark [class~="bg-[#FBFCFF]"],
+html.dark [class~="bg-[#1746D1]"] {
+  background-color: #111c2e !important;
+}
+html.dark .bg-rosybrown {
+  background-color: #0b1220 !important;
+}
+html.dark [class~="text-slate-900"],
+html.dark [class~="text-slate-800"],
+html.dark [class~="text-slate-700"],
+html.dark [class~="text-slate-600"],
+html.dark [class~="text-slate-500"] {
+  color: #cbd5e1 !important;
+}
+html.dark [class~="text-[#1746D1]"],
+html.dark [class~="text-blue-700"] {
+  color: #9bb9ff !important;
+}
+html.dark [class~="border-slate-100"],
+html.dark [class~="border-slate-200"],
+html.dark [class~="border-blue-100"] {
+  border-color: #29364a !important;
+}
+html.dark [class~="hover:bg-blue-50"]:hover,
+html.dark [class~="hover:bg-slate-100"]:hover,
+html.dark [class~="hover:bg-[#FBFCFF]"]:hover {
+  background-color: #1e293b !important;
+}
+
 ::selection { background: #facc15; color: #4169e1; }
 :focus-visible { outline: 3px solid #facc15; outline-offset: 3px; }
 button, input, textarea, select { font: inherit; }
