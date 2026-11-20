@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
-import { createSession } from "../../../../../lib/auth/session-store";
+import { ensureLocalAccount } from "../../../../../../lib/auth/account-store";
+import { createSession } from "../../../../../../lib/auth/session-store";
 
 const PREVIEW_HOST = "xedruo-career-preview.onrender.com";
 const PREVIEW_IDENTITY = "render-preview-demo-identity";
