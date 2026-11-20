@@ -66,20 +66,10 @@ export default function AccountForm({ authError, destination }: AccountFormProps
     }
   }
 
-  async function enterPreview() {
-    setBusy(true);
-    setError("");
-    try {
-      const response = await fetch("/api/v1/auth/preview/start", {
-        method: "POST",
-        credentials: "same-origin",
-      });
-      if (!response.ok) throw new Error(await getApiError(response));
-      window.location.assign("/start");
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Preview access is unavailable.");
-      setBusy(false);
-    }
+  function enterPreview() {
+    // Preview authentication is bypassed server-side only on the isolated
+    // Render preview host; no auth API, OAuth, or browser session is required.
+    window.location.assign("/start");
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
