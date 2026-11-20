@@ -13,6 +13,7 @@ import {
 type CandidateProfile = {
   fullName: string | null;
   phone: string | null;
+  dateOfBirth?: string | null;
   country: string | null;
   state: string | null;
   yearsExperience: number | null;
@@ -179,6 +180,7 @@ export default function CandidateProfilePage() {
         ["Full name", fullName],
         ["Email address", email],
         ["Phone number", candidate?.phone],
+        ["Date of birth", candidate?.dateOfBirth ? new Date(candidate.dateOfBirth).toLocaleDateString("en", { dateStyle: "long" }) : ""],
       ],
     },
     {
@@ -227,6 +229,16 @@ export default function CandidateProfilePage() {
           Your candidate information from onboarding
         </p>
       </header>
+
+      <section className="flex flex-col gap-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="font-semibold text-slate-900">Looking to hire talent?</h2>
+          <p className="mt-1 text-sm text-slate-600">Set up your recruiter workspace to post jobs and manage applicants.</p>
+        </div>
+        <Link href="/recruiter-onboarding" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1746D1] px-4 py-3 text-sm font-semibold text-white">
+          Hire talent <ArrowRight size={15} />
+        </Link>
+      </section>
 
       <div className="flex justify-end">
         <Link
