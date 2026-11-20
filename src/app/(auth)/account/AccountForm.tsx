@@ -125,22 +125,21 @@ export default function AccountForm({ authError, destination }: AccountFormProps
     <main className="min-h-screen bg-[#1746D1] px-5 pb-12 pt-6 text-slate-900 sm:px-8 sm:pt-8">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
         <Link href="/" aria-label="Xedruo Career home" className="text-2xl font-extrabold tracking-tight text-white">
-          xedruo<span className="text-blue-200">.</span>
-        </Link>
+          xedruo        </Link>
         <span className="hidden text-sm font-medium text-blue-100 sm:block">Career opportunities start here</span>
       </header>
 
       <div className="mx-auto flex min-h-[calc(100svh-100px)] w-full max-w-6xl items-center justify-center py-8">
-        <section className="w-full max-w-[440px] rounded-[28px] bg-white px-7 py-8 shadow-[0_24px_70px_rgba(7,29,94,0.22)] sm:px-9 sm:py-9">
+        <section className="w-full max-w-[440px] rounded-[28px] bg-amber-100 px-7 py-8 shadow-[0_24px_70px_rgba(7,29,94,0.22)] sm:px-9 sm:py-9">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1746D1]">
-            {isAdminLogin ? "Xedruo Career · Staff" : "Welcome to Xedruo"}
+            {isAdminLogin ? "Xedruo Career · Staff" : "Welcome to HIreuo"}
           </p>
-          <h1 className="mt-4 text-[27px] font-bold tracking-tight text-slate-950">
+          <h1 className="mt-4 text-[27px] font-bold tracking-tight text-slate-100">
             {isAdminLogin
               ? "Staff sign in"
-              : mode === "sign-up" ? "Create your account" : "Sign in to Xedruo"}
+              : mode === "sign-up" ? "Create your account" : "Sign in"}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-6 text-red-400">
             {isAdminLogin
               ? "Sign in with your authorized staff account to open the admin portal."
               : mode === "sign-up"
