@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import { and, desc, eq, gt, ilike, lte, or } from "drizzle-orm";
 import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
 
@@ -38,6 +39,8 @@ async function JobsPageContent({
     workplace?: string;
   }>;
 }) {
+  // This page uses live job expiry timestamps and database reads; render per request.
+  await connection();
   const params = await searchParams;
   const query = params.q?.trim().slice(0, 100) ?? "";
   const location = params.location?.trim().slice(0, 100) ?? "";
