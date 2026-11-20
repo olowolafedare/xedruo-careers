@@ -49,10 +49,14 @@ async function AccountContent({ searchParams }: AccountPageProps) {
   const requestHost = requestHeaders.get("host")?.toLowerCase();
   const canonicalHost = new URL(HIREUO_APP_ORIGIN).host;
 
+  const isDedicatedRenderPreview =
+    requestHost === "xedruo-career-preview.onrender.com";
+
   if (
     process.env.NODE_ENV === "production" &&
     requestHost &&
-    requestHost !== canonicalHost
+    requestHost !== canonicalHost &&
+    !isDedicatedRenderPreview
   ) {
     const accountUrl = new URL("/account", HIREUO_APP_ORIGIN);
     accountUrl.searchParams.set("next", destination);
