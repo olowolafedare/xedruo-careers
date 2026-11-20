@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { and, desc, eq, gt, ilike, isNull, or } from "drizzle-orm";
-import { MapPin, BriefcaseBusiness, Clock3, ArrowUpRight, Search, Bookmark, MessageCircle, Bell } from "lucide-react";
+import { MapPin, BriefcaseBusiness, Clock3, ArrowUpRight, Search, Bookmark, MessageCircle, Bell, UserRound } from "lucide-react";
 import { requireUser } from "@/src/lib/auth/require-user";
 import { getDb } from "@/src/lib/db";
 import { companies, jobs } from "@/src/lib/db/schema";
@@ -86,12 +86,13 @@ async function CandidateDashboardContent({ searchParams }: { searchParams: Searc
         <p className="mt-2 text-sm leading-6 text-slate-500">Search open roles and discover opportunities selected from the latest vacancies.</p>
       </section>
 
-      <section aria-label="Candidate shortcuts" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <section aria-label="Candidate shortcuts" className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         {[
           { href: "/candidate/applications", label: "My applications", detail: "Track your applications", icon: BriefcaseBusiness },
           { href: "/candidate/saved-jobs", label: "Saved jobs", detail: "Return to roles you saved", icon: Bookmark },
           { href: "/candidate/messages", label: "Messages", detail: "Talk to employers", icon: MessageCircle },
           { href: "/candidate/notifications", label: "Notifications", detail: "See your latest updates", icon: Bell },
+          { href: "/candidate/profile", label: "My profile", detail: "View and update your profile", icon: UserRound },
         ].map(({ href, label, detail, icon: Icon }) => (
           <Link key={href} href={href} className="group rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md">
             <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-[#1746D1]"><Icon size={19} strokeWidth={1.9} /></span>
