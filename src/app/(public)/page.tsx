@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import {
@@ -67,7 +67,7 @@ export default function HomePage() {
             </Link>
             <Link
               href={accountHref}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#1746D1] shadow-lg shadow-blue-950/15 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-bold text-[#1746D1] shadow-lg shadow-blue-950/15 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
               Get started <ArrowRight size={16} aria-hidden="true" />
             </Link>
@@ -83,7 +83,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="mt-7 max-w-[620px] text-[clamp(2.8rem,5.2vw,4.65rem)] font-extrabold leading-[1.04] tracking-[-0.045em] text-white">
-            Elevate your career with Xedruo Career.
+            Elevate your career with Xedruo Career
           </h1>
 
           <p className="mt-6 max-w-[540px] text-base leading-7 text-blue-50 sm:text-lg sm:leading-8">
@@ -94,7 +94,7 @@ export default function HomePage() {
           <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
             <Link
               href={accountHref}
-              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-white px-7 text-base font-bold text-[#1746D1] shadow-xl shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-black px-7 text-base font-bold text-[#1746D1] shadow-xl shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
               Get started <ArrowRight size={18} aria-hidden="true" />
             </Link>
