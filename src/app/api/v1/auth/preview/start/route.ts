@@ -7,24 +7,31 @@ const PREVIEW_HOST = "xedruo-career-preview.onrender.com";
 const PREVIEW_IDENTITY = "render-preview-demo-identity";
 
 export async function POST(request: NextRequest) {
-  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  // Render forwards the public host in the Host header. Prefer it to
+  // x-forwarded-host, which may contain an internal proxy hostname.
   const hostHeader = request.headers.get("host")?.split(",")[0]?.trim();
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
   const requestHost = new URL(request.url).hostname;
-  const hostname = (forwardedHost || hostHeader || requestHost).split(":")[0].toLowerCase();
+  const hostname = (hostHeader || forwardedHost || requestHost)
+    .split(":")[0]
+    .toLowerCase();
 
-  // Keep this bypass restricted to the dedicated Render preview hostname.
   if (
     process.env.HIREUO_RENDER_PREVIEW_AUTH !== "true" ||
     hostname !== PREVIEW_HOST
   ) {
-    return NextResponse.json({ error: "Preview access is not enabled on this host." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Preview access is not enabled on this host." },
+      { status: 404, headers: { "Cache-Control": "no-store" } },
+    );
   }
 
   let stage = "provision-demo-account";
   try {
+    // Do not attach a shared email to the demo identity: the accounts table
+    // has a unique email index and preview must not collide with a real user.
     const account = await ensureLocalAccount({
       id: PREVIEW_IDENTITY,
-      email: "preview@xedruo.test",
     });
 
     stage = "create-preview-session";
