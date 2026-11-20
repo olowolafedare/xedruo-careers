@@ -75,8 +75,7 @@ export default function AccountForm({ authError, destination }: AccountFormProps
         credentials: "same-origin",
       });
       if (!response.ok) throw new Error(await getApiError(response));
-      router.replace("/start");
-      router.refresh();
+      window.location.assign("/start");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Preview access is unavailable.");
       setBusy(false);
