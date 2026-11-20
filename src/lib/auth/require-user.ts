@@ -1,4 +1,9 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { ensureLocalAccount } from "./account-store";
+
+const RENDER_PREVIEW_HOST = "xedruo-career-preview.onrender.com";
+const RENDER_PREVIEW_IDENTITY = "render-preview-demo-identity";
 
 import {
   centralAuthMe,
@@ -29,6 +34,21 @@ async function refreshSession(session: {
 }
 
 export async function requireUser(returnTo = "/start") {
+  // Dedicated, isolated Render preview only: deliberately bypass Xedruo
+  // Central Auth and session cookies so reviewers can inspect the product.
+  const requestHeaders = await headers();
+  const previewHost = requestHeaders.get("host")?.split(":")[0]?.toLowerCase();
+  if (
+    process.env.HIREUO_RENDER_PREVIEW_AUTH === "true" &&
+    previewHost === RENDER_PREVIEW_HOST
+  ) {
+    const account = await ensureLocalAccount({ id: RENDER_PREVIEW_IDENTITY });
+    return {
+      account,
+      user: { id: account.xedruoIdentityId, email: account.email ?? null },
+      session: { id: "render-preview-session", expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000) },
+    };
+  }
     const redirectToAccount = (): never => {
     redirect("/account?next=" + encodeURIComponent(returnTo));
     };
