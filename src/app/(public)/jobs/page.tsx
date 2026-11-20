@@ -12,7 +12,7 @@ import {
 } from "@/src/lib/hireuo-jobs";
 
 export const metadata = { title: "Find a job | Xedruo Career" };
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 const employmentTypes: Record<string, string> = {
   "Full-time": "full_time",
