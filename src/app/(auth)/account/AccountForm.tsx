@@ -66,6 +66,23 @@ export default function AccountForm({ authError, destination }: AccountFormProps
     }
   }
 
+  async function enterPreview() {
+    setBusy(true);
+    setError("");
+    try {
+      const response = await fetch("/api/v1/auth/preview/start", {
+        method: "POST",
+        credentials: "same-origin",
+      });
+      if (!response.ok) throw new Error(await getApiError(response));
+      router.replace("/start");
+      router.refresh();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Preview access is unavailable.");
+      setBusy(false);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -252,6 +269,17 @@ export default function AccountForm({ authError, destination }: AccountFormProps
               {!busy && <ArrowRight size={18} strokeWidth={2.5} aria-hidden="true" />}
             </button>
           </form>
+
+          {!isAdminLogin && mode === "sign-in" && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={enterPreview}
+              className="mt-4 flex h-[50px] w-full items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-5 font-semibold text-[#1746D1] transition hover:bg-blue-100 disabled:opacity-60"
+            >
+              {busy ? "Please wait..." : "Preview Career without signing in"}
+            </button>
+          )}
 
           {!isAdminLogin && mode === "sign-in" && (
             <>
