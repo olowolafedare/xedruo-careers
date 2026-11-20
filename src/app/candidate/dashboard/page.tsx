@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { and, desc, eq, gt, ilike, isNull, or } from "drizzle-orm";
-import { MapPin, BriefcaseBusiness, Clock3, ArrowUpRight, Search } from "lucide-react";
+import { MapPin, BriefcaseBusiness, Clock3, ArrowUpRight, Search, Bookmark, MessageCircle, Bell } from "lucide-react";
 import { requireUser } from "@/src/lib/auth/require-user";
 import { getDb } from "@/src/lib/db";
 import { companies, jobs } from "@/src/lib/db/schema";
@@ -84,6 +84,21 @@ async function CandidateDashboardContent({ searchParams }: { searchParams: Searc
         <p className="text-sm font-semibold text-[#1746D1]">HOME</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Find your next opportunity</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">Search open roles and discover opportunities selected from the latest vacancies.</p>
+      </section>
+
+      <section aria-label="Candidate shortcuts" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { href: "/candidate/applications", label: "My applications", detail: "Track your applications", icon: BriefcaseBusiness },
+          { href: "/candidate/saved-jobs", label: "Saved jobs", detail: "Return to roles you saved", icon: Bookmark },
+          { href: "/candidate/messages", label: "Messages", detail: "Talk to employers", icon: MessageCircle },
+          { href: "/candidate/notifications", label: "Notifications", detail: "See your latest updates", icon: Bell },
+        ].map(({ href, label, detail, icon: Icon }) => (
+          <Link key={href} href={href} className="group rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md">
+            <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-[#1746D1]"><Icon size={19} strokeWidth={1.9} /></span>
+            <h2 className="mt-3 text-sm font-bold text-slate-900">{label}</h2>
+            <p className="mt-1 text-xs leading-5 text-slate-500">{detail}</p>
+          </Link>
+        ))}
       </section>
 
       <form action="/candidate/dashboard" method="GET" className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
