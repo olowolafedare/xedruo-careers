@@ -145,7 +145,7 @@ export default function AccountForm({ authError, destination }: AccountFormProps
               ? "Sign in with your authorized staff account to open the admin portal."
               : mode === "sign-up"
                 ? "Create your Xedruo account to continue to Career."
-                : "Use your existing Xedruo account details."}
+                : "Continue securely with Google."}
           </p>
 
           {visibleError && (
@@ -154,7 +154,8 @@ export default function AccountForm({ authError, destination }: AccountFormProps
             </p>
           )}
 
-          <form onSubmit={submit} className="mt-7 space-y-5">
+          {(mode === "sign-up" || isAdminLogin) && (
+            <form onSubmit={submit} className="mt-7 space-y-5">
             {mode === "sign-in" ? (
               <label className="block text-sm font-semibold text-slate-800">
                 Xedruo ID
@@ -238,12 +239,6 @@ export default function AccountForm({ authError, destination }: AccountFormProps
               </span>
             </label>
 
-            {!isAdminLogin && mode === "sign-in" && (
-              <div className="flex justify-end">
-                <span className="text-xs font-medium text-slate-400">Forgot password?</span>
-              </div>
-            )}
-
             <button
               disabled={busy}
               className="flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-[#1746D1] px-5 font-semibold text-white shadow-sm transition hover:bg-[#123bb4] disabled:cursor-not-allowed disabled:opacity-60"
@@ -251,30 +246,24 @@ export default function AccountForm({ authError, destination }: AccountFormProps
               {busy ? "Please wait..." : mode === "sign-in" ? "Sign in" : "Create account"}
               {!busy && <ArrowRight size={18} strokeWidth={2.5} aria-hidden="true" />}
             </button>
-          </form>
+            </form>
+          )}
 
           {!isAdminLogin && mode === "sign-in" && (
-            <>
-              <div className="my-5 flex items-center gap-3">
-                <span className="h-px flex-1 bg-slate-200" />
-                <span className="text-xs font-medium text-slate-400">OR</span>
-                <span className="h-px flex-1 bg-slate-200" />
-              </div>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={continueWithGoogle}
-                className="flex h-[50px] w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-              >
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.09-1.92 3.27-4.74 3.27-8.1Z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.15v2.84A11 11 0 0 0 12 23Z"/>
-                  <path fill="#FBBC05" d="M5.84 14.11A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.34-2.11V7.05H2.15A11 11 0 0 0 1 12c0 1.78.43 3.46 1.15 4.95l3.69-2.84Z"/>
-                  <path fill="#EA4335" d="M12 5.36c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.85 6.05l3.69 2.84C6.71 7.29 9.14 5.36 12 5.36Z"/>
-                </svg>
-                Continue with Google
-              </button>
-            </>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={continueWithGoogle}
+              className="flex h-[50px] w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.09-1.92 3.27-4.74 3.27-8.1Z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.15v2.84A11 11 0 0 0 12 23Z"/>
+                <path fill="#FBBC05" d="M5.84 14.11A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.34-2.11V7.05H2.15A11 11 0 0 0 1 12c0 1.78.43 3.46 1.15 4.95l3.69-2.84Z"/>
+                <path fill="#EA4335" d="M12 5.36c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.85 6.05l3.69 2.84C6.71 7.29 9.14 5.36 12 5.36Z"/>
+              </svg>
+              Continue with Google
+            </button>
           )}
 
           {!isAdminLogin && (
