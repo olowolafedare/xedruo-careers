@@ -41,6 +41,33 @@ html.dark body {
 html.dark .theme-toggle-moon { display: none; }
 .theme-toggle-sun { display: none; }
 html.dark .theme-toggle-sun { display: block; }
+.theme-toggle-light-label { display: none; }
+html.dark .theme-toggle-dark-label { display: none; }
+html.dark .theme-toggle-light-label { display: inline; }
+.theme-toggle-control {
+  position: fixed !important;
+  z-index: 99999;
+  left: max(1rem, env(safe-area-inset-left));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 0 1rem;
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 24%);
+  cursor: pointer;
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+.theme-toggle-control:hover { transform: translateY(-2px); }
+html.dark .theme-toggle-control {
+  border-color: #475569;
+  background: #111c2e;
+  color: #f1f5f9;
+}
 
 /* Apply dark surfaces and readable foregrounds to shared Tailwind utilities. */
 html.dark [class~="bg-white"],
