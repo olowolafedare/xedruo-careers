@@ -66,10 +66,10 @@ export default async function StartPage() {
 
   return (
     <main className="mx-auto min-h-screen max-w-4xl px-5 py-16">
-      <p className="text-sm font-bold text-amber-600">Xedruo Career</p>
+      <p className="text-sm font-bold text-amber-600">Hireuo</p>
 
       <h1 className="mt-4 text-3xl font-bold">
-        How will you use Xedruo Career?
+        How will you use Hireuo?
       </h1>
 
       <div className="mt-9 grid gap-5 sm:grid-cols-2">
