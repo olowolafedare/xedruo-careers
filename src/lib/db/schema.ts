@@ -613,3 +613,27 @@ export const jobCategoryAssignments = pgTable(
 
 
 
+
+export const interviewFormatEnum = pgEnum("hireuo_interview_format", ["video", "phone", "onsite"]);
+export const interviewStatusEnum = pgEnum("hireuo_interview_status", ["scheduled", "completed", "cancelled"]);
+export const interviews = pgTable(
+  "hireuo_interviews",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id").notNull().references(() => applications.id, { onDelete: "cascade" }),
+    scheduledByAccountId: uuid("scheduled_by_account_id").notNull().references(() => accounts.id),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    durationMinutes: integer("duration_minutes").notNull().default(30),
+    format: interviewFormatEnum("format").notNull().default("video"),
+    location: text("location"),
+    notes: text("notes"),
+    status: interviewStatusEnum("status").notNull().default("scheduled"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("hireuo_interviews_application_starts_idx").on(table.applicationId, table.startsAt),
+    index("hireuo_interviews_status_starts_idx").on(table.status, table.startsAt),
+    check("hireuo_interviews_duration_valid", sql`${table.durationMinutes} BETWEEN 10 AND 480`),
+  ],
+);
