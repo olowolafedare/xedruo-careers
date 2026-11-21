@@ -134,7 +134,7 @@ export default function AccountForm({ authError, destination }: AccountFormProps
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1746D1]">
             {isAdminLogin ? "Xedruo Career · Staff" : "Welcome to HIreuo"}
           </p>
-          <h1 className="mt-4 text-[27px] font-bold tracking-tight text-slate-100">
+          <h1 className="mt-4 text-[27px] font-bold tracking-tight text-blue-500">
             {isAdminLogin
               ? "Staff sign in"
               : mode === "sign-up" ? "Create your account" : "Sign in"}
