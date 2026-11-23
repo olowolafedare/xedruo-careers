@@ -19,6 +19,7 @@ type CandidateProfile = {
   searchTiming: string | null;
   workplacePreference: string | null;
   onboardingCompleted: boolean;
+  discoverable: boolean;
 };
 
 type ProfileResponse = {
@@ -64,6 +65,8 @@ export default function CandidateProfilePage() {
   const [resumeName, setResumeName] = useState("");
   const [uploadingResume, setUploadingResume] = useState(false);
   const [resumeError, setResumeError] = useState("");
+  const [visibilityError, setVisibilityError] = useState("");
+  const [savingVisibility, setSavingVisibility] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -168,6 +171,34 @@ export default function CandidateProfilePage() {
       setResumeError(cause instanceof Error ? cause.message : "Resume upload failed.");
     } finally {
       setUploadingResume(false);
+    }
+  }
+
+  async function updateDiscoverability() {
+    if (!candidate) return;
+    const discoverable = !candidate.discoverable;
+    setSavingVisibility(true);
+    setVisibilityError("");
+    try {
+      const response = await fetch("/api/v1/candidate/visibility", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ discoverable }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error ?? "Unable to update profile visibility.");
+      }
+      setCandidate({ ...candidate, discoverable: result.discoverable });
+    } catch (cause) {
+      setVisibilityError(
+        cause instanceof Error
+          ? cause.message
+          : "Unable to update profile visibility.",
+      );
+    } finally {
+      setSavingVisibility(false);
     }
   }
 
@@ -333,6 +364,54 @@ export default function CandidateProfilePage() {
           </section>
         </>
       ) : null}
+
+      <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8">
+        <h2 className="font-semibold">Privacy and account settings</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          Choose whether your name, location, and experience appear in employer
+          talent searches. Your CV and contact details remain private.
+        </p>
+        <button
+          type="button"
+          disabled={!candidate?.onboardingCompleted || savingVisibility}
+          aria-pressed={candidate?.discoverable ?? false}
+          onClick={() => void updateDiscoverability()}
+          className="mt-4 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {savingVisibility
+            ? "Saving privacy setting…"
+            : candidate?.discoverable
+              ? "Profile discoverable — turn off"
+              : "Profile private — allow employer discovery"}
+        </button>
+        {visibilityError && (
+          <p role="alert" className="mt-3 text-sm text-red-700">
+            {visibilityError}
+          </p>
+        )}
+        <Link
+          href="/account?next=%2Fcandidate%2Fprofile"
+          className="mt-4 block text-sm font-semibold text-[#1746D1] hover:underline"
+        >
+          Account sign-in settings
+        </Link>
+      </section>
+
+      <section className="rounded-2xl border border-blue-100 bg-[#F3F6FF] p-6 sm:p-8">
+        <p className="text-lg font-semibold text-slate-900">
+          Looking to hire talented people?
+        </p>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Find qualified professionals and manage your recruitment with Xedruo
+          Career.
+        </p>
+        <Link
+          href="/recruiter-onboarding"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
+        >
+          Hire Talent — Get Started <ArrowRight size={16} />
+        </Link>
+      </section>
     </div>
   );
 }
