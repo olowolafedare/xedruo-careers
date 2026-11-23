@@ -124,7 +124,7 @@ export default async function RecruiterApplicantsPage({
                 <ApplicationStage
                   id={application.id}
                   status={application.status}
-                  canEdit={["owner", "admin", "hr_manager"].includes(
+                  canEdit={["owner", "admin", "hr_manager", "recruiter"].includes(
                     membership.role,
                   )}
                 />

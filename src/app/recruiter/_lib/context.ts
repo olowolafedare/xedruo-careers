@@ -24,6 +24,7 @@ export const requireRecruiter = cache(async function requireRecruiter() {
         name: companies.name,
         website: companies.website,
         description: companies.description,
+        verificationStatus: companies.verificationStatus,
       },
     })
     .from(companyMemberships)
