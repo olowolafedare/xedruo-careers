@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 const accountHref = "/account?next=%2Fcandidate%2Fdashboard";
+const registrationHref = `${accountHref}&mode=sign-up`;
 
 const highlights = [
   {
@@ -55,21 +56,20 @@ export default function HomePage() {
           <div className="hidden items-center gap-8 text-sm font-medium text-white/90 md:flex">
             <Link href="/jobs" className="transition hover:text-white">Find jobs</Link>
             <a href="#opportunities" className="transition hover:text-white">Career growth</a>
-            <a href="#employers" className="transition hover:text-white">For employers</a>
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               href={accountHref}
-              className="hidden rounded-full px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:inline-flex"
+              className="rounded-full px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-white/10 sm:px-4 sm:text-sm"
             >
-              Sign in
+              Xedruo Login
             </Link>
             <Link
-              href={accountHref}
+              href={registrationHref}
               className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-bold text-[#1746D1] shadow-lg shadow-blue-950/15 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
-              Get started <ArrowRight size={16} aria-hidden="true" />
+              Get Started <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         </nav>
@@ -83,7 +83,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="mt-7 max-w-[620px] text-[clamp(2.8rem,5.2vw,4.65rem)] font-extrabold leading-[1.04] tracking-[-0.045em] text-white">
-            Elevate your career with Xedruo Career
+            Kindly start your career with Xedruo
           </h1>
 
           <p className="mt-6 max-w-[540px] text-base leading-7 text-blue-50 sm:text-lg sm:leading-8">
@@ -93,10 +93,10 @@ export default function HomePage() {
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
             <Link
-              href={accountHref}
+              href={registrationHref}
               className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-black px-7 text-base font-bold text-[#1746D1] shadow-xl shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
-              Get started <ArrowRight size={18} aria-hidden="true" />
+              Get Started <ArrowRight size={18} aria-hidden="true" />
             </Link>
             <Link
               href="/jobs"
@@ -111,7 +111,7 @@ export default function HomePage() {
               <CheckCircle2 size={16} aria-hidden="true" /> One Xedruo account
             </span>
             <span className="inline-flex items-center gap-2">
-              <CheckCircle2 size={16} aria-hidden="true" /> Career and hiring tools
+              <CheckCircle2 size={16} aria-hidden="true" /> Public job browsing and search
             </span>
           </div>
         </div>
@@ -154,23 +154,6 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div
-              id="employers"
-              className="mt-5 flex flex-col gap-3 rounded-2xl bg-[#F3F6FF] p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <p className="text-sm font-bold text-slate-900">Building a team?</p>
-                <p className="mt-1 text-xs text-slate-600">
-                  Find and connect with the right talent.
-                </p>
-              </div>
-              <Link
-                href={accountHref}
-                className="inline-flex items-center gap-2 text-sm font-bold text-[#1746D1] hover:underline"
-              >
-                Start hiring <ArrowRight size={15} aria-hidden="true" />
-              </Link>
-            </div>
           </div>
         </div>
       </section>
