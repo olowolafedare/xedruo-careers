@@ -21,6 +21,7 @@ const ALLOWED_DESTINATIONS = new Set([
 type AccountPageProps = {
   searchParams: Promise<{
     auth_error?: string | string[];
+    mode?: string | string[];
     next?: string | string[];
   }>;
 };
@@ -73,6 +74,7 @@ async function AccountContent({ searchParams }: AccountPageProps) {
     <AccountForm
       destination={destination}
       authError={firstValue(params.auth_error) ?? ""}
+      initialMode={firstValue(params.mode) === "sign-up" ? "sign-up" : "sign-in"}
     />
   );
 }
