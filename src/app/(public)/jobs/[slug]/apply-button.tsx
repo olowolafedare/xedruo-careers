@@ -1,33 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ApplyButton({
   jobId,
+  jobSlug,
   applied,
+  applyOnLoad,
 }: {
   jobId: string;
+  jobSlug: string;
   applied: boolean;
+  applyOnLoad: boolean;
 }) {
   const router = useRouter();
   const [done, setDone] = useState(applied);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const autoSubmitted = useRef(false);
+  const returnTo = `/jobs/${jobSlug}?apply=1`;
 
-  async function apply() {
+  const apply = useCallback(async () => {
     setBusy(true);
     setMessage("");
     try {
       const response = await fetch("/api/v1/applications", {
         method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ job_id: jobId }),
       });
       const result = await response.json();
       if (response.status === 401) {
-        router.push("/account?next=%2Fapplicant");
+        router.push(`/account?next=${encodeURIComponent(returnTo)}`);
+        return;
+      }
+      if (
+        response.status === 403 &&
+        result.code === "candidate_profile_required"
+      ) {
+        router.push(`/applicant?next=${encodeURIComponent(returnTo)}`);
         return;
       }
       if (!response.ok)
@@ -43,7 +58,14 @@ export default function ApplyButton({
     } finally {
       setBusy(false);
     }
-  }
+  }, [jobId, returnTo, router]);
+
+  useEffect(() => {
+    if (applyOnLoad && !done && !autoSubmitted.current) {
+      autoSubmitted.current = true;
+      void apply();
+    }
+  }, [apply, applyOnLoad, done]);
 
   return (
     <div>
