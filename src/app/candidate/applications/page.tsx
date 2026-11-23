@@ -3,10 +3,16 @@ export const instant = false;
 import Link from "next/link";
 import { Suspense } from "react";
 import { BriefcaseBusiness, MapPin } from "lucide-react";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { requireUser } from "@/src/lib/auth/require-user";
 import { getDb } from "@/src/lib/db";
-import { applications, jobs } from "@/src/lib/db/schema";
+import {
+  applications,
+  applicationStatusHistory,
+  companies,
+  jobs,
+  savedJobs,
+} from "@/src/lib/db/schema";
 import { formatEmploymentType, formatJobLocation } from "@/src/lib/hireuo-jobs";
 
 const stageStyle: Record<string, string> = {
@@ -20,6 +26,19 @@ const stageStyle: Record<string, string> = {
   hired: "bg-rosybrown text-emerald-700",
   rejected: "bg-rosybrown text-red-700",
   withdrawn: "bg-rosybrown text-slate-600",
+};
+
+const stageLabel: Record<string, string> = {
+  submitted: "Applied",
+  under_review: "Under Review",
+  reviewing: "Under Review",
+  shortlisted: "Shortlisted",
+  assessment: "Assessment",
+  interview: "Interview",
+  offered: "Offer Received",
+  hired: "Hired",
+  rejected: "Rejected",
+  withdrawn: "Withdrawn",
 };
 
 async function ApplicationsContent() {
@@ -37,15 +56,59 @@ async function ApplicationsContent() {
         location: jobs.location,
         employmentType: jobs.employmentType,
         workplaceType: jobs.workplaceType,
+        companyName: companies.name,
       },
     })
     .from(applications)
     .innerJoin(jobs, eq(applications.jobId, jobs.id))
+    .innerJoin(companies, eq(jobs.companyId, companies.id))
     .where(eq(applications.candidateAccountId, account.id))
     .orderBy(desc(applications.submittedAt));
 
+  const historyRows = applicationRows.length
+    ? await db
+        .select({
+          id: applicationStatusHistory.id,
+          applicationId: applicationStatusHistory.applicationId,
+          status: applicationStatusHistory.newStatus,
+          changedAt: applicationStatusHistory.createdAt,
+        })
+        .from(applicationStatusHistory)
+        .where(
+          inArray(
+            applicationStatusHistory.applicationId,
+            applicationRows.map(({ id }) => id),
+          ),
+        )
+        .orderBy(desc(applicationStatusHistory.createdAt))
+    : [];
+  const historyByApplication = new Map<string, typeof historyRows>();
+  for (const history of historyRows) {
+    const applicationHistory =
+      historyByApplication.get(history.applicationId) ?? [];
+    applicationHistory.push(history);
+    historyByApplication.set(history.applicationId, applicationHistory);
+  }
+
+  const savedJobRows = await db
+    .select({
+      id: savedJobs.id,
+      job: {
+        slug: jobs.slug,
+        title: jobs.title,
+        location: jobs.location,
+        companyName: companies.name,
+      },
+    })
+    .from(savedJobs)
+    .innerJoin(jobs, eq(savedJobs.jobId, jobs.id))
+    .innerJoin(companies, eq(jobs.companyId, companies.id))
+    .where(eq(savedJobs.accountId, account.id))
+    .orderBy(desc(savedJobs.createdAt));
+
   const applicationItems = applicationRows.map((application) => ({
     ...application,
+    history: historyByApplication.get(application.id) ?? [],
     job: {
       ...application.job,
       city: application.job.location,
@@ -60,7 +123,7 @@ async function ApplicationsContent() {
     <div className="space-y-7">
       <header>
         <p className="text-sm font-semibold text-amber-600">YOUR JOB SEARCH</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Applications</h1>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight">My Job</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Keep track of the roles you have applied for and what comes next
         </p>
@@ -85,7 +148,7 @@ async function ApplicationsContent() {
                       {job?.title || "Job opening"}
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
-                      Employer details unavailable
+                      {job?.companyName || "Employer details unavailable"}
                     </p>
                     <p className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
                       <span className="inline-flex items-center gap-1">
@@ -108,8 +171,29 @@ async function ApplicationsContent() {
                 <span
                   className={`w-fit rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${stageStyle[application.status] || "bg-rosybrown text-slate-600"}`}
                 >
-                  {application.status.replaceAll("_", " ")}
+                  {stageLabel[application.status] ?? application.status}
                 </span>
+                {application.history.length > 0 && (
+                  <details className="basis-full text-sm">
+                    <summary className="cursor-pointer font-medium text-slate-600">
+                      Application history
+                    </summary>
+                    <ol className="mt-3 space-y-2 border-l border-slate-200 pl-4">
+                      {application.history.map((entry) => (
+                        <li key={entry.id}>
+                          <span className="font-medium">
+                            {stageLabel[entry.status] ?? entry.status}
+                          </span>
+                          <span className="ml-2 text-xs text-slate-500">
+                            {entry.changedAt.toLocaleDateString("en", {
+                              dateStyle: "medium",
+                            })}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+                )}
               </article>
             );
           })}
@@ -133,6 +217,40 @@ async function ApplicationsContent() {
           </div>
         </section>
       )}
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight">Saved jobs</h2>
+          <p className="mt-1 text-sm leading-6 text-slate-500">
+            Opportunities you have bookmarked for later.
+          </p>
+        </div>
+        {savedJobRows.length ? (
+          <div className="space-y-3">
+            {savedJobRows.map(({ id, job }) => (
+              <Link
+                key={id}
+                href={`/jobs/${job.slug}`}
+                className="block rounded-2xl bg-rosybrown p-5 transition hover:shadow-sm"
+              >
+                <h3 className="font-semibold">{job.title}</h3>
+                <p className="mt-1 text-sm text-slate-600">{job.companyName}</p>
+                <p className="mt-2 text-xs text-slate-500">
+                  {job.location || "Location not specified"}
+                </p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+            You have no saved jobs yet.{" "}
+            <Link href="/jobs" className="font-semibold text-blue-700 underline">
+              Browse open roles
+            </Link>
+            .
+          </p>
+        )}
+      </section>
     </div>
   );
 }
