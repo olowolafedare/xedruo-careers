@@ -18,10 +18,13 @@ export const instant = false;
 
 export default async function JobDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ apply?: string }>;
 }) {
   const { slug } = await params;
+  const { apply } = await searchParams;
 
   const isId =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -196,7 +199,12 @@ export default async function JobDetailPage({
               </p>
             </div>
 
-            <ApplyButton jobId={job.id} applied={applied} />
+            <ApplyButton
+              jobId={job.id}
+              jobSlug={job.slug}
+              applied={applied}
+              applyOnLoad={apply === "1"}
+            />
             <SaveButton jobId={job.id} initiallySaved={saved} />
 
             <p className="text-xs leading-5 text-slate-400">
