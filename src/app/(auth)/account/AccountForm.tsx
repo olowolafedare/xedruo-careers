@@ -12,14 +12,19 @@ import {
 type AccountFormProps = {
   authError: string;
   destination: string;
+  initialMode: AuthMode;
 };
 
 type AuthMode = "sign-in" | "sign-up";
 
-export default function AccountForm({ authError, destination }: AccountFormProps) {
+export default function AccountForm({
+  authError,
+  destination,
+  initialMode,
+}: AccountFormProps) {
   const router = useRouter();
   const isAdminLogin = destination === "/admin";
-  const [mode, setMode] = useState<AuthMode>("sign-in");
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [xedruoId, setXedruoId] = useState("");
   const [name, setName] = useState("");
   const [countryCode, setCountryCode] = useState("NG");
