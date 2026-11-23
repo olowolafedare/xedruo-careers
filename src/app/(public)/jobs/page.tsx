@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { and, desc, eq, ilike } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, lte, or } from "drizzle-orm";
 import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
 
 import { getDb } from "@/src/lib/db";
@@ -16,9 +16,17 @@ export const instant = false;
 
 const employmentTypes: Record<string, string> = {
   "Full-time": "full_time",
+  full_time: "full_time",
   "Part-time": "part_time",
+  part_time: "part_time",
   Contract: "contract",
+  contract: "contract",
   Internship: "internship",
+  internship: "internship",
+  Temporary: "temporary",
+  temporary: "temporary",
+  Freelance: "freelance",
+  freelance: "freelance",
 };
 
 function escapeLike(value: string) {
@@ -28,32 +36,77 @@ function escapeLike(value: string) {
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; location?: string; type?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    location?: string;
+    industry?: string;
+    type?: string;
+    experience?: string;
+    salaryMin?: string;
+    salaryMax?: string;
+  }>;
 }) {
   const params = await searchParams;
 
   const query = params.q?.trim().slice(0, 100) ?? "";
   const location = params.location?.trim().slice(0, 100) ?? "";
+  const industry = params.industry?.trim().slice(0, 100) ?? "";
   const type = params.type ?? "";
+  const experience = params.experience ?? "";
+  const salaryMin = Number(params.salaryMin);
+  const salaryMax = Number(params.salaryMax);
 
   const conditions = [eq(jobs.status, "published")];
 
   if (query) {
-    conditions.push(ilike(jobs.title, `%${escapeLike(query)}%`));
+    const queryMatch = or(
+      ilike(jobs.title, `%${escapeLike(query)}%`),
+      ilike(jobs.description, `%${escapeLike(query)}%`),
+      ilike(companies.name, `%${escapeLike(query)}%`),
+    );
+    if (queryMatch) conditions.push(queryMatch);
   }
 
   if (location) {
     conditions.push(ilike(jobs.location, `%${escapeLike(location)}%`));
   }
 
-  if (type === "Remote") {
+  if (industry) {
+    const industryMatch = or(
+      ilike(jobs.title, `%${escapeLike(industry)}%`),
+      ilike(jobs.description, `%${escapeLike(industry)}%`),
+      ilike(companies.name, `%${escapeLike(industry)}%`),
+    );
+    if (industryMatch) conditions.push(industryMatch);
+  }
+
+  if (type === "Remote" || type === "remote") {
     conditions.push(eq(jobs.workplaceType, "remote"));
   } else if (employmentTypes[type]) {
     conditions.push(eq(jobs.employmentType, employmentTypes[type] as
       | "full_time"
       | "part_time"
       | "contract"
-      | "internship"));
+      | "internship"
+      | "temporary"
+      | "freelance"));
+  }
+
+  if (["entry", "junior", "mid", "senior", "lead", "executive"].includes(experience)) {
+    conditions.push(eq(jobs.experienceLevel, experience as
+      | "entry"
+      | "junior"
+      | "mid"
+      | "senior"
+      | "lead"
+      | "executive"));
+  }
+
+  if (Number.isFinite(salaryMin) && salaryMin > 0) {
+    conditions.push(gte(jobs.salaryMax, salaryMin));
+  }
+  if (Number.isFinite(salaryMax) && salaryMax > 0) {
+    conditions.push(lte(jobs.salaryMin, salaryMax));
   }
 
   let results: {
@@ -129,7 +182,7 @@ export default async function JobsPage({
 
         <form
           action="/jobs"
-          className="mt-8 grid gap-3 rounded-2xl bg-rosybrown p-4 sm:grid-cols-[1fr_1fr_180px_auto] sm:p-5"
+          className="mt-8 grid gap-3 rounded-2xl bg-rosybrown p-4 sm:grid-cols-2 lg:grid-cols-3 sm:p-5"
         >
           <label className="relative">
             <span className="sr-only">Job title</span>
@@ -160,6 +213,16 @@ export default async function JobsPage({
           </label>
 
           <label>
+            <span className="sr-only">Industry</span>
+            <input
+              name="industry"
+              defaultValue={industry}
+              placeholder="Industry or field"
+              className="w-full rounded-xl px-3 py-3 text-sm"
+            />
+          </label>
+
+          <label>
             <span className="sr-only">Employment type</span>
             <select
               name="type"
@@ -171,11 +234,54 @@ export default async function JobsPage({
               <option>Part-time</option>
               <option>Contract</option>
               <option>Internship</option>
+              <option>Temporary</option>
+              <option>Freelance</option>
               <option>Remote</option>
             </select>
           </label>
 
-          <button className="rounded-xl bg-rosybrown px-5 py-3 text-sm font-semibold text-white">
+          <label>
+            <span className="sr-only">Experience level</span>
+            <select
+              name="experience"
+              defaultValue={experience}
+              className="w-full rounded-xl bg-rosybrown px-3 py-3 text-sm"
+            >
+              <option value="">All experience levels</option>
+              <option value="entry">Entry level</option>
+              <option value="junior">Junior</option>
+              <option value="mid">Mid-level</option>
+              <option value="senior">Senior</option>
+              <option value="lead">Lead</option>
+              <option value="executive">Executive</option>
+            </select>
+          </label>
+
+          <label>
+            <span className="sr-only">Minimum salary</span>
+            <input
+              name="salaryMin"
+              type="number"
+              min="0"
+              defaultValue={params.salaryMin}
+              placeholder="Minimum salary"
+              className="w-full rounded-xl px-3 py-3 text-sm"
+            />
+          </label>
+
+          <label>
+            <span className="sr-only">Maximum salary</span>
+            <input
+              name="salaryMax"
+              type="number"
+              min="0"
+              defaultValue={params.salaryMax}
+              placeholder="Maximum salary"
+              className="w-full rounded-xl px-3 py-3 text-sm"
+            />
+          </label>
+
+          <button className="rounded-xl bg-rosybrown px-5 py-3 text-sm font-semibold text-white lg:col-span-3">
             Search jobs
           </button>
         </form>
