@@ -115,6 +115,12 @@ test("concurrent callback session writes share one database session and one opaq
   assert.equal(harness.rows.size, 1);
   assert.equal(harness.writes.length, 2);
   assert.equal(harness.writes[0][1], harness.writes[1][1]);
+  assert.equal(harness.writes[0][0], "hireuo_session");
+  assert.equal(harness.writes[0][2].httpOnly, true);
+  assert.equal(harness.writes[0][2].sameSite, "lax");
+  assert.equal(harness.writes[0][2].path, "/");
+  assert.equal(harness.writes[0][2].domain, undefined);
+  assert.ok(harness.writes[0][2].expires instanceof Date);
 });
 
 test("a failed cookie write revokes a newly inserted session", async () => {

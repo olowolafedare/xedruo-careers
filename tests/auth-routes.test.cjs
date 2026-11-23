@@ -68,7 +68,9 @@ test("application Google callback exchanges only a completion code with the matc
   const { createApplicationGoogleLoginTransaction } = require(
     "../src/lib/auth/application-google-login-cookie.ts",
   );
-  const { sealed, transaction } = createApplicationGoogleLoginTransaction();
+  const { sealed, transaction } = createApplicationGoogleLoginTransaction(
+    "/jobs/product-manager-123?apply=1",
+  );
   const exchanges = [];
   const accounts = [];
   const sessions = [];
@@ -129,6 +131,9 @@ test("application Google callback exchanges only a completion code with the matc
   assert.equal(sessions.length, 1);
   assert.equal(sessions[0].accountId, "hireuo-account-id");
   assert.equal(sessions[0].authMode, "local_application_google");
+  const callbackDestination = new URL(accepted.headers.get("location"));
+  assert.equal(callbackDestination.pathname, "/jobs/product-manager-123");
+  assert.equal(callbackDestination.search, "?apply=1");
   assert.equal(cookieWrites.length, 2);
   assert.equal(cookieWrites[1][1], "");
 });
