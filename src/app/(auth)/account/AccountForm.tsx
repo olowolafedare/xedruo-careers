@@ -58,6 +58,7 @@ export default function AccountForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
+        body: JSON.stringify({ returnTo: destination }),
       });
       if (!response.ok) throw new Error(await getApiError(response));
       const { authorizationUrl } = await response.json();
@@ -99,6 +100,7 @@ export default function AccountForm({
           countryCode,
           password,
           displayName: name,
+          returnTo: destination,
         }),
       });
       if (!response.ok) throw new Error(await getApiError(response));
