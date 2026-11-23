@@ -102,7 +102,7 @@ export default async function RecruiterDashboardPage() {
             RECRUITER WORKSPACE
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Welcome to {company.name}
+            Welcome to {company.name} Workspace
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-500">
             Manage your openings and keep candidate conversations moving

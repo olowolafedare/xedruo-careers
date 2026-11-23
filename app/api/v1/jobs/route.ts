@@ -163,7 +163,14 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     const contentType = request.headers.get("content-type") ?? "";
 
     if (contentType.includes("application/json")) {
-      body = await request.json();
+      const payload: unknown = await request.json();
+      if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        return NextResponse.json(
+          { error: "Job details must be sent as a JSON object." },
+          { status: 400 },
+        );
+      }
+      body = Object.fromEntries(Object.entries(payload));
     } else {
       const formData = await request.formData();
       body = Object.fromEntries(formData.entries());
@@ -175,69 +182,120 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     );
   }
 
-  const companyId =
-    typeof body.organization_id === "string"
-      ? body.organization_id
-      : typeof body.company_id === "string"
-        ? body.company_id
-        : "";
+  const stringValue = (...values: unknown[]) =>
+    values.find(
+      (value): value is string =>
+        typeof value === "string" && value.trim().length > 0,
+    ) ?? "";
+  const companyId = stringValue(
+    body.organization_id,
+    body.company_id,
+    body.organizationId,
+    body.companyId,
+  ).trim();
 
-  const title =
-    typeof body.title === "string" ? body.title.trim() : "";
+  const title = stringValue(body.title).trim();
 
-  const description =
-    typeof body.description === "string"
-      ? body.description.trim()
-      : "";
+  const description = stringValue(body.description).trim();
 
-  const location =
-    typeof body.location === "string"
-      ? body.location.trim()
-      : typeof body.city === "string"
-        ? body.city.trim()
-        : "";
+  const location = stringValue(body.location, body.city).trim();
 
-  const employmentType = String(body.employment_type ?? "");
-  const workplaceType = String(body.workplace_type ?? "");
-  const responsibilities = typeof body.responsibilities === "string" ? body.responsibilities.trim() : "";
-  const requirements = typeof body.requirements === "string" ? body.requirements.trim() : "";
-  const experienceLevel = typeof body.experience_level === "string" ? body.experience_level : "";
+  const normalizeEnum = (value: string) =>
+    value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  const employmentType = normalizeEnum(
+    stringValue(body.employment_type, body.employmentType),
+  );
+  const workplaceType = normalizeEnum(
+    stringValue(body.workplace_type, body.workplaceType),
+  );
+  const responsibilities = stringValue(body.responsibilities).trim();
+  const requirements = stringValue(body.requirements).trim();
+  const experienceLevel = normalizeEnum(
+    stringValue(body.experience_level, body.experienceLevel),
+  );
   const allowedExperienceLevels = ["entry", "junior", "mid", "senior", "lead", "executive"] as const;
   const parseOptionalAmount = (value: unknown) => {
     if (value === null || value === undefined || value === "") return null;
     const amount = Number(value);
     return Number.isSafeInteger(amount) && amount >= 0 ? amount : Number.NaN;
   };
-  const salaryMin = parseOptionalAmount(body.salary_min);
-  const salaryMax = parseOptionalAmount(body.salary_max);
-  const salaryCurrency = typeof body.salary_currency === "string" ? body.salary_currency.trim().toUpperCase() : "";
-  const openings = body.openings === undefined || body.openings === "" ? 1 : Number(body.openings);
-  const deadlineValue = typeof body.application_deadline === "string" && body.application_deadline ? new Date(body.application_deadline) : null;
+  const salaryMin = parseOptionalAmount(
+    body.salary_min ?? body.salaryMin,
+  );
+  const salaryMax = parseOptionalAmount(
+    body.salary_max ?? body.salaryMax,
+  );
+  const salaryCurrency = stringValue(
+    body.salary_currency,
+    body.salaryCurrency,
+  ).trim().toUpperCase();
+  const openingsValue = body.openings;
+  const openings =
+    openingsValue === undefined || openingsValue === "" ? 1 : Number(openingsValue);
+  const deadlineInput = stringValue(
+    body.application_deadline,
+    body.applicationDeadline,
+  );
+  const deadlineValue = deadlineInput ? new Date(deadlineInput) : null;
+  const invalidFields: string[] = [];
 
+  if (!companyId) invalidFields.push("organization_id");
+  if (!title || title.length > 200) invalidFields.push("title");
+  if (!description) invalidFields.push("description");
+  if (location.length > 160) invalidFields.push("location");
   if (
-    !companyId ||
-    !title ||
-    title.length > 200 ||
-    !description ||
-    location.length > 160 ||
     !allowedEmploymentTypes.includes(
       employmentType as (typeof allowedEmploymentTypes)[number],
-    ) ||
+    )
+  ) {
+    invalidFields.push("employment_type");
+  }
+  if (
     !allowedWorkplaceTypes.includes(
       workplaceType as (typeof allowedWorkplaceTypes)[number],
-    ) ||
-    responsibilities.length > 12000 ||
-    requirements.length > 12000 ||
-    (experienceLevel !== "" && !allowedExperienceLevels.includes(experienceLevel as (typeof allowedExperienceLevels)[number])) ||
-    Number.isNaN(salaryMin) ||
-    Number.isNaN(salaryMax) ||
-    (salaryMin !== null && salaryMax !== null && salaryMax < salaryMin) ||
-    (salaryCurrency !== "" && !/^[A-Z]{3}$/.test(salaryCurrency)) ||
-    !Number.isInteger(openings) || openings < 1 || openings > 1000 ||
-    (deadlineValue !== null && Number.isNaN(deadlineValue.getTime()))
+    )
   ) {
+    invalidFields.push("workplace_type");
+  }
+  if (responsibilities.length > 12000) {
+    invalidFields.push("responsibilities");
+  }
+  if (requirements.length > 12000) invalidFields.push("requirements");
+  if (
+    experienceLevel !== "" &&
+    !allowedExperienceLevels.includes(
+      experienceLevel as (typeof allowedExperienceLevels)[number],
+    )
+  ) {
+    invalidFields.push("experience_level");
+  }
+  if (Number.isNaN(salaryMin)) invalidFields.push("salary_min");
+  if (Number.isNaN(salaryMax)) invalidFields.push("salary_max");
+  if (
+    salaryMin !== null &&
+    salaryMax !== null &&
+    !Number.isNaN(salaryMin) &&
+    !Number.isNaN(salaryMax) &&
+    salaryMax < salaryMin
+  ) {
+    invalidFields.push("salary_max (must be greater than or equal to salary_min)");
+  }
+  if (salaryCurrency && !/^[A-Z]{3}$/.test(salaryCurrency)) {
+    invalidFields.push("salary_currency (use a 3-letter currency code)");
+  }
+  if (!Number.isInteger(openings) || openings < 1 || openings > 1000) {
+    invalidFields.push("openings");
+  }
+  if (deadlineValue !== null && Number.isNaN(deadlineValue.getTime())) {
+    invalidFields.push("application_deadline");
+  }
+
+  if (invalidFields.length) {
     return NextResponse.json(
-      { error: "Please provide valid job details" },
+      {
+        error: `Please check these job details: ${invalidFields.join(", ")}.`,
+        invalidFields,
+      },
       { status: 400 },
     );
   }
