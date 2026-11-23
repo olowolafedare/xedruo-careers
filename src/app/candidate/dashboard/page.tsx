@@ -11,17 +11,18 @@ import {
   Bell,
   UserRound,
 } from "lucide-react";
-import { eq, count } from "drizzle-orm";
+import { and, eq, count, desc, ilike, or } from "drizzle-orm";
 import { requireUser } from "@/src/lib/auth/require-user";
 import { getDb } from "@/src/lib/db";
 import {
   applications,
   savedJobs,
   candidateProfiles,
+  companies,
+  jobs,
 } from "@/src/lib/db/schema";
 
-// This authenticated dashboard reads cookies and user-specific database data.
-// Render it as a blocking route instead of prerendering it at build time.
+
 export const instant = false;
 
 const shortcuts = [
@@ -74,18 +75,64 @@ async function CandidateDashboardContent() {
       db
         .select({
           onboardingCompleted: candidateProfiles.onboardingCompleted,
+          state: candidateProfiles.state,
+          country: candidateProfiles.country,
         })
         .from(candidateProfiles)
         .where(eq(candidateProfiles.accountId, account.id))
         .limit(1),
     ]);
 
+  const profile = profileResult[0];
+  const locationConditions = [profile?.state, profile?.country]
+    .filter((location): location is string => Boolean(location?.trim()))
+    .map((location) =>
+      ilike(jobs.location, `%${location.replace(/[\\%_]/g, "\\$&")}%`),
+    );
+  const recommendationConditions = [eq(jobs.status, "published")];
+  const locationMatch =
+    locationConditions.length > 0 ? or(...locationConditions) : undefined;
+
+  if (locationMatch) {
+    recommendationConditions.push(locationMatch);
+  }
+
+  let recommendedJobs = await db
+    .select({
+      id: jobs.id,
+      slug: jobs.slug,
+      title: jobs.title,
+      location: jobs.location,
+      companyName: companies.name,
+    })
+    .from(jobs)
+    .innerJoin(companies, eq(jobs.companyId, companies.id))
+    .where(and(...recommendationConditions))
+    .orderBy(desc(jobs.createdAt))
+    .limit(6);
+
+  if (!recommendedJobs.length && locationMatch) {
+    recommendedJobs = await db
+      .select({
+        id: jobs.id,
+        slug: jobs.slug,
+        title: jobs.title,
+        location: jobs.location,
+        companyName: companies.name,
+      })
+      .from(jobs)
+      .innerJoin(companies, eq(jobs.companyId, companies.id))
+      .where(eq(jobs.status, "published"))
+      .orderBy(desc(jobs.createdAt))
+      .limit(6);
+  }
+
   const counts = [
     { label: "Applications", value: applicationResult[0]?.total ?? 0 },
     { label: "Saved jobs", value: savedJobResult[0]?.total ?? 0 },
     {
       label: "Profile",
-      value: profileResult[0]?.onboardingCompleted
+      value:       profile?.onboardingCompleted
         ? "Complete"
         : "In progress",
     },
@@ -112,6 +159,132 @@ async function CandidateDashboardContent() {
         >
           Explore jobs <ArrowRight size={16} />
         </Link>
+      </section>
+
+      <form
+        action="/jobs"
+        className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
+      >
+        <label className="text-xs font-semibold text-slate-600">
+          Search jobs
+          <input
+            name="q"
+            placeholder="Job title, company or skill"
+            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+          />
+        </label>
+        <label className="text-xs font-semibold text-slate-600">
+          Location
+          <input
+            name="location"
+            placeholder="City, state or country"
+            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+          />
+        </label>
+        <label className="text-xs font-semibold text-slate-600">
+          Industry
+          <input
+            name="industry"
+            placeholder="Industry or field"
+            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+          />
+        </label>
+        <label className="text-xs font-semibold text-slate-600">
+          Job type
+          <select
+            name="type"
+            defaultValue=""
+            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"
+          >
+            <option value="">All job types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+            <option value="Temporary">Temporary</option>
+            <option value="Freelance">Freelance</option>
+          </select>
+        </label>
+        <label className="text-xs font-semibold text-slate-600">
+          Experience
+          <select
+            name="experience"
+            defaultValue=""
+            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"
+          >
+            <option value="">Any experience</option>
+            <option value="entry">Entry level</option>
+            <option value="junior">Junior</option>
+            <option value="mid">Mid-level</option>
+            <option value="senior">Senior</option>
+            <option value="lead">Lead</option>
+            <option value="executive">Executive</option>
+          </select>
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="text-xs font-semibold text-slate-600">
+            Salary from
+            <input
+              name="salaryMin"
+              type="number"
+              min="0"
+              placeholder="Any"
+              className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+            />
+          </label>
+          <label className="text-xs font-semibold text-slate-600">
+            Salary to
+            <input
+              name="salaryMax"
+              type="number"
+              min="0"
+              placeholder="Any"
+              className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+            />
+          </label>
+        </div>
+        <div className="sm:col-span-2 lg:col-span-3">
+          <button className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-800">
+            Search opportunities
+          </button>
+        </div>
+      </form>
+
+      <section className="space-y-4" aria-label="Recommended jobs">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight">
+            Recommended jobs
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Current openings, prioritized by your profile location when available.
+          </p>
+        </div>
+        {recommendedJobs.length ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {recommendedJobs.map((job) => (
+              <Link
+                key={job.id}
+                href={`/jobs/${job.slug}`}
+                className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-200 hover:shadow-sm"
+              >
+                <h3 className="font-semibold">{job.title}</h3>
+                <p className="mt-1 text-sm text-slate-600">{job.companyName}</p>
+                <p className="mt-2 text-xs text-slate-500">
+                  {job.location || "Location not specified"}
+                </p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+            No published opportunities match your profile location yet. Browse
+            all open roles to see more.
+            {" "}
+            <Link href="/jobs" className="font-semibold text-blue-700 underline">
+              Browse all jobs
+            </Link>
+          </p>
+        )}
       </section>
 
       <section
