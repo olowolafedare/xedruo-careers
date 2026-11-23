@@ -1,6 +1,7 @@
 import "server-only";
 
 import { decryptToken, encryptToken } from "./token-crypto";
+import { getSafeAuthReturnTo } from "./safe-return-to";
 
 export const REGISTRATION_COOKIE = "hireuo_registration_continuation";
 export const REGISTRATION_COOKIE_MAX_AGE = 10 * 60;
@@ -11,11 +12,17 @@ type RegistrationCookie = {
   centralIdentityId: string;
   continuationToken: string;
   expiresAt: number;
+  returnTo: string;
 };
 
-export function sealRegistration(input: Omit<RegistrationCookie, "expiresAt">) {
+export function sealRegistration(
+  input: Omit<RegistrationCookie, "expiresAt" | "returnTo"> & {
+    returnTo?: string;
+  },
+) {
   return encryptToken(JSON.stringify({
     ...input,
+    returnTo: getSafeAuthReturnTo(input.returnTo),
     expiresAt: Date.now() + REGISTRATION_COOKIE_MAX_AGE * 1000,
   } satisfies RegistrationCookie));
 }
@@ -31,7 +38,10 @@ export function openRegistration(value: string | undefined): RegistrationCookie 
       typeof parsed.expiresAt !== "number" ||
       parsed.expiresAt <= Date.now()
     ) return null;
-    return parsed;
+    return {
+      ...parsed,
+      returnTo: getSafeAuthReturnTo(parsed.returnTo),
+    };
   } catch {
     return null;
   }
