@@ -4,19 +4,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { connection } from "next/server";
 import AccountForm from "./AccountForm";
-
-const ALLOWED_DESTINATIONS = new Set([
-  "/admin",
-  "/start",
-  "/applicant",
-  "/recruiter",
-  "/candidate/dashboard",
-  "/candidate/applications",
-  "/candidate/saved-jobs",
-  "/candidate/notifications",
-  "/candidate/messages",
-  "/recruiter/messages",
-]);
+import { getSafeAuthReturnTo } from "../../../lib/auth/safe-return-to";
 
 type AccountPageProps = {
   searchParams: Promise<{
@@ -35,9 +23,7 @@ function firstValue(value: string | string[] | undefined) {
 
 function safeDestination(value: string | string[] | undefined) {
   const destination = firstValue(value);
-  return destination && ALLOWED_DESTINATIONS.has(destination)
-    ? destination
-    : "/start";
+  return getSafeAuthReturnTo(destination);
 }
 
 async function AccountContent({ searchParams }: AccountPageProps) {
