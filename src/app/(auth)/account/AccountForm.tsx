@@ -84,7 +84,11 @@ export default function AccountForm({
           body: JSON.stringify({ xedruoId, password }),
         });
         if (!response.ok) throw new Error(await getApiError(response));
-        router.replace(destination);
+        const result = await response.json();
+        if (result?.redirectTo !== "/portal-selection") {
+          throw new Error("Sign-in succeeded, but portal selection could not be opened.");
+        }
+        router.replace(result.redirectTo);
         router.refresh();
         return;
       }
