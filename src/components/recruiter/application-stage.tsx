@@ -15,6 +15,18 @@ const stages = [
   "withdrawn",
 ] as const;
 
+const stageLabels: Record<(typeof stages)[number], string> = {
+  submitted: "Applied",
+  under_review: "Under Review",
+  shortlisted: "Shortlisted",
+  assessment: "Assessment",
+  interview: "Interview",
+  offered: "Offer Received",
+  hired: "Hired",
+  rejected: "Rejected",
+  withdrawn: "Withdrawn",
+};
+
 export function ApplicationStage({
   id,
   status,
@@ -52,6 +64,9 @@ export function ApplicationStage({
         return;
       }
 
+      if (!result.notificationQueued || !result.historyRecorded) {
+        setMessage("Status saved, but an update could not be recorded or delivered.");
+      }
       router.refresh();
     } catch {
       setMessage("Could not update. Check your connection and try again.");
@@ -70,9 +85,7 @@ export function ApplicationStage({
         className="rounded-lg bg-rosybrown px-2.5 py-2 text-xs font-semibold capitalize text-slate-700 outline-none disabled:cursor-not-allowed disabled:opacity-75"
       >
         {stages.map((stage) => (
-          <option key={stage} value={stage}>
-            {stage.replaceAll("_", " ")}
-          </option>
+          <option key={stage} value={stage}>{stageLabels[stage]}</option>
         ))}
       </select>
 
