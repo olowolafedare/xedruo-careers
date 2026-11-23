@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/src/lib/db";
-import { applications, jobs } from "@/src/lib/db/schema";
+import {
+  applications,
+  applicationStatusHistory,
+  companyMemberships,
+  jobs,
+  notifications,
+} from "@/src/lib/db/schema";
 import { requireApiUser } from "@/src/lib/auth/require-api-user";
 import { withCentralAuthErrors } from "@/src/lib/auth/central-auth-response";
 
@@ -102,6 +108,8 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     const [job] = await db
       .select({
         id: jobs.id,
+        title: jobs.title,
+        companyId: jobs.companyId,
         status: jobs.status,
         expiresAt: jobs.expiresAt,
         applicationDeadline: jobs.applicationDeadline,
@@ -156,7 +164,53 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
         applied_at: applications.submittedAt,
       });
 
-    return NextResponse.json({ application }, { status: 201 });
+    let applicationHistoryRecorded = true;
+    try {
+      await db.insert(applicationStatusHistory).values({
+        applicationId: application.id,
+        oldStatus: null,
+        newStatus: "submitted",
+        changedBy: current.account.id,
+      });
+    } catch (historyError) {
+      applicationHistoryRecorded = false;
+      console.error("Application saved, but initial status history recording failed:", historyError);
+    }
+
+    let employerNotificationsQueued = true;
+    try {
+      const members = await db
+        .select({ accountId: companyMemberships.accountId })
+        .from(companyMemberships)
+        .where(
+          and(
+            eq(companyMemberships.companyId, job.companyId),
+            eq(companyMemberships.status, "active"),
+          ),
+        );
+
+      if (members.length > 0) {
+        await db.insert(notifications).values(
+          members.map(({ accountId }) => ({
+            accountId,
+            type: "application_received",
+            title: "New application received",
+            message: `A candidate applied for ${job.title}.`,
+            entityType: "application",
+            entityId: application.id,
+            actionUrl: "/recruiter/applicants",
+          })),
+        );
+      }
+    } catch (notificationError) {
+      employerNotificationsQueued = false;
+      console.error("Application saved, but employer notification delivery failed:", notificationError);
+    }
+
+    return NextResponse.json(
+      { application, applicationHistoryRecorded, employerNotificationsQueued },
+      { status: 201 },
+    );
   } catch (error) {
   
     if (
