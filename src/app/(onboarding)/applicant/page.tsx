@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getSafeAuthReturnTo } from "../../../lib/auth/safe-return-to";
 
 const SEARCH_TIMINGS = [
   { value: "immediately", label: "Immediately" },
@@ -22,14 +23,6 @@ const WORK_PREFERENCES = [
 const inputClass =
   "mt-2 w-full rounded-xl bg-rosybrown px-4 py-3 text-sm text-slate-900 outline-none transition focus:ring-4 focus:ring-amber-100";
 
-type CandidateProfile = {
-  phone_number: string | null;
-  years_experience: number | null;
-  job_search_timing: string | null;
-  preferred_workplace_type: string | null;
-  onboarding_completed: boolean;
-};
-
 export default function ApplicantOnboardingPage() {
   const router = useRouter();
 
@@ -48,11 +41,18 @@ export default function ApplicantOnboardingPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [returnTo, setReturnTo] = useState("/candidate/dashboard");
 
   useEffect(() => {
     let active = true;
 
     async function loadProfile() {
+      const intendedReturnTo = getSafeAuthReturnTo(
+        new URLSearchParams(window.location.search).get("next"),
+        "/candidate/dashboard",
+      );
+      setReturnTo(intendedReturnTo);
+
       try {
         const [profileResponse, resumeResponse] = await Promise.all([
           fetch("/api/v1/candidate/profile", {
@@ -68,7 +68,10 @@ export default function ApplicantOnboardingPage() {
         if (!active) return;
 
         if (profileResponse.status === 401) {
-          router.replace("/account?next=%2Fapplicant");
+          const onboardingDestination = `/applicant?next=${encodeURIComponent(intendedReturnTo)}`;
+          router.replace(
+            `/account?next=${encodeURIComponent(onboardingDestination)}`,
+          );
           return;
         }
 
@@ -96,7 +99,7 @@ export default function ApplicantOnboardingPage() {
         setEmail(profilePayload.email ?? "");
 
         if (profile?.onboardingCompleted) {
-          router.replace("/candidate/dashboard");
+          router.replace(intendedReturnTo);
           return;
         }
 
@@ -219,7 +222,7 @@ export default function ApplicantOnboardingPage() {
         }
 
         setNotice("Your candidate profile has been saved");
-        router.push("/candidate/dashboard");
+        router.push(returnTo);
         router.refresh();
       } catch (err) {
         const message =
