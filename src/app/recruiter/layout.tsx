@@ -12,7 +12,6 @@ import {
   Settings,
   UserRoundCheck,
 } from "lucide-react";
-import { requireRecruiter } from "./_lib/context";
 
 const navigation = [
   { href: "/recruiter/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -35,8 +34,7 @@ export default async function RecruiterLayout({
   children: ReactNode;
 }) {
   await connection();
-  const { company, membership } = await requireRecruiter();
-  const canManage = ["owner", "admin", "hr_manager", "recruiter"].includes(membership.role);
+  const canManage = true;
 
   return (
     <div className="min-h-screen bg-rosybrown text-slate-900">
@@ -51,7 +49,7 @@ export default async function RecruiterLayout({
           <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
             Workspace
           </p>
-          <p className="mt-1 truncate text-sm font-semibold">{company.name}</p>
+          <p className="mt-1 truncate text-sm font-semibold">Hiring workspace</p>
         </div>
         <nav aria-label="Recruiter navigation" className="space-y-1">
           {navigation.map(({ href, label, icon: Icon }) => (
@@ -95,8 +93,7 @@ export default async function RecruiterLayout({
               Xedruo Career
             </Link>
             <p className="hidden text-sm text-slate-500 lg:block">
-              Recruiting workspace{" "}
-              <span className="px-1 text-slate-300">/</span> {company.name}
+              Recruiting workspace
             </p>
             {canManage && (
               <Link
