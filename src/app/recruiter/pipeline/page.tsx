@@ -33,23 +33,28 @@ const columns = [
 export default async function RecruiterPipelinePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; stage?: string }>;
 }) {
-  const [{ page: pageParam }, { company, membership }] = await Promise.all([
+  const [{ page: pageParam, stage: stageParam }, { company, membership }] = await Promise.all([
     searchParams,
     requireRecruiter(),
   ]);
 
   const page = parsePage(pageParam);
+  const shortlistedOnly = stageParam === "shortlisted";
   const { from, to } = getPageRange(page, DEFAULT_PAGE_SIZE);
   const db = getDb();
+  const applicationConditions = [eq(jobs.companyId, company.id)];
+  if (shortlistedOnly) {
+    applicationConditions.push(eq(applications.status, "shortlisted"));
+  }
 
   const [[countResult], applicationRows] = await Promise.all([
     db
       .select({ total: count() })
       .from(applications)
       .innerJoin(jobs, eq(applications.jobId, jobs.id))
-      .where(eq(jobs.companyId, company.id)),
+      .where(and(...applicationConditions)),
 
     db
       .select({
@@ -69,7 +74,7 @@ export default async function RecruiterPipelinePage({
           candidateProfiles.accountId,
         ),
       )
-      .where(eq(jobs.companyId, company.id))
+      .where(and(...applicationConditions))
       .orderBy(desc(applications.submittedAt))
       .limit(to - from + 1)
       .offset(from),
@@ -95,21 +100,19 @@ export default async function RecruiterPipelinePage({
     stageApplications.get(application.status)?.push(application);
   }
 
-  const canEditApplications = [
-    "owner",
-    "admin",
-    "hr_manager",
-  ].includes(membership.role);
+  const canEditApplications = ["owner", "admin", "hr_manager", "recruiter"].includes(membership.role);
 
   return (
     <div className="space-y-7">
       <header>
         <p className="text-sm font-semibold text-amber-600">HIRING FLOW</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">
-          Candidate pipeline
+          {shortlistedOnly ? "Shortlisted Candidates" : "Candidate pipeline"}
         </h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">
-          Move each application forward as your team reviews candidates
+          {shortlistedOnly
+            ? "Review candidates your team has shortlisted"
+            : "Move each application forward as your team reviews candidates"}
         </p>
       </header>
 
@@ -121,7 +124,7 @@ export default async function RecruiterPipelinePage({
           </p>
 
           <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-            {columns.map((stage) => {
+            {(shortlistedOnly ? ["shortlisted"] as const : columns).map((stage) => {
               const stageApps = stageApplications.get(stage) ?? [];
 
               return (
