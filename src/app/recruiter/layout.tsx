@@ -2,27 +2,29 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { connection } from "next/server";
 import {
-  Activity,
   Building2,
   CalendarDays,
-  ClipboardList,
   LayoutDashboard,
   Users,
   BriefcaseBusiness,
   MessageCircle,
+  Search,
+  Settings,
+  UserRoundCheck,
 } from "lucide-react";
 import { requireRecruiter } from "./_lib/context";
 
 const navigation = [
   { href: "/recruiter/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/recruiter/jobs", label: "Jobs", icon: BriefcaseBusiness },
+  { href: "/recruiter/jobs/new", label: "Post a Job", icon: BriefcaseBusiness },
+  { href: "/recruiter/jobs", label: "Manage Jobs", icon: BriefcaseBusiness },
   { href: "/recruiter/applicants", label: "Applicants", icon: Users },
+  { href: "/recruiter/talent", label: "Find Talent", icon: Search },
+  { href: "/recruiter/pipeline?stage=shortlisted", label: "Shortlisted Candidates", icon: UserRoundCheck },
   { href: "/recruiter/messages", label: "Messages", icon: MessageCircle },
-  { href: "/recruiter/pipeline", label: "Pipeline", icon: Activity },
   { href: "/recruiter/interviews", label: "Interviews", icon: CalendarDays },
-  { href: "/recruiter/assessments", label: "Assessments", icon: ClipboardList },
-  { href: "/recruiter/analytics", label: "Analytics", icon: Activity },
-  { href: "/recruiter/company", label: "Company", icon: Building2 },
+  { href: "/recruiter/company", label: "Company Profile", icon: Building2 },
+  { href: "/recruiter/settings", label: "Settings", icon: Settings },
 ];
 
 export const instant = false;
