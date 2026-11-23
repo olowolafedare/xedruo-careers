@@ -4,6 +4,7 @@ import { getDb } from "@/src/lib/db";
 import {
   applications,
   applicationStatusHistory,
+  candidateProfiles,
   companyMemberships,
   jobs,
   notifications,
@@ -129,6 +130,24 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
       return NextResponse.json(
         { error: "This job is no longer accepting applications" },
         { status: 404 },
+      );
+    }
+
+    const [candidateProfile] = await db
+      .select({
+        onboardingCompleted: candidateProfiles.onboardingCompleted,
+      })
+      .from(candidateProfiles)
+      .where(eq(candidateProfiles.accountId, current.account.id))
+      .limit(1);
+
+    if (!candidateProfile?.onboardingCompleted) {
+      return NextResponse.json(
+        {
+          error: "Complete your candidate profile before applying.",
+          code: "candidate_profile_required",
+        },
+        { status: 403 },
       );
     }
 
