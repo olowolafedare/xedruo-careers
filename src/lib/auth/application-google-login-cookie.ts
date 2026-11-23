@@ -14,7 +14,9 @@ export type ApplicationGoogleLoginTransaction = {
   returnTo: string;
 };
 
-export function createApplicationGoogleLoginTransaction(returnTo = "/start") {
+export function createApplicationGoogleLoginTransaction(
+  returnTo = "/portal-selection",
+) {
   const transaction: ApplicationGoogleLoginTransaction = {
     state: randomBytes(32).toString("base64url"),
     expiresAt: Date.now() + APPLICATION_GOOGLE_LOGIN_MAX_AGE * 1000,
