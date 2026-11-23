@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       request.headers.get("user-agent"),
     );
 
-    return redirectTo(registration.returnTo, true);
+    return redirectTo("/portal-selection", true);
   } catch (error) {
     if (error instanceof CentralAuthError) {
       console.warn("HIREUO Google callback rejected by Central Auth:", { stage, status: error.status });
