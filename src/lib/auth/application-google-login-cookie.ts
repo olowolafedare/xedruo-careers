@@ -2,6 +2,7 @@ import "server-only";
 
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { decryptToken, encryptToken } from "./token-crypto";
+import { getSafeAuthReturnTo } from "./safe-return-to";
 
 export const APPLICATION_GOOGLE_LOGIN_COOKIE = "hireuo_application_google_login";
 export const APPLICATION_GOOGLE_LOGIN_MAX_AGE = 10 * 60;
@@ -10,12 +11,14 @@ export const APPLICATION_GOOGLE_LOGIN_COOKIE_PATH = "/api/v1/auth/google/login";
 export type ApplicationGoogleLoginTransaction = {
   state: string;
   expiresAt: number;
+  returnTo: string;
 };
 
-export function createApplicationGoogleLoginTransaction() {
+export function createApplicationGoogleLoginTransaction(returnTo = "/start") {
   const transaction: ApplicationGoogleLoginTransaction = {
     state: randomBytes(32).toString("base64url"),
     expiresAt: Date.now() + APPLICATION_GOOGLE_LOGIN_MAX_AGE * 1000,
+    returnTo: getSafeAuthReturnTo(returnTo),
   };
   return { transaction, sealed: encryptToken(JSON.stringify(transaction)) };
 }
@@ -28,7 +31,10 @@ export function openApplicationGoogleLoginTransaction(value: string | undefined)
       typeof parsed.state !== "string" || parsed.state.length < 32 ||
       typeof parsed.expiresAt !== "number" || parsed.expiresAt <= Date.now()
     ) return null;
-    return parsed;
+    return {
+      ...parsed,
+      returnTo: getSafeAuthReturnTo(parsed.returnTo),
+    };
   } catch {
     return null;
   }
