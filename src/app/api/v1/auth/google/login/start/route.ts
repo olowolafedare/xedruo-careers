@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import {
   centralAuthApplicationGoogleStart,
@@ -11,14 +11,18 @@ import {
   createApplicationGoogleLoginTransaction,
 } from "../../../../../../../lib/auth/application-google-login-cookie";
 import { getHireuoOrigin } from "../../../../../../../lib/auth/registration-cookie";
+import { getSafeAuthReturnTo } from "../../../../../../../lib/auth/safe-return-to";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
+    const body = await request.json().catch(() => null);
+    const returnTo = getSafeAuthReturnTo(body?.returnTo);
     const callbackUri = new URL(
       "/api/v1/auth/google/login/callback",
       getHireuoOrigin(),
     ).toString();
-    const { transaction, sealed } = createApplicationGoogleLoginTransaction();
+    const { transaction, sealed } =
+      createApplicationGoogleLoginTransaction(returnTo);
     const result = await centralAuthApplicationGoogleStart(
       callbackUri,
       transaction.state,
