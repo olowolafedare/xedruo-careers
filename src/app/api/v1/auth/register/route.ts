@@ -6,6 +6,7 @@ import { centralAuthErrorResponse } from "../../../../../lib/auth/central-auth-r
 import { ensureLocalAccount } from "../../../../../lib/auth/account-store";
 import { completeRegistration } from "../../../../../lib/auth/registration-flow";
 import { openRegistration, REGISTRATION_COOKIE, registrationCookieOptions, sealRegistration } from "../../../../../lib/auth/registration-cookie";
+import { getSafeAuthReturnTo } from "../../../../../lib/auth/safe-return-to";
 
 export async function POST(request: NextRequest) {
   let stage = "central_auth_registration";
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
     const countryCode = typeof body?.countryCode === "string" ? body.countryCode.trim().toUpperCase() : "";
     const password = typeof body?.password === "string" ? body.password : "";
     const displayName = typeof body?.displayName === "string" ? body.displayName.trim() : "";
+    const returnTo = getSafeAuthReturnTo(body?.returnTo);
 
     if (!password || password.length < 8 || password.length > 1024) {
       return NextResponse.json({ error: "Password must be between 8 and 1024 characters." }, { status: 400 });
@@ -50,7 +52,11 @@ export async function POST(request: NextRequest) {
 
     stage = "continuation_cookie";
     const response = NextResponse.json({ success: true, next: "google_link" }, { status: 201 });
-    response.cookies.set(REGISTRATION_COOKIE, sealRegistration(registration), registrationCookieOptions());
+    response.cookies.set(
+      REGISTRATION_COOKIE,
+      sealRegistration({ ...registration, returnTo }),
+      registrationCookieOptions(),
+    );
     return response;
   } catch (error) {
     if (error instanceof CentralAuthError) {
