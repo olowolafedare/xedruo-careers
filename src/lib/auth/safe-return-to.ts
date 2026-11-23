@@ -3,7 +3,6 @@ const FIXED_DESTINATIONS = new Set([
   "/portal-selection",
   "/applicant",
   "/recruiter",
-  "/candidate/dashboard",
   "/candidate/applications",
   "/candidate/saved-jobs",
   "/candidate/notifications",
