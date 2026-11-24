@@ -1,4 +1,4 @@
-import { Building2, Globe2, ShieldCheck } from "lucide-react";
+import { ArrowRight, Building2, Globe2, ShieldCheck } from "lucide-react";
 import { requireRecruiter } from "../_lib/context";
 import CompanyProfileForm from "./company-profile-form";
 
@@ -62,6 +62,21 @@ export default async function RecruiterCompanyPage() {
             Ask a company administrator or recruiter to update these details.
           </p>
         )}
+      </section>
+      <section className="rounded-2xl border border-blue-100 bg-blue-50 p-6 sm:p-8">
+        <h2 className="font-semibold text-slate-900">Looking for a job?</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600">
+          Switch to your job-seeker workspace to explore opportunities and manage applications.
+        </p>
+        <form action="/api/v1/portals/select" method="post" className="mt-4">
+          <input type="hidden" name="portal" value="candidate" />
+          <button className="inline-flex min-h-11 items-center gap-2 font-semibold text-[#1746D1] underline underline-offset-2 hover:text-blue-800">
+            Switch to job seeking <ArrowRight size={16} />
+          </button>
+        </form>
+        <a href="/applicant" className="mt-2 inline-block text-sm text-slate-600 underline underline-offset-2">
+          Set up a job-seeker profile
+        </a>
       </section>
     </div>
   );
