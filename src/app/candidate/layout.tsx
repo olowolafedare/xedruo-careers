@@ -4,7 +4,7 @@ import { BriefcaseBusiness, Home, MessageCircle, Search, UserRound } from "lucid
 
 const navigation = [
   { href: "/candidate/dashboard", label: "Home", icon: Home },
-  { href: "/jobs", label: "Search", icon: Search },
+  { href: "/candidate/jobs", label: "Search", icon: Search },
   { href: "/candidate/applications", label: "My Job", icon: BriefcaseBusiness },
   { href: "/candidate/messages", label: "Message", icon: MessageCircle },
   { href: "/candidate/profile", label: "My Profile", icon: UserRound },
@@ -29,7 +29,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
         </nav>
         <div className="mt-auto rounded-2xl bg-[#1746D1] p-4 text-white">
           <p className="text-sm font-semibold">Ready for a new opportunity?</p>
-          <Link href="/jobs" className="mt-3 inline-flex text-sm font-semibold text-white underline underline-offset-4">Browse jobs</Link>
+          <Link href="/candidate/jobs" className="mt-3 inline-flex text-sm font-semibold text-white underline underline-offset-4">Browse jobs</Link>
         </div>
       </aside>
       <div className="lg:pl-64">
@@ -39,7 +39,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
               <span className="grid size-8 place-items-center rounded-lg bg-[#1746D1] text-sm text-white">x</span>Xedruo Career
             </Link>
             <p className="hidden text-sm text-slate-500 lg:block">Your career workspace</p>
-            <Link href="/jobs" className="text-sm font-semibold text-[#1746D1] lg:hidden">Find jobs</Link>
+            <Link href="/candidate/jobs" className="text-sm font-semibold text-[#1746D1] lg:hidden">Find jobs</Link>
           </div>
         </header>
         <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-6xl px-5 py-8 pb-28 sm:px-8 sm:py-10 sm:pb-28">{children}</main>

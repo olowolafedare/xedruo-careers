@@ -6,9 +6,13 @@ import { useRouter } from "next/navigation";
 export default function SaveButton({
   jobId,
   initiallySaved,
+  returnTo = "/applicant",
+  compact = false,
 }: {
   jobId: string;
   initiallySaved: boolean;
+  returnTo?: string;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [saved, setSaved] = useState(initiallySaved);
@@ -33,7 +37,7 @@ export default function SaveButton({
         },
       );
       if (response.status === 401) {
-        router.push("/account?next=%2Fapplicant");
+        router.push(`/account?next=${encodeURIComponent(returnTo)}`);
         return;
       }
       const result = await response.json();
@@ -54,13 +58,13 @@ export default function SaveButton({
         type="button"
         onClick={() => void toggle()}
         disabled={busy}
-        className="w-full rounded-xl px-5 py-3 text-sm font-semibold text-slate-700 bg-rosybrown disabled:opacity-60"
+        className={`${compact ? "w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs" : "w-full rounded-xl px-5 py-3 text-sm"} font-semibold text-slate-700 bg-rosybrown disabled:opacity-60`}
       >
         {busy
           ? "Updating…"
           : saved
-            ? "Remove from saved jobs"
-            : "Save this job"}
+          ? compact ? "Unsave" : "Remove from saved jobs"
+          : compact ? "Save job" : "Save this job"}
       </button>
       {error && (
         <p role="alert" className="mt-2 text-xs text-red-700">
