@@ -209,7 +209,7 @@ async function ApplicationsContent() {
               When you apply for a role, return here to follow its progress
             </p>
             <Link
-              href="/jobs"
+              href="/candidate/jobs"
               className="mt-5 inline-flex rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
             >
               Explore open jobs
@@ -230,7 +230,7 @@ async function ApplicationsContent() {
             {savedJobRows.map(({ id, job }) => (
               <Link
                 key={id}
-                href={`/jobs/${job.slug}`}
+                href={`/candidate/jobs/${job.slug}`}
                 className="block rounded-2xl bg-rosybrown p-5 transition hover:shadow-sm"
               >
                 <h3 className="font-semibold">{job.title}</h3>
@@ -244,7 +244,7 @@ async function ApplicationsContent() {
         ) : (
           <p className="rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">
             You have no saved jobs yet.{" "}
-            <Link href="/jobs" className="font-semibold text-blue-700 underline">
+            <Link href="/candidate/jobs" className="font-semibold text-blue-700 underline">
               Browse open roles
             </Link>
             .
