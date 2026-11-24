@@ -10,7 +10,7 @@ import {
 } from "@/src/lib/db/schema";
 
 function redirectToSelection(request: NextRequest, error = "unauthorized") {
-  const destination = new URL("/portal-selection", request.nextUrl.origin);
+  const destination = new URL("/start", request.nextUrl.origin);
   if (error) destination.searchParams.set("error", error);
   return NextResponse.redirect(destination, 303);
 }
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   const auth = await requireApiUser();
   if (!auth) {
     const login = new URL("/account", request.nextUrl.origin);
-    login.searchParams.set("next", "/portal-selection");
+    login.searchParams.set("next", "/start");
     return NextResponse.redirect(login, 303);
   }
 
@@ -51,7 +51,10 @@ export async function POST(request: NextRequest) {
       .where(eq(candidateProfiles.accountId, auth.account.id))
       .limit(1);
 
-    if (!profile) return redirectToSelection(request);
+    if (!profile) return NextResponse.redirect(new URL("/applicant", request.nextUrl.origin), 303);
+    if (!profile.onboardingCompleted) {
+      return NextResponse.redirect(new URL("/applicant", request.nextUrl.origin), 303);
+    }
     return NextResponse.redirect(
       new URL(
         profile.onboardingCompleted ? "/candidate/dashboard" : "/applicant",
@@ -62,9 +65,20 @@ export async function POST(request: NextRequest) {
   }
 
   if (portal === "employer") {
-    const companyId = formData.get("companyId");
+    let companyId = formData.get("companyId");
     if (typeof companyId !== "string" || !companyId) {
-      return redirectToSelection(request);
+      const [firstMembership] = await db
+        .select({ companyId: companyMemberships.companyId })
+        .from(companyMemberships)
+        .where(and(
+          eq(companyMemberships.accountId, auth.account.id),
+          eq(companyMemberships.status, "active"),
+        ))
+        .limit(1);
+      companyId = firstMembership?.companyId ?? null;
+    }
+    if (typeof companyId !== "string" || !companyId) {
+      return NextResponse.redirect(new URL("/recruiter", request.nextUrl.origin), 303);
     }
 
     const [membership] = await db
