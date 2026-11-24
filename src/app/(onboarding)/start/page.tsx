@@ -7,8 +7,10 @@ import { getDb } from "../../../lib/db";
 import {
   candidateProfiles,
   companyMemberships,
+  staffRoles,
 } from "../../../lib/db/schema";
 import { requireUser } from "../../../lib/auth/require-user";
+import { and, eq, isNull } from "drizzle-orm";
 
 export const instant = false;
 
@@ -18,7 +20,7 @@ export default async function StartPage() {
   const { account } = await requireUser("/start");
   const db = getDb();
 
-  const [candidateRows, membershipRows] = await Promise.all([
+  const [candidateRows, membershipRows, staffRows] = await Promise.all([
     db
       .select({
         onboardingCompleted: candidateProfiles.onboardingCompleted,
@@ -39,6 +41,11 @@ export default async function StartPage() {
         ),
       )
       .limit(1),
+    db
+      .select({ id: staffRoles.id })
+      .from(staffRoles)
+      .where(and(eq(staffRoles.accountId, account.id), isNull(staffRoles.revokedAt)))
+      .limit(1),
   ]);
 
   if (candidateRows[0]?.onboardingCompleted) {
@@ -47,6 +54,14 @@ export default async function StartPage() {
 
   if (membershipRows.length > 0) {
     redirect("/recruiter/dashboard");
+  }
+
+  if (staffRows.length > 0) {
+    redirect("/admin");
+  }
+
+  if (candidateRows.length > 0) {
+    redirect("/applicant");
   }
 
   const options = [
