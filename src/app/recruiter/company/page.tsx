@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight, Building2, Globe2, ShieldCheck } from "lucide-react";
 import { requireRecruiter } from "../_lib/context";
 import CompanyProfileForm from "./company-profile-form";
@@ -63,20 +64,20 @@ export default async function RecruiterCompanyPage() {
           </p>
         )}
       </section>
-      <section className="rounded-2xl border border-blue-100 bg-blue-50 p-6 sm:p-8">
-        <h2 className="font-semibold text-slate-900">Looking for a job?</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">
-          Switch to your job-seeker workspace to explore opportunities and manage applications.
+      <section className="rounded-2xl border border-blue-100 bg-[#F3F6FF] p-6 sm:p-8">
+        <p className="text-lg font-semibold text-slate-900">
+          Looking for a job?
         </p>
-        <form action="/api/v1/portals/select" method="post" className="mt-4">
-          <input type="hidden" name="portal" value="candidate" />
-          <button className="inline-flex min-h-11 items-center gap-2 font-semibold text-[#1746D1] underline underline-offset-2 hover:text-blue-800">
-            Switch to job seeking <ArrowRight size={16} />
-          </button>
-        </form>
-        <a href="/applicant" className="mt-2 inline-block text-sm text-slate-600 underline underline-offset-2">
-          Set up a job-seeker profile
-        </a>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Switch to your job-seeker workspace to explore opportunities and
+          manage applications.
+        </p>
+        <Link
+          href="/candidate-onboarding"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
+        >
+          Switch to Job Seeking <ArrowRight size={16} />
+        </Link>
       </section>
     </div>
   );
