@@ -58,15 +58,6 @@ async function CandidateDashboardContent() {
         </Link>
       </section>
 
-      <form action="/jobs" className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-5">
-        <label className="text-xs font-semibold text-slate-600">Search jobs<input name="q" placeholder="Job title, company or skill" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" /></label>
-        <label className="text-xs font-semibold text-slate-600">Country<input name="country" placeholder="Country" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" /></label>
-        <label className="text-xs font-semibold text-slate-600">State<input name="state" placeholder="State" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" /></label>
-        <label className="text-xs font-semibold text-slate-600">Job type<select name="type" defaultValue="" className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="">All job types</option><option value="full_time">Full-time</option><option value="part_time">Part-time</option><option value="contract">Contract</option><option value="freelance">Freelance</option><option value="internship">Internship</option><option value="temporary">Temporary</option></select></label>
-        <label className="text-xs font-semibold text-slate-600">Work arrangement<select name="workplace" defaultValue="" className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="">Any arrangement</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">Full onsite</option></select></label>
-        <div className="sm:col-span-2 lg:col-span-5"><button className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-800">Search opportunities</button></div>
-      </form>
-
       <section className="grid gap-4 sm:grid-cols-3" aria-label="Your career summary">
         {counts.map(({ label, value }) => <article key={label} className="rounded-2xl bg-rosybrown p-5"><p className="text-sm font-medium text-slate-500">{label}</p><p className="mt-3 text-2xl font-bold tracking-tight">{value}</p></article>)}
       </section>
