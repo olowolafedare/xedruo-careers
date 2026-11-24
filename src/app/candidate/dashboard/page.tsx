@@ -154,7 +154,7 @@ async function CandidateDashboardContent() {
           </p>
         </div>
         <Link
-          href="/jobs"
+          href="/candidate/jobs"
           className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-black transition bg-rosybrown sm:self-auto"
         >
           Explore jobs <ArrowRight size={16} />
@@ -175,7 +175,7 @@ async function CandidateDashboardContent() {
             {recommendedJobs.map((job) => (
               <Link
                 key={job.id}
-                href={`/jobs/${job.slug}`}
+                href={`/candidate/jobs/${job.slug}`}
                 className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-200 hover:shadow-sm"
               >
                 <h3 className="font-semibold">{job.title}</h3>
@@ -191,7 +191,7 @@ async function CandidateDashboardContent() {
             No published opportunities match your profile location yet. Browse
             all open roles to see more.
             {" "}
-            <Link href="/jobs" className="font-semibold text-blue-700 underline">
+            <Link href="/candidate/jobs" className="font-semibold text-blue-700 underline">
               Browse all jobs
             </Link>
           </p>
@@ -271,7 +271,7 @@ async function CandidateDashboardContent() {
             to go
           </p>
           <Link
-            href="/jobs"
+            href="/candidate/jobs"
             className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-black/80"
           >
             Browse opportunities <ArrowRight size={15} />

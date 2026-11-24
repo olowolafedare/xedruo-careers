@@ -52,7 +52,7 @@ export default async function SavedJobsPage() {
                 key={saved.id}
                 className="flex flex-col justify-between gap-4 rounded-2xl bg-rosybrown p-5 sm:flex-row sm:items-center"
               >
-                <Link href={`/jobs/${job.id}`} className="min-w-0">
+                <Link href={`/candidate/jobs/${job.id}`} className="min-w-0">
                   <h2 className="font-semibold hover:text-amber-600">
                     {job.title}
                   </h2>
@@ -75,7 +75,7 @@ export default async function SavedJobsPage() {
                 </Link>
 
                 <Link
-                  href={`/jobs/${job.id}`}
+                  href={`/candidate/jobs/${job.id}`}
                   className="inline-flex w-fit items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:text-amber-700"
                 >
                   <Bookmark size={15} />
@@ -97,7 +97,7 @@ export default async function SavedJobsPage() {
               collected here
             </p>
             <Link
-              href="/jobs"
+              href="/candidate/jobs"
               className="mt-5 inline-flex rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
             >
               Find a role
