@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BriefcaseBusiness, Home, MessageCircle, UserRound } from "lucide-react";
+import { BriefcaseBusiness, Home, MessageCircle, Search, UserRound } from "lucide-react";
 
 const navigation = [
   { href: "/candidate/dashboard", label: "Home", icon: Home },
+  { href: "/jobs", label: "Search", icon: Search },
   { href: "/candidate/applications", label: "My Job", icon: BriefcaseBusiness },
   { href: "/candidate/messages", label: "Message", icon: MessageCircle },
   { href: "/candidate/profile", label: "My Profile", icon: UserRound },
@@ -28,7 +29,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
         </nav>
         <div className="mt-auto rounded-2xl bg-[#1746D1] p-4 text-white">
           <p className="text-sm font-semibold">Ready for a new opportunity?</p>
-          <Link href="/jobs" className="mt-3 inline-flex text-sm font-semibold text-white underline underline-offset-4">Browse jobs →</Link>
+          <Link href="/jobs" className="mt-3 inline-flex text-sm font-semibold text-white underline underline-offset-4">Browse jobs</Link>
         </div>
       </aside>
       <div className="lg:pl-64">
@@ -43,7 +44,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
         </header>
         <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-6xl px-5 py-8 pb-28 sm:px-8 sm:py-10 sm:pb-28">{children}</main>
       </div>
-      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-blue-100 bg-white/95 px-1 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur lg:hidden">
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-blue-100 bg-white/95 px-1 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur lg:hidden">
         {navigation.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} className="flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[10px] font-semibold text-slate-600 hover:text-[#1746D1]">
             <Icon size={20} strokeWidth={1.9} /><span className="truncate">{label}</span>
