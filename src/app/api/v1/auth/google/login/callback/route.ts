@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       userAgent: request.headers.get("user-agent"),
     });
 
-    return clearPendingCookie(redirectTo("/portal-selection"));
+    return clearPendingCookie(redirectTo("/start"));
   } catch (error) {
     if (error instanceof CentralAuthError) {
       console.warn("HIREUO application Google callback rejected by Central Auth:", {
