@@ -53,7 +53,7 @@ async function CandidateDashboardContent() {
           <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Your career in one place</h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">Track your applications, prepare for next steps, and find your next opportunity</p>
         </div>
-        <Link href="/jobs" className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-black transition sm:self-auto">
+        <Link href="/candidate/jobs" className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-black transition sm:self-auto">
           Explore jobs <ArrowRight size={16} />
         </Link>
       </section>
@@ -85,7 +85,7 @@ async function CandidateDashboardContent() {
           <span className="grid size-10 place-items-center rounded-xl bg-rosybrown"><Search size={19} /></span>
           <h2 className="mt-5 text-lg font-semibold">Ready for a new opportunity?</h2>
           <p className="mt-2 text-sm leading-6 text-amber-300">Explore current openings and find a role that matches where you want to go</p>
-          <Link href="/jobs" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-black/80">Browse opportunities <ArrowRight size={15} /></Link>
+          <Link href="/candidate/jobs" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:text-black/80">Browse opportunities <ArrowRight size={15} /></Link>
         </div>
       </section>
     </div>
