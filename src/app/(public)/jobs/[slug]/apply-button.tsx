@@ -9,18 +9,20 @@ export default function ApplyButton({
   jobSlug,
   applied,
   applyOnLoad,
+  returnTo: customReturnTo,
 }: {
   jobId: string;
   jobSlug: string;
   applied: boolean;
   applyOnLoad: boolean;
+  returnTo?: string;
 }) {
   const router = useRouter();
   const [done, setDone] = useState(applied);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const autoSubmitted = useRef(false);
-  const returnTo = `/jobs/${jobSlug}?apply=1`;
+  const returnTo = customReturnTo ?? `/jobs/${jobSlug}?apply=1`;
 
   const apply = useCallback(async () => {
     setBusy(true);
