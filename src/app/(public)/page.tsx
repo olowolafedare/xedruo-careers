@@ -63,7 +63,7 @@ export default function HomePage() {
               href={accountHref}
               className="rounded-full px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-white/10 sm:px-4 sm:text-sm"
             >
-              Xedruo Login
+              Login
             </Link>
             <Link
               href={registrationHref}
@@ -83,12 +83,19 @@ export default function HomePage() {
           </div>
 
           <h1 className="mt-7 max-w-[620px] text-[clamp(2.8rem,5.2vw,4.65rem)] font-extrabold leading-[1.04] tracking-[-0.045em] text-white">
-            Kindly start your career with Xedruo
+            Start your career with Xedruo
           </h1>
 
           <p className="mt-6 max-w-[540px] text-base leading-7 text-blue-50 sm:text-lg sm:leading-8">
-            Discover opportunities that match your ambition. Connect with employers,
-            showcase your strengths and move your career forward.
+            <li>
+              Discover opportunities that match your ambition
+            </li>
+            <li>
+              Build your professional profile and manage applications
+            </li>
+            <li>
+              Connect with employers and Showcase your strengths and move your career forward
+            </li>
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
