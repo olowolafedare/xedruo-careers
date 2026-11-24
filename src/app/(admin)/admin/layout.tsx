@@ -53,10 +53,10 @@ export default async function AdminLayout({
             View site
           </Link>
           <Link
-            href="/portal-selection"
+            href="/start"
             className="text-sm font-semibold text-amber-800"
           >
-            Choose portal
+            Switch workspace
           </Link>
         </header>
         <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-10">
