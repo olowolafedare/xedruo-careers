@@ -1,6 +1,6 @@
 const FIXED_DESTINATIONS = new Set([
   "/admin",
-  "/portal-selection",
+  "/start",
   "/applicant",
   "/recruiter",
   "/candidate/applications",
@@ -14,10 +14,10 @@ const JOB_DESTINATION = /^\/jobs\/[A-Za-z0-9-]+(?:\?apply=1)?$/;
 
 export function getSafeAuthReturnTo(
   value: unknown,
-  fallback = "/portal-selection",
+  fallback = "/start",
 ): string {
   if (typeof value !== "string" || value.length > 500) return fallback;
-  if (value === "/start") return "/portal-selection";
+  if (value === "/portal-selection" || value === "/start") return "/start";
   if (FIXED_DESTINATIONS.has(value) || JOB_DESTINATION.test(value)) {
     return value;
   }
