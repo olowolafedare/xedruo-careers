@@ -413,13 +413,10 @@ export default function CandidateProfilePage() {
         </Link>
       </section>
       <section className="mt-7 rounded-2xl border border-blue-100 bg-[#F3F6FF] p-6 sm:p-8">
-        <h2 className="text-lg font-semibold text-slate-900">Looking to hire?</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Switch workspace</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          Open your hiring workspace or set up a company profile
+          Already part of a hiring team? Open your recruiter workspace here.
         </p>
-        <Link href="/recruiter-onboarding" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800">
-          Set up a hiring workspace <ArrowRight size={16} />
-        </Link>
         <form action="/api/v1/portals/select" method="post" className="mt-4 border-t border-blue-100 pt-4">
           <input type="hidden" name="portal" value="employer" />
           <button className="inline-flex min-h-11 items-center gap-2 font-semibold text-[#1746D1] underline underline-offset-2 hover:text-blue-800">
