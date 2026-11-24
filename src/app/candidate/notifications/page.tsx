@@ -146,7 +146,7 @@ export default async function CandidateNotificationsPage() {
             assessments, they&apos;ll appear here.
           </p>
           <Link
-            href="/jobs"
+            href="/candidate/jobs"
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
           >
             Explore jobs <ArrowUpRight size={16} />
