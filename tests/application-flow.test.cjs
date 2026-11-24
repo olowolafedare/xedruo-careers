@@ -42,10 +42,10 @@ test("auth return destinations allow job application continuation but reject ext
     getSafeAuthReturnTo("/applicant?next=%2Fjobs%2Frole-123%3Fapply%3D1"),
     "/applicant?next=%2Fjobs%2Frole-123%3Fapply%3D1",
   );
-  assert.equal(getSafeAuthReturnTo("//attacker.example"), "/portal-selection");
-  assert.equal(getSafeAuthReturnTo("/jobs/%2f%2fattacker"), "/portal-selection");
-  assert.equal(getSafeAuthReturnTo("/jobs/role-123?next=https://attacker.example"), "/portal-selection");
-  assert.equal(getSafeAuthReturnTo("/start"), "/portal-selection");
+  assert.equal(getSafeAuthReturnTo("//attacker.example"), "/start");
+  assert.equal(getSafeAuthReturnTo("/jobs/%2f%2fattacker"), "/start");
+  assert.equal(getSafeAuthReturnTo("/jobs/role-123?next=https://attacker.example"), "/start");
+  assert.equal(getSafeAuthReturnTo("/start"), "/start");
 });
 
 test("application API rejects unauthenticated requests using the HIREUO session guard", async () => {

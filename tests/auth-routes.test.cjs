@@ -135,7 +135,7 @@ test("application Google callback exchanges only a completion code with the matc
   assert.equal(sessions[0].accountId, "hireuo-account-id");
   assert.equal(sessions[0].authMode, "local_application_google");
   const callbackDestination = new URL(accepted.headers.get("location"));
-  assert.equal(callbackDestination.pathname, "/portal-selection");
+  assert.equal(callbackDestination.pathname, "/start");
   assert.equal(callbackDestination.search, "");
   assert.equal(cookieWrites.length, 2);
   assert.equal(cookieWrites[1][1], "");
