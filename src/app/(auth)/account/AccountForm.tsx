@@ -45,7 +45,7 @@ export default function AccountForm({
   }, [authError]);
 
   const visibleError = error || (authError && authError !== "google_account_unlinked"
-    ? "Authentication could not be completed. Please try again."
+    ? "Account not found, Tap 'Create an account'"
     : "");
 
   async function getApiError(response: Response) {
