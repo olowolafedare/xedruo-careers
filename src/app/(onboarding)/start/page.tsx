@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 import { getDb } from "../../../lib/db";
 import {
@@ -10,7 +10,6 @@ import {
   staffRoles,
 } from "../../../lib/db/schema";
 import { requireUser } from "../../../lib/auth/require-user";
-import { and, eq, isNull } from "drizzle-orm";
 
 export const instant = false;
 
