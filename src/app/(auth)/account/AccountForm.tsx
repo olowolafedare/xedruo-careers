@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   normalizeRegistrationPhone,
@@ -33,8 +33,18 @@ export default function AccountForm({
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showUnlinkedNotice, setShowUnlinkedNotice] = useState(
+    authError === "google_account_unlinked",
+  );
 
-  const visibleError = error || (authError
+  useEffect(() => {
+    if (!authError) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("auth_error");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  }, [authError]);
+
+  const visibleError = error || (authError && authError !== "google_account_unlinked"
     ? "Authentication could not be completed. Please try again."
     : "");
 
@@ -157,6 +167,30 @@ export default function AccountForm({
             <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {visibleError}
             </p>
+          )}
+
+          {showUnlinkedNotice && (
+            <div role="alert" className="mt-5 rounded-xl border border-amber-300 bg-white px-4 py-4 shadow-sm sm:px-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-slate-900">Account not found.</p>
+                  <Link
+                    href="/account?mode=sign-up"
+                    className="mt-1 inline-flex min-h-11 items-center gap-1 font-semibold text-[#1746D1] underline underline-offset-2 hover:text-[#123bb4]"
+                  >
+                    Create account <ArrowRight size={16} aria-hidden="true" />
+                  </Link>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Dismiss account not found notification"
+                  onClick={() => setShowUnlinkedNotice(false)}
+                  className="grid min-h-11 min-w-11 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              </div>
+            </div>
           )}
 
           {(mode === "sign-up" || isAdminLogin) && (
