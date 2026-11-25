@@ -120,7 +120,7 @@ export default async function RecruiterPipelinePage({
         <>
           <p className="text-xs text-slate-500">
             Showing {from + 1}–{Math.min(from + applicationRows.length, total)}{" "}
-            of {total} applications. Stage totals reflect this page.
+            of {total} applications Stage totals reflect this page
           </p>
 
           <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">

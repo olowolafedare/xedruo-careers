@@ -11,7 +11,7 @@ export default async function RecruiterSettingsPage() {
         <p className="text-sm font-semibold text-amber-600">WORKSPACE</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Settings</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">
-          Review your organization and workspace access.
+          Review your organization and workspace access
         </p>
       </header>
 

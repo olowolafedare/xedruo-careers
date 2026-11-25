@@ -60,7 +60,7 @@ export default async function RecruiterCompanyPage() {
           />
         ) : (
           <p className="mt-6 rounded-xl bg-rosybrown p-4 text-sm leading-6 text-slate-500">
-            Ask a company administrator or recruiter to update these details.
+            Ask a company administrator or recruiter to update these details
           </p>
         )}
       </section>
@@ -70,7 +70,7 @@ export default async function RecruiterCompanyPage() {
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
           Switch to your job-seeker workspace to explore opportunities and
-          manage applications.
+          manage applications
         </p>
         <Link
           href="/candidate-onboarding"

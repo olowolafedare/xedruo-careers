@@ -173,7 +173,7 @@ export default function AccountForm({
             <div role="alert" className="mt-5 rounded-xl border border-amber-300 bg-white px-4 py-4 shadow-sm sm:px-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-slate-900">Account not found.</p>
+                  <p className="font-semibold text-slate-900">Account not found</p>
                   <Link
                     href="/account?mode=sign-up"
                     className="mt-1 inline-flex min-h-11 items-center gap-1 font-semibold text-[#1746D1] underline underline-offset-2 hover:text-[#123bb4]"

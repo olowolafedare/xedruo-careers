@@ -180,7 +180,7 @@ async function JobsPageContent({
         </form>
 
         {error ? (
-          <p role="alert" className="mt-8 rounded-xl bg-rosybrown p-4 text-sm text-red-700">Jobs are temporarily unavailable. Please try again later.</p>
+          <p role="alert" className="mt-8 rounded-xl bg-rosybrown p-4 text-sm text-red-700">Jobs are temporarily unavailable Please try again later</p>
         ) : results.length ? (
           <div className="mt-8 space-y-3">
             {results.map((job) => (
@@ -203,7 +203,7 @@ async function JobsPageContent({
           <section className="mt-8 rounded-2xl bg-rosybrown px-6 py-16 text-center">
             <span className="mx-auto grid size-12 place-items-center rounded-xl bg-rosybrown text-slate-500"><BriefcaseBusiness size={22} /></span>
             <h2 className="mt-4 text-lg font-semibold">No matching roles found</h2>
-            <p className="mt-2 text-sm text-slate-500">Try a different title or location, or check back soon for new opportunities.</p>
+            <p className="mt-2 text-sm text-slate-500">Try a different title or location, or check back soon for new opportunities</p>
           </section>
         )}
         <p className="mt-5 text-xs text-slate-500">Showing up to 100 recent published roles</p>

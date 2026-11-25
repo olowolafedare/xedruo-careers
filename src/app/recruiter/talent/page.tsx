@@ -51,8 +51,8 @@ export default async function RecruiterTalentPage({
         <p className="text-sm font-semibold text-amber-600">TALENT SEARCH</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Find Talent</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          Search candidate profiles that have opted in to employer discovery.
-          Private contact details and documents are not shown here.
+          Search candidate profiles that have opted in to employer discovery
+          Private contact details and documents are not shown here
         </p>
       </header>
 
@@ -113,7 +113,7 @@ export default async function RecruiterTalentPage({
           ))
         ) : (
           <p className="rounded-2xl border border-dashed border-slate-300 p-7 text-sm text-slate-500">
-            No discoverable candidate profiles match these filters.
+            No discoverable candidate profiles match these filters
           </p>
         )}
       </section>
