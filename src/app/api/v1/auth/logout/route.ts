@@ -29,7 +29,7 @@ export async function POST() {
   } catch (error) {
     if (error instanceof CentralAuthError) {
       return centralAuthErrorResponse(error, {
-        429: "Too many sign-out requests. Please wait before trying again.",
+        429: "Too many sign-out requests Please wait before trying again",
       });
     }
 

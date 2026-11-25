@@ -284,7 +284,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     });
 
     return NextResponse.json(
-      { error: "Unable to upload resume. Please try again." },
+      { error: "Unable to upload resume Please try again" },
       { status: 500 },
     );
   }

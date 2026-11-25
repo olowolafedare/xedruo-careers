@@ -10,14 +10,14 @@ export function centralAuthErrorResponse(
   const message =
     messages[status] ??
     (status === 429
-      ? "Too many authentication requests. Please wait before trying again."
+      ? "Too many authentication requests Please wait before trying again"
       : status === 401 || status === 403
-        ? "Authentication could not be completed. Check your credentials and try again."
+        ? "Authentication could not be completed Check your credentials and try again"
         : status === 400 || status === 422
-          ? "The authentication request could not be completed. Check your details and try again."
+          ? "The authentication request could not be completed Check your details and try again"
           : status === 409
             ? "These account details are already in use."
-            : "The authentication service is temporarily unavailable. Please try again later.");
+            : "The authentication service is temporarily unavailable Please try again later");
 
   const headers = new Headers();
   if (error.retryAfter) {

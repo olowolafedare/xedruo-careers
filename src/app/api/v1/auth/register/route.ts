@@ -63,12 +63,12 @@ export async function POST(request: NextRequest) {
       console.warn("HIREUO registration upstream failure:", { stage, status: error.status });
       return centralAuthErrorResponse(error, {
         400: "Check your phone number, country, display name, and password, then try again.",
-        409: "These details are already linked to a Xedruo identity. Try signing in or continuing an existing Google link.",
+        409: "These details are already linked to a Xedruo identity Try signing in or continuing an existing Google link",
         422: "Check your phone number, country, display name, and password, then try again.",
-        429: "Too many registration attempts. Please wait before trying again.",
+        429: "Too many registration attempts Please wait before trying again",
       });
     }
     console.error("HIREUO registration failed:", { stage, errorName: error instanceof Error ? error.name : "UnknownError" });
-    return NextResponse.json({ error: "Unable to complete registration. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: "Unable to complete registration Please try again" }, { status: 500 });
   }
 }

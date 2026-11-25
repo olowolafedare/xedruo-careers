@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       return centralAuthErrorResponse(error, {
         401: "Invalid Xedruo ID or password.",
         403: "Invalid Xedruo ID or password.",
-        429: "Too many sign-in attempts. Please wait before trying again.",
+        429: "Too many sign-in attempts Please wait before trying again",
       });
     }
 
