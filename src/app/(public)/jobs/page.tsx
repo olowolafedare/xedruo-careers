@@ -291,7 +291,7 @@ export default async function JobsPage({
             role="alert"
             className="mt-8 rounded-xl bg-rosybrown p-4 text-sm text-red-700"
           >
-            Jobs are temporarily unavailable. Please try again later.
+            Jobs are temporarily unavailable Please try again later
           </p>
         ) : results.length ? (
           <div className="mt-8 space-y-3">

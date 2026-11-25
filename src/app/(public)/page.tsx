@@ -132,10 +132,10 @@ export default function HomePage() {
                   Your career workspace
                 </p>
                 <h2 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
-                  Make your next move count.
+                  Make your next move count
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Everything you need to move forward.
+                  Everything you need to move forward
                 </p>
               </div>
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#EAF0FF] text-[#1746D1]">
