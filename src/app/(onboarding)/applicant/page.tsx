@@ -118,7 +118,7 @@ export default function ApplicantOnboardingPage() {
         setError(
           error instanceof Error
             ? error.message
-            : "We couldn't load your profile. Please refresh and try again.",
+            : "We couldn't load your profile Please refresh and try again",
         );
       } finally {
         if (active) setLoading(false);

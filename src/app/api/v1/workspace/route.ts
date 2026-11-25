@@ -327,7 +327,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     console.error("Recruiter workspace creation failed:", error);
 
     return NextResponse.json(
-      { error: "We couldn't create your recruiter workspace. Please try again." },
+      { error: "We couldn't create your recruiter workspace Please try again" },
       { status: 500 },
     );
   }

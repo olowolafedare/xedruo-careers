@@ -24,7 +24,7 @@ async function readWorkspaceResponse(
       status: response.status,
       contentType: contentType.slice(0, 100) || null,
     });
-    throw new Error("The server returned an unexpected response. Please try again.");
+    throw new Error("The server returned an unexpected response Please try again");
   }
 
   try {
@@ -36,7 +36,7 @@ async function readWorkspaceResponse(
       status: response.status,
       contentType: contentType.slice(0, 100),
     });
-    throw new Error("The server returned an invalid response. Please try again.");
+    throw new Error("The server returned an invalid response Please try again");
   }
 }
 
