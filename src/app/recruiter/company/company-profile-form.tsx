@@ -47,14 +47,14 @@ export default function CompanyProfileForm({
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error || "Unable to save company profile. Try again.");
+        setError(result.error || "Unable to save company profile Try again");
         return;
       }
 
       setMessage("Company profile saved");
       router.refresh();
     } catch {
-      setError("Unable to save company profile. Check your connection and try again.");
+      setError("Unable to save company profile Check your connection and try again");
     } finally {
       setBusy(false);
     }

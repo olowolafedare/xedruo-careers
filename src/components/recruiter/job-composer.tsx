@@ -73,7 +73,7 @@ export function JobComposer({ companyId }: { companyId: string }) {
 
     if (!response?.ok) {
       const payload = await response?.json().catch(() => null);
-      setError(payload?.error ?? "We could not save this role. Please try again.");
+      setError(payload?.error ?? "We could not save this role Please try again");
       setSaving(false);
       return;
     }

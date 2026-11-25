@@ -43,7 +43,7 @@ export function JobStatus({
 
       router.refresh();
     } catch {
-      setError("Unable to update. Check your connection and try again.");
+      setError("Unable to update Check your connection and try again");
     } finally {
       setSaving(false);
     }

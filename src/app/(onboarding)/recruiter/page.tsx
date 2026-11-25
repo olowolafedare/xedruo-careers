@@ -153,7 +153,7 @@ export default function RecruiterOnboardingPage() {
   if (loading)
     return (
       <main className="grid min-h-screen place-items-center bg-rosybrown">
-        <p className="text-sm text-slate-500">Loading ...</p>
+        <p className="text-sm text-slate-500">Loading</p>
       </main>
     );
   return (

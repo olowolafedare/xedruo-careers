@@ -72,7 +72,7 @@ export default function AccountForm({
       if (!response.ok) throw new Error(await getApiError(response));
       const { authorizationUrl } = await response.json();
       if (typeof authorizationUrl !== "string" || !authorizationUrl.startsWith("https://")) {
-        throw new Error("We couldn't start Google sign-in. Please try again.");
+        throw new Error("We couldn't start Google sign-in Please try again");
       }
       window.location.assign(authorizationUrl);
     } catch (cause) {
@@ -122,7 +122,7 @@ export default function AccountForm({
       if (!startResponse.ok) throw new Error(await getApiError(startResponse));
       const { authorizationUrl } = await startResponse.json();
       if (typeof authorizationUrl !== "string" || !authorizationUrl.startsWith("https://")) {
-        throw new Error("We couldn't start Google linking. Please try again.");
+        throw new Error("We couldn't start Google linking Please try again");
       }
       window.location.assign(authorizationUrl);
     } catch (cause) {

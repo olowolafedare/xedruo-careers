@@ -126,7 +126,7 @@ export default function CandidateProfilePage() {
         console.error("Candidate profile loading failed:", err);
 
         if (active) {
-          setError("We couldn't load your profile. Please try again.");
+          setError("We couldn't load your profile Please try again");
         }
       } finally {
         if (active) {

@@ -103,7 +103,7 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
       const payload = await response.json().catch(() => null);
       if (!response.ok) throw new Error(payload?.error ?? "Interview could not be scheduled.");
       setForm((current) => ({ ...current, applicationId: "", location: "", notes: "" }));
-      setNotice("Interview scheduled. The candidate has been notified.");
+      setNotice("Interview scheduled The candidate has been notified");
       await load();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Interview could not be scheduled.");
@@ -194,7 +194,7 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
         <p className="text-sm font-semibold text-amber-600">{isEmployer ? "MEET YOUR SHORTLIST" : "WHAT'S NEXT"}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Interviews</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">
-          {isEmployer ? "Schedule interviews with candidates. They are notified instantly and the application moves to the interview stage." : "Upcoming interview details from hiring teams, with join links and preparation notes."}
+          {isEmployer ? "Schedule interviews with candidates They are notified instantly and the application moves to the interview stage" : "Upcoming interview details from hiring teams, with join links and preparation notes"}
         </p>
       </header>
 
