@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import CandidateNavigation from "./candidate-navigation";
+import CandidateNavigation, { CandidateMobileNavigation } from "./candidate-navigation";
 import { requireUser } from "@/src/lib/auth/require-user";
 
 export const instant = false;
@@ -20,6 +20,7 @@ export default async function CandidateLayout({ children }: { children: ReactNod
           <Link href="/candidate/jobs" className="mt-3 inline-flex text-sm font-semibold text-white underline underline-offset-4">Browse jobs</Link>
         </div>
       </aside>
+      <CandidateMobileNavigation />
       <div className="lg:pl-64">
         <header className="sticky top-0 z-10 border-b border-blue-100 bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
