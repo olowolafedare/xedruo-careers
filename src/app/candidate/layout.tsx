@@ -3,11 +3,11 @@ import type { ReactNode } from "react";
 import { BriefcaseBusiness, Home, MessageCircle, Search, UserRound } from "lucide-react";
 
 const navigation = [
-  { href: "/candidate/dashboard", label: "Home", icon: Home },
-  { href: "/candidate/jobs", label: "Search", icon: Search },
-  { href: "/candidate/applications", label: "My Job", icon: BriefcaseBusiness },
-  { href: "/candidate/messages", label: "Message", icon: MessageCircle },
-  { href: "/candidate/profile", label: "My Profile", icon: UserRound },
+  { href: "/candidate/dashboard", icon: Home },
+  { href: "/candidate/jobs", icon: Search },
+  { href: "/candidate/applications", icon: BriefcaseBusiness },
+  { href: "/candidate/messages", icon: MessageCircle },
+  { href: "/candidate/profile", icon: UserRound },
 ];
 
 export const instant = false;
@@ -18,7 +18,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-blue-100 bg-white px-5 py-6 lg:flex">
         <Link href="/" className="flex items-center gap-3 px-2">
           <span className="grid size-10 place-items-center rounded-xl bg-[#1746D1] text-lg font-bold text-white">x</span>
-          <span className="text-lg font-bold tracking-tight text-[#1746D1]">Xedruo Career</span>
+          <span className="text-lg font-bold tracking-tight text-[#1746D1]">HIREUO</span>
         </Link>
         <nav aria-label="Candidate navigation" className="mt-9 space-y-1">
           {navigation.map(({ href, label, icon: Icon }) => (
@@ -36,7 +36,7 @@ export default function CandidateLayout({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-10 border-b border-blue-100 bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
             <Link href="/" className="flex items-center gap-2 font-bold text-[#1746D1] lg:hidden">
-              <span className="grid size-8 place-items-center rounded-lg bg-[#1746D1] text-sm text-white">x</span>Xedruo Career
+              <span className="grid size-8 place-items-center rounded-lg bg-[#1746D1] text-sm text-white">x</span>HIREUO
             </Link>
             <p className="hidden text-sm text-slate-500 lg:block">Your career workspace</p>
             <Link href="/candidate/jobs" className="text-sm font-semibold text-[#1746D1] lg:hidden">Find jobs</Link>
