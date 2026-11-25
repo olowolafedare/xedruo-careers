@@ -41,15 +41,15 @@ export async function POST() {
   } catch (error) {
     if (error instanceof CentralAuthError) {
       return centralAuthErrorResponse(error, {
-        401: "Google sign-in is unavailable. Please try again.",
-        429: "Too many Google sign-in attempts. Please wait before trying again.",
+        401: "Google sign-in is unavailable Please try again",
+        429: "Too many Google sign-in attempts Please wait before trying again",
       });
     }
     console.error("HIREUO Google application-login start failed:", {
       errorName: error instanceof Error ? error.name : "UnknownError",
     });
     return NextResponse.json(
-      { error: "Unable to start Google sign-in. Please try again." },
+      { error: "Unable to start Google sign-in Please try again" },
       { status: 502, headers: { "Cache-Control": "no-store" } },
     );
   }

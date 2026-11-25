@@ -7,7 +7,7 @@ import { googleCallbackUrl, openRegistration, REGISTRATION_COOKIE } from "../../
 export async function POST(request: NextRequest) {
   const registration = openRegistration(request.cookies.get(REGISTRATION_COOKIE)?.value);
   if (!registration) {
-    return NextResponse.json({ error: "Your registration link expired. Please create your account again." }, { status: 410 });
+    return NextResponse.json({ error: "Your registration link expired Please create your account again" }, { status: 410 });
   }
 
   try {
@@ -21,6 +21,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof CentralAuthError) return centralAuthErrorResponse(error);
     console.error("HIREUO Google link initiation failed:", { stage: "google_start", errorName: error instanceof Error ? error.name : "UnknownError" });
-    return NextResponse.json({ error: "Unable to start Google linking. Please try again." }, { status: 502 });
+    return NextResponse.json({ error: "Unable to start Google linking Please try again" }, { status: 502 });
   }
 }

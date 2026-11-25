@@ -16,7 +16,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
   const apiKey = process.env.XEDRION_COMPANY_API_KEY?.trim();
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Xedrion AI is not connected yet. Configure XEDRION_COMPANY_API_KEY in the Career app server environment." },
+      { error: "Xedrion AI is not connected yet Configure XEDRION_COMPANY_API_KEY in the Career app server environment" },
       { status: 503 },
     );
   }
@@ -65,7 +65,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
   } catch (error) {
     console.error("Xedrion AI request failed:", error);
     return NextResponse.json(
-      { error: "Could not reach Xedrion AI. Please try again or write the description manually." },
+      { error: "Could not reach Xedrion AI Please try again or write the description manually" },
       { status: 502 },
     );
   }
@@ -87,7 +87,7 @@ export const POST = withCentralAuthErrors(async function POST(request: NextReque
     typeof result?.answer === "string" ? result.answer.trim() : "";
   if (!description) {
     return NextResponse.json(
-      { error: "Xedrion AI returned an empty response. Please try again." },
+      { error: "Xedrion AI returned an empty response Please try again" },
       { status: 502 },
     );
   }
