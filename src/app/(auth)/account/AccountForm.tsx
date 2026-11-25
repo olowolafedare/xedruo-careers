@@ -145,7 +145,7 @@ export default function AccountForm({
             {isAdminLogin ? "Xedruo Career · Staff" : "Welcome to HIreuo"}
           </p>
           {embedded ? <h2 className="mt-4 text-[27px] font-bold tracking-tight text-blue-500">{isAdminLogin ? "Staff sign in" : mode === "sign-up" ? "Create your account" : "Sign in"}</h2> : <h1 className="mt-4 text-[27px] font-bold tracking-tight text-blue-500">{isAdminLogin ? "Staff sign in" : mode === "sign-up" ? "Create your account" : "Sign in"}</h1>}
-          <p className="mt-2 text-sm leading-6 text-red-400">
+          <p className="mt-2 text-sm leading-6 text-blue-400">
             {isAdminLogin
               ? "Sign in with your authorized staff account to open the admin portal"
               : mode === "sign-up"
