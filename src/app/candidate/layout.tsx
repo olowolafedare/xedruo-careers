@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import CandidateNavigation from "./candidate-navigation";
+import { requireUser } from "@/src/lib/auth/require-user";
 
 export const instant = false;
 
-export default function CandidateLayout({ children }: { children: ReactNode }) {
+export default async function CandidateLayout({ children }: { children: ReactNode }) {
+  await requireUser("/candidate/dashboard");
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-blue-100 bg-white px-5 py-6 lg:flex">
