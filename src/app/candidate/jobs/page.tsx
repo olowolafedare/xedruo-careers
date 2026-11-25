@@ -128,7 +128,7 @@ export default async function CandidateJobsPage({
       <header>
         <p className="text-sm font-semibold text-amber-600">DISCOVER OPPORTUNITIES</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Jobs workspace</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">Discover opportunities and manage your recruitment activity in one place.</p>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Discover opportunities and manage your recruitment activity in one place</p>
       </header>
 
       <form id="explore-jobs" action="/candidate/jobs" className="scroll-mt-24 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
@@ -166,7 +166,7 @@ export default async function CandidateJobsPage({
             </div>
           </article>;
         })}
-      </section> : <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center"><h2 className="font-semibold">No matching jobs found</h2><p className="mt-2 text-sm text-slate-500">Try broadening your search or changing the filters.</p></section>}
+      </section> : <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center"><h2 className="font-semibold">No matching jobs found</h2><p className="mt-2 text-sm text-slate-500">Try broadening your search or changing the filters</p></section>}
 
       {totalPages > 1 && <nav aria-label="Job results pages" className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm">
         {currentPage > 1 ? <Link href={queryString(currentPage - 1)} className="font-semibold text-[#1746D1]">Previous</Link> : <span className="text-slate-400">Previous</span>}

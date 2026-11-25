@@ -270,7 +270,7 @@ export default function CandidateProfilePage() {
 
       {loading ? (
         <p className="rounded-2xl bg-rosybrown p-6 text-sm text-slate-500">
-          Loading your profile...
+          Loading your profile…
         </p>
       ) : null}
 
@@ -369,7 +369,7 @@ export default function CandidateProfilePage() {
         <h2 className="font-semibold">Privacy and account settings</h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Choose whether your name, location, and experience appear in employer
-          talent searches. Your CV and contact details remain private.
+          talent searches Your CV and contact details remain private
         </p>
         <button
           type="button"
@@ -403,7 +403,7 @@ export default function CandidateProfilePage() {
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
           Find qualified professionals and manage your recruitment with Xedruo
-          Career.
+          Career
         </p>
         <Link
           href="/recruiter-onboarding"

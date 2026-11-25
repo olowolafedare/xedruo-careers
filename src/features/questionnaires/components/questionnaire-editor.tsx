@@ -83,7 +83,7 @@ export function QuestionnaireEditor({ jobId, initialQuestions = [] }: Props) {
       <div>
         <h1 className="text-2xl font-bold">Application questions</h1>
         <p className="mt-2 text-sm text-gray-600">
-          Add questions applicants must answer when applying for this job.
+          Add questions applicants must answer when applying for this job
         </p>
       </div>
 

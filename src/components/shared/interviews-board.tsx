@@ -202,7 +202,7 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
         <form onSubmit={(event) => void schedule(event)} className="rounded-2xl border border-slate-200 p-5">
           <h2 className="text-lg font-semibold">Schedule an interview</h2>
           {candidates.length === 0 && !loading ? (
-            <p className="mt-2 text-sm text-slate-500">No open applications yet. Candidates appear here once they apply to your jobs.</p>
+            <p className="mt-2 text-sm text-slate-500">No open applications yet Candidates appear here once they apply to your jobs</p>
           ) : (
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <label className="text-sm font-medium sm:col-span-2">Candidate

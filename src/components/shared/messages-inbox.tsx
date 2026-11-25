@@ -83,13 +83,13 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
       <header>
         <p className="text-sm font-semibold text-amber-600">{audience === "candidate" ? "CANDIDATE WORKSPACE" : "RECRUITER WORKSPACE"}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Messages</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">Keep application conversations in one place. Messages are limited to the candidate and the employer team for that application.</p>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Keep application conversations in one place Messages are limited to the candidate and the employer team for that application</p>
       </header>
       {contacts.length > 0 && (
         <section className="space-y-3">
           <div>
             <h2 className="text-lg font-semibold">Start a conversation</h2>
-            <p className="mt-1 text-sm text-slate-500">Choose an application to contact the other side.</p>
+            <p className="mt-1 text-sm text-slate-500">Choose an application to contact the other side</p>
           </div>
           {contacts.map((contact) => {
             const key = "new:" + contact.applicationId + ":" + contact.accountId;
@@ -110,7 +110,7 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
       {loading ? <p className="rounded-2xl border border-slate-200 p-6 text-sm text-slate-500">Loading conversations…</p> : conversations.length === 0 ? (
         <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
           <h2 className="text-lg font-semibold">No conversations yet</h2>
-          <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">Messages become available when a candidate and an employer start a conversation about an application.</p>
+          <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">Messages become available when a candidate and an employer start a conversation about an application</p>
         </section>
       ) : conversations.map(({ key, messages }) => {
         const latest = messages[messages.length - 1];

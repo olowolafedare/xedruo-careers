@@ -22,7 +22,7 @@ export function QuestionPreview({
 
       {questions.length === 0 ? (
         <p className="rounded-lg bg-rosybrown p-4 text-sm text-gray-500">
-          No application questions have been added yet.
+          No application questions have been added yet
         </p>
       ) : (
         <div className="space-y-6">
@@ -158,7 +158,7 @@ export function QuestionPreview({
 
       <div className=" pt-4">
         <p className="text-xs text-gray-500">
-          Preview mode — answers are not submitted or saved.
+          Preview mode — answers are not submitted or saved
         </p>
       </div>
     </div>

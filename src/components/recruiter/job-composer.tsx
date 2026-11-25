@@ -134,7 +134,7 @@ export function JobComposer({ companyId }: { companyId: string }) {
 
       <section className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
         <div className="flex items-center gap-2 text-[#1746D1]"><Sparkles size={18} /><h2 className="font-bold">Xedrion AI job description assistant</h2></div>
-        <p className="mt-2 text-sm leading-6 text-slate-600">Describe the person you want to hire. Xedrion AI will draft a structured description for you to review and edit.</p>
+        <p className="mt-2 text-sm leading-6 text-slate-600">Describe the person you want to hire Xedrion AI will draft a structured description for you to review and edit</p>
         <textarea value={aiPrompt} onChange={(event) => setAiPrompt(event.target.value)} className={fieldClass + " min-h-24"} maxLength={4000} placeholder="Example: An experienced accountant with financial reporting, tax, budgeting and financial analysis skills." />
         <button type="button" onClick={generateDescription} disabled={generating} className="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1746D1] px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-800 disabled:opacity-60">
           <Sparkles size={16} />{generating ? "Generating with Xedrion…" : "Generate with Xedrion AI"}
@@ -155,7 +155,7 @@ export function JobComposer({ companyId }: { companyId: string }) {
         Review and edit job description *
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} className={fieldClass + " min-h-64 resize-y leading-6"} required placeholder="Write the role description or generate a first draft with Xedrion AI." />
       </label>
-      <p className="text-xs leading-5 text-slate-500">AI content is a draft only. Review and approve all details before publishing. This action saves the vacancy as a draft.</p>
+      <p className="text-xs leading-5 text-slate-500">AI content is a draft only Review and approve all details before publishing This action saves the vacancy as a draft</p>
       {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
         <Link href="/recruiter/jobs" className="rounded-xl px-4 py-3 text-center text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</Link>

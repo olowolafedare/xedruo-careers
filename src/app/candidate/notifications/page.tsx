@@ -113,7 +113,7 @@ export default async function CandidateNotificationsPage() {
             Notifications
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-500">
-            Keep up with application updates, interviews, and assessments.
+            Keep up with application updates, interviews, and assessments
           </p>
         </div>
 
@@ -129,8 +129,8 @@ export default async function CandidateNotificationsPage() {
             Notifications could not be loaded
           </h2>
           <p className="mt-2 text-sm leading-6 text-amber-800">
-            Please try again later. If this continues, check the HIREUO
-            notifications table and database connection.
+            Please try again later If this continues, check the HIREUO
+            notifications table and database connection
           </p>
         </section>
       ) : !notificationsList.length ? (
@@ -143,7 +143,7 @@ export default async function CandidateNotificationsPage() {
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
             When there are updates about your applications, interviews, or
-            assessments, they&apos;ll appear here.
+            assessments, they&apos;ll appear here
           </p>
           <Link
             href="/candidate/jobs"

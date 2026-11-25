@@ -222,7 +222,7 @@ async function ApplicationsContent() {
         <div>
           <h2 className="text-xl font-bold tracking-tight">Saved jobs</h2>
           <p className="mt-1 text-sm leading-6 text-slate-500">
-            Opportunities you have bookmarked for later.
+            Opportunities you have bookmarked for later
           </p>
         </div>
         {savedJobRows.length ? (
@@ -243,11 +243,10 @@ async function ApplicationsContent() {
           </div>
         ) : (
           <p className="rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-            You have no saved jobs yet.{" "}
+            You have no saved jobs yet{" "}
             <Link href="/candidate/jobs" className="font-semibold text-blue-700 underline">
               Browse open roles
             </Link>
-            .
           </p>
         )}
       </section>
