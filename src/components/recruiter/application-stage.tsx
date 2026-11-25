@@ -69,7 +69,7 @@ export function ApplicationStage({
       }
       router.refresh();
     } catch {
-      setMessage("Could not update Check your connection and try again");
+      setMessage("Could not update, check your connection and try again");
     } finally {
       setSaving(false);
     }

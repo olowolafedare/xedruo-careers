@@ -369,7 +369,7 @@ export default function CandidateProfilePage() {
         <h2 className="font-semibold">Privacy and account settings</h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Choose whether your name, location, and experience appear in employer
-          talent searches Your CV and contact details remain private
+          talent searches, while your CV and contact details remain private
         </p>
         <button
           type="button"

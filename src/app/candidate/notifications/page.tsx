@@ -129,8 +129,8 @@ export default async function CandidateNotificationsPage() {
             Notifications could not be loaded
           </h2>
           <p className="mt-2 text-sm leading-6 text-amber-800">
-            Please try again later If this continues, check the HIREUO
-            notifications table and database connection
+            Please try again later, and if this continues, check the HIREUO
+            notifications service and try again
           </p>
         </section>
       ) : !notificationsList.length ? (
