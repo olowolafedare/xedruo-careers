@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { and, asc, count, desc, eq, gt, gte, ilike, inArray, lte, or } from "drizzle-orm";
-import { ArrowRight, Bell, Bookmark, BriefcaseBusiness, CalendarDays, ClipboardCheck, MapPin } from "lucide-react";
+import { BriefcaseBusiness, MapPin } from "lucide-react";
 
 import { requireUser } from "@/src/lib/auth/require-user";
 import { getDb } from "@/src/lib/db";
@@ -61,12 +61,10 @@ export default async function CandidateJobsPage({
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, 10_000) : 1;
   const db = getDb();
 
-  const [categories, candidateProfile, recruiterMembership, applicationCount, savedCount] = await Promise.all([
+  const [categories, candidateProfile, recruiterMembership] = await Promise.all([
     db.select({ id: jobCategories.id, name: jobCategories.name }).from(jobCategories).where(eq(jobCategories.isActive, true)).orderBy(asc(jobCategories.displayOrder), asc(jobCategories.name)),
     db.select({ onboardingCompleted: candidateProfiles.onboardingCompleted }).from(candidateProfiles).where(eq(candidateProfiles.accountId, account.id)).limit(1),
     db.select({ id: companyMemberships.id }).from(companyMemberships).where(and(eq(companyMemberships.accountId, account.id), eq(companyMemberships.status, "active"))).limit(1),
-    db.select({ total: count() }).from(applications).where(eq(applications.candidateAccountId, account.id)),
-    db.select({ total: count() }).from(savedJobs).where(eq(savedJobs.accountId, account.id)),
   ]);
 
   if (!candidateProfile.length && recruiterMembership.length) {
@@ -133,25 +131,7 @@ export default async function CandidateJobsPage({
         <p className="mt-2 text-sm leading-6 text-slate-500">Discover opportunities and manage your recruitment activity in one place.</p>
       </header>
 
-      <section aria-label="Recruitment overview" className="grid gap-3 sm:grid-cols-3">
-        <a href="#explore-jobs" className="rounded-2xl bg-[#1746D1] p-5 text-white"><p className="text-sm font-medium text-blue-100">Explore Jobs</p><p className="mt-2 text-lg font-semibold">Find your next role <ArrowRight className="ml-1 inline" size={16} /></p></a>
-        <Link href="/candidate/applications" className="rounded-2xl bg-blue-50 p-5"><p className="text-sm font-medium text-slate-600">Applications</p><p className="mt-2 text-2xl font-bold">{applicationCount[0]?.total ?? 0}</p></Link>
-        <Link href="/candidate/saved-jobs" className="rounded-2xl bg-blue-50 p-5"><p className="text-sm font-medium text-slate-600">Saved Jobs</p><p className="mt-2 text-2xl font-bold">{savedCount[0]?.total ?? 0}</p></Link>
-        <Link href="/candidate/profile" className="rounded-2xl border border-slate-200 p-5"><p className="text-sm font-medium text-slate-600">Profile</p><p className="mt-2 text-lg font-bold">{candidateProfile[0]?.onboardingCompleted ? "Complete" : "In progress"}</p></Link>
-      </section>
-
-      <section aria-label="Recruitment workspace sections" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {[
-          { title: "Applications", description: "Follow the roles you have applied to.", href: "/candidate/applications", icon: BriefcaseBusiness },
-          { title: "Saved Jobs", description: "Keep interesting opportunities close.", href: "/candidate/saved-jobs", icon: Bookmark },
-          { title: "Interviews", description: "Prepare for upcoming conversations.", href: "/candidate/interviews", icon: CalendarDays },
-          { title: "Assessments", description: "See skills tasks shared with you.", href: "/candidate/assessments", icon: ClipboardCheck },
-          { title: "Notifications", description: "Stay updated on your recruitment journey.", href: "/candidate/notifications", icon: Bell },
-        ].map(({ title, description, href, icon: Icon }) => <Link key={href} href={href} className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-200 hover:shadow-sm"><span className="grid size-9 place-items-center rounded-lg bg-blue-50 text-[#1746D1]"><Icon size={18} /></span><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-1 min-h-10 text-xs leading-5 text-slate-500">{description}</p><span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-[#1746D1]">Open <ArrowRight size={14} className="transition group-hover:translate-x-1" /></span></Link>)}
-      </section>
-
-      <div id="explore-jobs" className="scroll-mt-24"><h2 className="text-xl font-bold">Explore Jobs</h2></div>
-      <form action="/candidate/jobs" className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
+      <form id="explore-jobs" action="/candidate/jobs" className="scroll-mt-24 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
         <label className="text-xs font-semibold text-slate-600 sm:col-span-2">Search jobs
           <input name="q" defaultValue={query} placeholder="Job title, skills, company or description" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" />
         </label>
