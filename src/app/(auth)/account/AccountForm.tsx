@@ -13,6 +13,7 @@ type AccountFormProps = {
   authError: string;
   destination: string;
   initialMode: AuthMode;
+  embedded?: boolean;
 };
 
 type AuthMode = "sign-in" | "sign-up";
@@ -21,6 +22,7 @@ export default function AccountForm({
   authError,
   destination,
   initialMode,
+  embedded = false,
 }: AccountFormProps) {
   const router = useRouter();
   const isAdminLogin = destination === "/admin";
@@ -50,11 +52,11 @@ export default function AccountForm({
 
   async function getApiError(response: Response) {
     const result = await response.json().catch(() => null);
-    const message = result?.error || "We couldn't complete your request.";
+    const message = result?.error || "We couldn't complete your request";
     if (response.status === 429) {
       const retryAfter = response.headers.get("Retry-After");
       if (retryAfter && /^\\d+$/.test(retryAfter)) {
-        return `${message} Try again in ${retryAfter} seconds.`;
+        return `${message} Try again in ${retryAfter} seconds`;
       }
     }
     return message;
@@ -76,7 +78,7 @@ export default function AccountForm({
       }
       window.location.assign(authorizationUrl);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "We couldn't complete Google sign-in.");
+      setError(cause instanceof Error ? cause.message : "We couldn't complete Google sign-in");
       setBusy(false);
     }
   }
@@ -126,7 +128,7 @@ export default function AccountForm({
       }
       window.location.assign(authorizationUrl);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "We couldn't complete your request.");
+      setError(cause instanceof Error ? cause.message : "We couldn't complete your request");
     } finally {
       setBusy(false);
     }
@@ -137,30 +139,18 @@ export default function AccountForm({
     setError("");
   }
 
-  return (
-    <main className="min-h-screen bg-[#1746D1] px-5 pb-12 pt-6 text-slate-900 sm:px-8 sm:pt-8">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
-        <Link href="/" aria-label="Xedruo Career home" className="text-2xl font-extrabold tracking-tight text-white">
-          xedruo        </Link>
-        <span className="hidden text-sm font-medium text-blue-100 sm:block">Career opportunities start here</span>
-      </header>
-
-      <div className="mx-auto flex min-h-[calc(100svh-100px)] w-full max-w-6xl items-center justify-center py-8">
-        <section className="w-full max-w-[440px] rounded-[28px] bg-amber-100 px-7 py-8 shadow-[0_24px_70px_rgba(7,29,94,0.22)] sm:px-9 sm:py-9">
+  const formCard = (
+    <section className={embedded ? "w-full rounded-2xl bg-transparent p-0" : "w-full max-w-[440px] rounded-[28px] bg-amber-100 px-7 py-8 shadow-[0_24px_70px_rgba(7,29,94,0.22)] sm:px-9 sm:py-9"}>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1746D1]">
             {isAdminLogin ? "Xedruo Career · Staff" : "Welcome to HIreuo"}
           </p>
-          <h1 className="mt-4 text-[27px] font-bold tracking-tight text-blue-500">
-            {isAdminLogin
-              ? "Staff sign in"
-              : mode === "sign-up" ? "Create your account" : "Sign in"}
-          </h1>
+          {embedded ? <h2 className="mt-4 text-[27px] font-bold tracking-tight text-blue-500">{isAdminLogin ? "Staff sign in" : mode === "sign-up" ? "Create your account" : "Sign in"}</h2> : <h1 className="mt-4 text-[27px] font-bold tracking-tight text-blue-500">{isAdminLogin ? "Staff sign in" : mode === "sign-up" ? "Create your account" : "Sign in"}</h1>}
           <p className="mt-2 text-sm leading-6 text-red-400">
             {isAdminLogin
-              ? "Sign in with your authorized staff account to open the admin portal."
+              ? "Sign in with your authorized staff account to open the admin portal"
               : mode === "sign-up"
-                ? "Create your Xedruo account to continue to Career."
-                : "Continue securely with Google."}
+                ? "Create your Xedruo account to continue to Career"
+                : "Continue securely with Google"}
           </p>
 
           {visibleError && (
@@ -282,7 +272,7 @@ export default function AccountForm({
               disabled={busy}
               className="flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-[#1746D1] px-5 font-semibold text-white shadow-sm transition hover:bg-[#123bb4] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {busy ? "Please wait..." : mode === "sign-in" ? "Sign in" : "Create account"}
+              {busy ? "Please wait" : mode === "sign-in" ? "Sign in" : "Create account"}
               {!busy && <ArrowRight size={18} strokeWidth={2.5} aria-hidden="true" />}
             </button>
             </form>
@@ -314,6 +304,20 @@ export default function AccountForm({
             </p>
           )}
         </section>
+  );
+
+  if (embedded) return formCard;
+
+  return (
+    <main className="min-h-screen bg-[#1746D1] px-5 pb-12 pt-6 text-slate-900 sm:px-8 sm:pt-8">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
+        <Link href="/" aria-label="Xedruo Career home" className="text-2xl font-extrabold tracking-tight text-white">
+          xedruo
+        </Link>
+        <span className="hidden text-sm font-medium text-blue-100 sm:block">Career opportunities start here</span>
+      </header>
+      <div className="mx-auto flex min-h-[calc(100svh-100px)] w-full max-w-6xl items-center justify-center py-8">
+        {formCard}
       </div>
     </main>
   );

@@ -4,37 +4,13 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  BriefcaseBusiness,
   CheckCircle2,
-  FileText,
-  Search,
   Sparkles,
-  Users,
 } from "lucide-react";
+import AccountForm from "../(auth)/account/AccountForm";
 
 const accountHref = "/account?next=%2Fcandidate%2Fdashboard";
 const registrationHref = `${accountHref}&mode=sign-up`;
-
-const highlights = [
-  {
-    icon: Search,
-    title: "Discover opportunities",
-    description: "Find roles that align with your skills and ambitions.",
-    tone: "bg-[#EAF0FF] text-[#1746D1]",
-  },
-  {
-    icon: FileText,
-    title: "Present your strengths",
-    description: "Build your professional profile and manage applications.",
-    tone: "bg-[#EAF7F0] text-[#16804A]",
-  },
-  {
-    icon: Users,
-    title: "Connect with employers",
-    description: "Explore new possibilities and grow your career network.",
-    tone: "bg-[#F2ECFF] text-[#7045C5]",
-  },
-];
 
 export default function HomePage() {
   return (
@@ -59,12 +35,6 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href={accountHref}
-              className="rounded-full px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-white/10 sm:px-4 sm:text-sm"
-            >
-              Login
-            </Link>
             <Link
               href={registrationHref}
               className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-bold text-[#1746D1] shadow-lg shadow-blue-950/15 transition hover:-translate-y-0.5 hover:bg-[#F2F6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -126,41 +96,7 @@ export default function HomePage() {
         <div className="relative mx-auto w-full max-w-[540px]" id="opportunities">
           <div aria-hidden="true" className="absolute -inset-5 rounded-[34px] bg-white/10 blur-2xl" />
           <div className="relative rounded-[26px] border border-white/70 bg-white p-5 text-slate-900 shadow-[0_28px_80px_rgba(5,24,87,0.28)] sm:p-7">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#1746D1]">
-                  Your career workspace
-                </p>
-                <h2 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
-                  Make your next move count
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Everything you need to move forward
-                </p>
-              </div>
-              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#EAF0FF] text-[#1746D1]">
-                <BriefcaseBusiness size={23} aria-hidden="true" />
-              </span>
-            </div>
-
-            <div className="mt-6 space-y-3">
-              {highlights.map(({ icon: Icon, title, description, tone }) => (
-                <div
-                  key={title}
-                  className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 transition hover:border-blue-100 hover:bg-[#FBFCFF]"
-                >
-                  <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${tone}`}>
-                    <Icon size={20} aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">{description}</p>
-                  </div>
-                  <ArrowUpRight className="ml-auto shrink-0 text-slate-300" size={17} aria-hidden="true" />
-                </div>
-              ))}
-            </div>
-
+            <AccountForm destination="/candidate/dashboard" authError="" initialMode="sign-in" embedded />
           </div>
         </div>
       </section>
