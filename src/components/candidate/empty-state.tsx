@@ -16,16 +16,16 @@ export function EmptyState({
   href: string;
 }) {
   return (
-    <section className="grid min-h-80 place-items-center rounded-2xl bg-rosybrown px-6 py-12 text-center">
+    <section className="grid min-h-80 place-items-center rounded-2xl border border-[#E2E8F0] bg-white px-6 py-12 text-center shadow-xs">
       <div className="max-w-md">
-        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
+        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-blue-50 text-[#1746D1]">
           <Icon size={22} strokeWidth={1.8} />
         </span>
-        <h2 className="mt-5 text-lg font-semibold">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+        <h2 className="mt-5 text-lg font-bold text-[#0B1B3D]">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-[#64748B]">{description}</p>
         <Link
           href={href}
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white bg-rosybrown"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-[#1237a8]"
         >
           {action}
           <ArrowRight size={15} />
