@@ -75,13 +75,13 @@ export default function ApplyButton({
         <div>
           <p
             role="status"
-            className="rounded-xl bg-rosybrown p-4 text-sm font-medium text-emerald-800"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800"
           >
             {message || "You have applied for this role."}
           </p>
           <Link
             href="/candidate/applications"
-            className="mt-3 inline-flex text-sm font-semibold text-amber-600"
+            className="mt-3 inline-flex text-sm font-bold text-[#1746D1] hover:underline"
           >
             View your applications
           </Link>
@@ -91,7 +91,7 @@ export default function ApplyButton({
           <button
             onClick={() => void apply()}
             disabled={busy}
-            className="w-full rounded-xl bg-rosybrown px-5 py-3.5 text-sm font-semibold text-white bg-rosybrown disabled:opacity-60"
+            className="w-full rounded-xl bg-[#1746D1] px-5 py-3.5 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8] disabled:opacity-60"
           >
             {busy ? "Submitting…" : "Apply for this job"}
           </button>

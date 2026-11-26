@@ -14,14 +14,14 @@ export function QuestionPreview({
   description = "Please answer the following questions",
 }: Props) {
   return (
-    <div className="mx-auto max-w-2xl space-y-6 rounded-xl bg-rosybrown p-6 shadow-sm">
-      <header className=" pb-5">
-        <h2 className="text-2xl font-bold">{title}</h2>
-        <p className="mt-2 text-sm text-gray-600">{description}</p>
+    <div className="mx-auto max-w-2xl space-y-6 rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
+      <header className="border-b border-[#E2E8F0] pb-5">
+        <h2 className="text-2xl font-extrabold text-[#0B1B3D]">{title}</h2>
+        <p className="mt-1 text-sm text-[#64748B]">{description}</p>
       </header>
 
       {questions.length === 0 ? (
-        <p className="rounded-lg bg-rosybrown p-4 text-sm text-gray-500">
+        <p className="rounded-xl border border-dashed border-[#E2E8F0] bg-[#F8FAFF] p-6 text-center text-sm text-[#64748B]">
           No application questions have been added yet
         </p>
       ) : (
@@ -35,7 +35,7 @@ export function QuestionPreview({
                 className="space-y-3"
                 aria-describedby={`${id}-hint`}
               >
-                <legend className="mb-2 font-medium text-gray-900">
+                <legend className="mb-2 font-bold text-[#0B1B3D]">
                   {index + 1}. {question.questionText || "Untitled question"}
                   {question.isRequired && (
                     <span className="ml-1 text-red-600" aria-label="Required">
@@ -50,7 +50,7 @@ export function QuestionPreview({
                     type="text"
                     required={question.isRequired}
                     placeholder="Your answer"
-                    className="w-full rounded-md px-3 py-2"
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm text-[#0B1B3D]"
                   />
                 )}
 
@@ -58,10 +58,71 @@ export function QuestionPreview({
                   <textarea
                     id={id}
                     required={question.isRequired}
-                    placeholder="Write your answer..."
                     rows={4}
-                    className="w-full rounded-md px-3 py-2"
+                    placeholder="Your answer"
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm text-[#0B1B3D]"
                   />
+                )}
+
+                {question.type === "single_choice" && (
+                  <div className="space-y-2">
+                    {question.options.map((option) => (
+                      <label
+                        key={option.id}
+                        className="flex items-center gap-2.5 text-sm text-[#0B1B3D]"
+                      >
+                        <input
+                          type="radio"
+                          name={id}
+                          required={question.isRequired}
+                          className="size-4 accent-[#1746D1]"
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {question.type === "multiple_choice" && (
+                  <div className="space-y-2">
+                    {question.options.map((option) => (
+                      <label
+                        key={option.id}
+                        className="flex items-center gap-2.5 text-sm text-[#0B1B3D]"
+                      >
+                        <input
+                          type="checkbox"
+                          className="size-4 rounded accent-[#1746D1]"
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {question.type === "yes_no" && (
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 text-sm text-[#0B1B3D]">
+                      <input
+                        type="radio"
+                        name={id}
+                        value="yes"
+                        required={question.isRequired}
+                        className="size-4 accent-[#1746D1]"
+                      />
+                      <span>Yes</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-[#0B1B3D]">
+                      <input
+                        type="radio"
+                        name={id}
+                        value="no"
+                        required={question.isRequired}
+                        className="size-4 accent-[#1746D1]"
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
                 )}
 
                 {question.type === "number" && (
@@ -69,8 +130,8 @@ export function QuestionPreview({
                     id={id}
                     type="number"
                     required={question.isRequired}
-                    placeholder="Enter a number"
-                    className="w-full rounded-md px-3 py-2"
+                    placeholder="0"
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm text-[#0B1B3D]"
                   />
                 )}
 
@@ -80,7 +141,7 @@ export function QuestionPreview({
                     type="url"
                     required={question.isRequired}
                     placeholder="https://example.com"
-                    className="w-full rounded-md px-3 py-2"
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm text-[#0B1B3D]"
                   />
                 )}
 
@@ -89,7 +150,7 @@ export function QuestionPreview({
                     id={id}
                     type="date"
                     required={question.isRequired}
-                    className="rounded-md px-3 py-2"
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm text-[#0B1B3D]"
                   />
                 )}
 
@@ -98,69 +159,14 @@ export function QuestionPreview({
                     id={id}
                     type="file"
                     required={question.isRequired}
-                    className="block w-full text-sm"
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm text-[#0B1B3D]"
                   />
                 )}
-
-                {question.type === "yes_no" && (
-                  <div className="flex gap-5">
-                    {["Yes", "No"].map((answer) => (
-                      <label key={answer} className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name={id}
-                          value={answer.toLowerCase()}
-                          required={question.isRequired}
-                        />
-                        {answer}
-                      </label>
-                    ))}
-                  </div>
-                )}
-
-                {(question.type === "single_choice" ||
-                  question.type === "multiple_choice") && (
-                  <div className="space-y-3">
-                    {question.options
-                      .filter((option) => option.label.trim())
-                      .map((option) => (
-                        <label
-                          key={option.id}
-                          className="flex items-center gap-3"
-                        >
-                          <input
-                            type={
-                              question.type === "single_choice"
-                                ? "radio"
-                                : "checkbox"
-                            }
-                            name={id}
-                            value={option.id}
-                            required={
-                              question.isRequired &&
-                              question.type === "single_choice"
-                            }
-                          />
-                          <span>{option.label}</span>
-                        </label>
-                      ))}
-                  </div>
-                )}
-
-                <p id={`${id}-hint`} className="text-xs text-gray-500">
-                  {question.isRequired ? "Required" : "Optional"}
-                </p>
               </fieldset>
             );
           })}
         </div>
       )}
-
-      <div className=" pt-4">
-        <p className="text-xs text-gray-500">
-          Preview mode — answers are not submitted or saved
-        </p>
-      </div>
     </div>
   );
 }

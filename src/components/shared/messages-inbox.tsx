@@ -81,7 +81,7 @@ export function MessagesInbox({ audience }: { audience: "candidate" | "employer"
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-sm font-semibold text-amber-600">{audience === "candidate" ? "CANDIDATE WORKSPACE" : "RECRUITER WORKSPACE"}</p>
+        <p className="text-sm font-semibold text-[#1746D1]">{audience === "candidate" ? "CANDIDATE WORKSPACE" : "RECRUITER WORKSPACE"}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Messages</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">Keep application conversations in one place, limited to the candidate and employer team for each application</p>
       </header>

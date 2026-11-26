@@ -105,11 +105,11 @@ export default async function RecruiterPipelinePage({
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">HIRING FLOW</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">HIRING FLOW</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">
           {shortlistedOnly ? "Shortlisted Candidates" : "Candidate pipeline"}
         </h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
           {shortlistedOnly
             ? "Review candidates your team has shortlisted"
             : "Move each application forward as your team reviews candidates"}
@@ -118,9 +118,9 @@ export default async function RecruiterPipelinePage({
 
       {applicationRows.length ? (
         <>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#94A3B8]">
             Showing {from + 1}–{Math.min(from + applicationRows.length, total)}{" "}
-            of {total} applications Stage totals reflect this page
+            of {total} applications. Stage totals reflect this page.
           </p>
 
           <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
@@ -130,28 +130,28 @@ export default async function RecruiterPipelinePage({
               return (
                 <div
                   key={stage}
-                  className="min-h-52 rounded-2xl bg-rosybrown p-3"
+                  className="min-h-52 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFF] p-3.5"
                 >
                   <div className="flex items-center justify-between px-1 pb-3">
-                    <h2 className="text-sm font-semibold capitalize">
+                    <h2 className="text-sm font-bold capitalize text-[#0B1B3D]">
                       {stage.replaceAll("_", " ")}
                     </h2>
-                    <span className="rounded-full bg-rosybrown px-2 py-0.5 text-xs text-slate-500">
+                    <span className="rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5 text-xs font-semibold text-[#0B1B3D]">
                       {stageApps.length}
                     </span>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {stageApps.map((application) => (
                       <article
                         key={application.id}
-                        className="rounded-xl bg-rosybrown p-3"
+                        className="rounded-xl border border-[#E2E8F0] bg-white p-3.5 shadow-xs"
                       >
-                        <p className="text-sm font-semibold">
+                        <p className="text-sm font-bold text-[#0B1B3D]">
                           {application.candidateName || "Candidate"}
                         </p>
 
-                        <p className="mt-1 truncate text-xs text-slate-500">
+                        <p className="mt-1 truncate text-xs text-[#64748B]">
                           {application.jobTitle || "Job opening"}
                         </p>
 
@@ -166,7 +166,7 @@ export default async function RecruiterPipelinePage({
                     ))}
 
                     {stageApps.length === 0 && (
-                      <p className="rounded-xl px-3 py-5 text-center text-xs text-slate-400">
+                      <p className="rounded-xl px-3 py-5 text-center text-xs text-[#94A3B8]">
                         No candidates on this page
                       </p>
                     )}
@@ -183,15 +183,15 @@ export default async function RecruiterPipelinePage({
           />
         </>
       ) : (
-        <section className="grid min-h-80 place-items-center rounded-2xl bg-rosybrown px-6 py-12 text-center">
+        <section className="grid min-h-80 place-items-center rounded-2xl border border-dashed border-[#E2E8F0] bg-white px-6 py-12 text-center">
           <div>
-            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
+            <span className="mx-auto grid size-12 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
               <Activity size={22} />
             </span>
-            <h2 className="mt-5 text-lg font-semibold">
+            <h2 className="mt-5 text-lg font-bold text-[#0B1B3D]">
               Your pipeline is ready
             </h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-md text-sm leading-6 text-[#64748B]">
               When candidates apply, their applications will appear here so you
               can move them through each stage
             </p>

@@ -48,35 +48,35 @@ export default async function RecruiterTalentPage({
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">TALENT SEARCH</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Find Talent</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          Search candidate profiles that have opted in to employer discovery
-          Private contact details and documents are not shown here
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">TALENT SEARCH</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">Find Talent</h1>
+        <p className="mt-1.5 max-w-2xl text-sm leading-6 text-[#64748B]">
+          Search candidate profiles that have opted in to employer discovery.
+          Private contact details and documents are not shown here.
         </p>
       </header>
 
       <form
         action="/recruiter/talent"
-        className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm sm:grid-cols-3"
+        className="grid gap-3.5 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs sm:grid-cols-3"
       >
-        <label className="text-xs font-semibold text-slate-600">
+        <label className="text-xs font-semibold text-[#64748B]">
           Candidate name
           <input
             name="name"
             defaultValue={name}
-            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+            className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
           />
         </label>
-        <label className="text-xs font-semibold text-slate-600">
+        <label className="text-xs font-semibold text-[#64748B]">
           Location
           <input
             name="location"
             defaultValue={location}
-            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+            className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
           />
         </label>
-        <label className="text-xs font-semibold text-slate-600">
+        <label className="text-xs font-semibold text-[#64748B]">
           Years of experience
           <input
             name="experience"
@@ -84,10 +84,10 @@ export default async function RecruiterTalentPage({
             min="0"
             max="100"
             defaultValue={experience}
-            className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal"
+            className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
           />
         </label>
-        <button className="rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-semibold text-white sm:col-span-3 sm:justify-self-start">
+        <button className="rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8] sm:col-span-3 sm:justify-self-start">
           Search candidates
         </button>
       </form>
@@ -97,22 +97,22 @@ export default async function RecruiterTalentPage({
           candidates.map((candidate, index) => (
             <article
               key={`${candidate.fullName ?? "candidate"}-${index}`}
-              className="rounded-2xl border border-slate-200 bg-white p-5"
+              className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs transition hover:border-blue-200"
             >
-              <h2 className="font-semibold">{candidate.fullName || "Candidate"}</h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <h2 className="font-bold text-[#0B1B3D]">{candidate.fullName || "Candidate"}</h2>
+              <p className="mt-1 text-sm text-[#64748B]">
                 {[candidate.state, candidate.country].filter(Boolean).join(", ") ||
                   "Location not provided"}
               </p>
               {candidate.yearsExperience !== null && (
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs font-medium text-[#94A3B8]">
                   {candidate.yearsExperience} years of experience
                 </p>
               )}
             </article>
           ))
         ) : (
-          <p className="rounded-2xl border border-dashed border-slate-300 p-7 text-sm text-slate-500">
+          <p className="rounded-2xl border border-dashed border-[#E2E8F0] bg-white p-7 text-sm text-[#64748B]">
             No discoverable candidate profiles match these filters
           </p>
         )}

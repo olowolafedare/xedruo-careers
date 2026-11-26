@@ -66,14 +66,14 @@ export default async function JobQuestionsPage({
     <div className="space-y-6">
       <Link
         href="/recruiter/assessments"
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-amber-600"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] hover:text-[#1746D1]"
       >
         <ArrowLeft size={16} />
         Back to assessments
       </Link>
 
-      <div className="rounded-2xl bg-rosybrown p-5 sm:p-8">
-        <p className="mb-5 text-sm font-medium text-slate-500">{job.title}</p>
+      <div className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs sm:p-8">
+        <p className="mb-5 text-sm font-bold text-[#0B1B3D]">{job.title}</p>
         <QuestionnaireEditor
           jobId={job.id}
           initialQuestions={initialQuestions}

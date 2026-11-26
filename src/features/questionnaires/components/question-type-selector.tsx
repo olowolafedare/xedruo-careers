@@ -24,13 +24,13 @@ type Props = {
 
 export function QuestionTypeSelector({ value, onChange }: Props) {
   return (
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="font-medium">Answer type</span>
+    <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B1B3D]">
+      <span>Answer type</span>
 
       <select
         value={value}
         onChange={(event) => onChange(event.target.value as QuestionType)}
-        className="rounded-md bg-rosybrown px-3 py-2 text-gray-900"
+        className="rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:ring-4 focus:ring-blue-100"
       >
         {QUESTION_TYPE_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

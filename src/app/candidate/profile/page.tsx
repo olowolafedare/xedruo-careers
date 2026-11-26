@@ -126,7 +126,7 @@ export default function CandidateProfilePage() {
         console.error("Candidate profile loading failed:", err);
 
         if (active) {
-          setError("We couldn't load your profile Please try again");
+          setError("We couldn't load your profile. Please try again");
         }
       } finally {
         if (active) {
@@ -249,27 +249,26 @@ export default function CandidateProfilePage() {
 
   return (
     <div className="space-y-7">
-      <header>
-        <p className="text-sm font-semibold text-amber-600">
-          YOUR PROFESSIONAL DETAILS
-        </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">My profile</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          Your candidate information from onboarding
-        </p>
-      </header>
-
-      <div className="flex justify-end">
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">
+            YOUR PROFESSIONAL DETAILS
+          </p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">My profile</h1>
+          <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
+            Your candidate information from onboarding
+          </p>
+        </div>
         <Link
           href="/applicant"
-          className="inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
         >
           Update profile <ArrowRight size={15} />
         </Link>
-      </div>
+      </header>
 
       {loading ? (
-        <p className="rounded-2xl bg-rosybrown p-6 text-sm text-slate-500">
+        <p className="rounded-2xl border border-[#E2E8F0] bg-white p-6 text-sm text-[#64748B]">
           Loading your profile…
         </p>
       ) : null}
@@ -277,21 +276,21 @@ export default function CandidateProfilePage() {
       {error ? (
         <p
           role="alert"
-          className="rounded-xl bg-rosybrown p-4 text-sm text-red-700"
+          className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
         >
           {error}
         </p>
       ) : null}
 
       {!loading && !error && !candidate?.onboardingCompleted ? (
-        <section className="rounded-2xl bg-rosybrown p-6">
-          <h2 className="font-semibold">Complete your candidate profile</h2>
-          <p className="mt-2 text-sm text-slate-500">
+        <section className="rounded-2xl border border-blue-200 bg-blue-50/70 p-6">
+          <h2 className="font-bold text-[#0B1B3D]">Complete your candidate profile</h2>
+          <p className="mt-1 text-sm text-[#475569]">
             Fill in your onboarding information to see it here
           </p>
           <Link
             href="/applicant"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-amber-600"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#1746D1] hover:underline"
           >
             Continue onboarding
             <ArrowRight size={15} />
@@ -304,22 +303,22 @@ export default function CandidateProfilePage() {
           {details.map(({ icon: Icon, title, rows }) => (
             <section
               key={title}
-              className="rounded-2xl bg-rosybrown p-6 sm:p-8"
+              className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8"
             >
               <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-xl bg-rosybrown text-amber-600">
+                <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
                   <Icon size={18} />
                 </span>
-                <h2 className="font-semibold">{title}</h2>
+                <h2 className="font-bold text-[#0B1B3D]">{title}</h2>
               </div>
 
-              <dl className="mt-5 grid gap-4 sm:grid-cols-2">
+              <dl className="mt-5 grid gap-4 border-t border-[#E2E8F0] pt-5 sm:grid-cols-2">
                 {rows.map(([label, value]) => (
                   <div key={label}>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    <dt className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
                       {label}
                     </dt>
-                    <dd className="mt-1 text-sm text-slate-900">
+                    <dd className="mt-1 text-sm font-medium text-[#0B1B3D]">
                       {value || "Not provided"}
                     </dd>
                   </div>
@@ -328,24 +327,35 @@ export default function CandidateProfilePage() {
             </section>
           ))}
 
-          <section className="rounded-2xl bg-rosybrown p-6 sm:p-8">
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
             <div className="flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-xl bg-rosybrown text-amber-600">
+              <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
                 <FileText size={18} />
               </span>
-              <h2 className="font-semibold">Resume</h2>
+              <h2 className="font-bold text-[#0B1B3D]">Resume</h2>
             </div>
 
             <form onSubmit={uploadResume} className="mt-5 space-y-3">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-[#0B1B3D]">
                 Upload or replace your CV (PDF, DOC or DOCX, max 5 MB)
-                <input name="resume" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required className="mt-2 block w-full rounded-xl border border-slate-200 p-3 text-sm" />
+                <input
+                  name="resume"
+                  type="file"
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  required
+                  className="mt-2 block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] p-3 text-sm text-[#0B1B3D]"
+                />
               </label>
               {resumeError && <p role="alert" className="text-sm text-red-700">{resumeError}</p>}
-              <button disabled={uploadingResume} className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{uploadingResume ? "Uploading…" : "Upload CV"}</button>
+              <button
+                disabled={uploadingResume}
+                className="rounded-xl bg-[#1746D1] px-5 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8] disabled:opacity-50"
+              >
+                {uploadingResume ? "Uploading…" : "Upload CV"}
+              </button>
             </form>
 
-            <p className="mt-4 text-sm text-slate-600">
+            <p className="mt-4 text-sm text-[#64748B]">
               {resumeUrl
                 ? `Current CV: ${resumeName || "Uploaded document"}`
                 : "No resume uploaded"}
@@ -356,18 +366,18 @@ export default function CandidateProfilePage() {
                 href={resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-flex text-sm font-semibold text-amber-600 hover:text-amber-700"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-[#1746D1] hover:underline"
               >
-                View resume <ArrowRight size={15} className="ml-2" />
+                View resume <ArrowRight size={15} />
               </a>
             ) : null}
           </section>
         </>
       ) : null}
 
-      <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8">
-        <h2 className="font-semibold">Privacy and account settings</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+      <section className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
+        <h2 className="font-bold text-[#0B1B3D]">Privacy and account settings</h2>
+        <p className="mt-1 text-sm leading-6 text-[#64748B]">
           Choose whether your name, location, and experience appear in employer
           talent searches, while your CV and contact details remain private
         </p>
@@ -376,7 +386,7 @@ export default function CandidateProfilePage() {
           disabled={!candidate?.onboardingCompleted || savingVisibility}
           aria-pressed={candidate?.discoverable ?? false}
           onClick={() => void updateDiscoverability()}
-          className="mt-4 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-semibold text-[#0B1B3D] shadow-xs transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {savingVisibility
             ? "Saving privacy setting…"
@@ -391,23 +401,23 @@ export default function CandidateProfilePage() {
         )}
         <Link
           href="/account?next=%2Fcandidate%2Fprofile"
-          className="mt-4 block text-sm font-semibold text-[#1746D1] hover:underline"
+          className="mt-4 block text-sm font-bold text-[#1746D1] hover:underline"
         >
           Account sign-in settings
         </Link>
       </section>
 
-      <section className="rounded-2xl border border-blue-100 bg-[#F3F6FF] p-6 sm:p-8">
-        <p className="text-lg font-semibold text-slate-900">
+      <section className="rounded-2xl border border-blue-100 bg-[#F2F6FE] p-6 sm:p-8">
+        <p className="text-lg font-bold text-[#0B1B3D]">
           Looking to hire talented people?
         </p>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+        <p className="mt-1.5 max-w-2xl text-sm leading-6 text-[#475569]">
           Find qualified professionals and manage your recruitment with Xedruo
           Career
         </p>
         <Link
           href="/recruiter-onboarding"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
         >
           Hire Talent — Get Started <ArrowRight size={16} />
         </Link>

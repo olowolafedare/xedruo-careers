@@ -5,25 +5,23 @@ import { QuestionTypeSelector } from "./question-type-selector";
 
 type Props = {
   question: QuestionnaireQuestion;
-  onChange: (question: QuestionnaireQuestion) => void;
+  onChange: (updated: QuestionnaireQuestion) => void;
   onRemove: () => void;
 };
 
-const CHOICE_TYPES: QuestionType[] = ["single_choice", "multiple_choice"];
-
 export function QuestionCard({ question, onChange, onRemove }: Props) {
-  const usesOptions = CHOICE_TYPES.includes(question.type);
+  const usesOptions =
+    question.type === "single_choice" || question.type === "multiple_choice";
 
   function changeType(type: QuestionType) {
-    const options = CHOICE_TYPES.includes(type)
+    const isNowOptions =
+      type === "single_choice" || type === "multiple_choice";
+    const options = isNowOptions
       ? question.options.length >= 2
         ? question.options
         : [
-            ...question.options,
-            ...Array.from({ length: 2 - question.options.length }, () => ({
-              id: crypto.randomUUID(),
-              label: "",
-            })),
+            { id: crypto.randomUUID(), label: "Option 1" },
+            { id: crypto.randomUUID(), label: "Option 2" },
           ]
       : [];
 
@@ -40,21 +38,21 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
   }
 
   return (
-    <section className="space-y-4 rounded-xl bg-rosybrown p-5 shadow-sm">
+    <section className="space-y-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] p-5 shadow-xs">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold">Question {question.displayOrder + 1}</h3>
+        <h3 className="font-bold text-[#0B1B3D]">Question {question.displayOrder + 1}</h3>
 
         <button
           type="button"
           onClick={onRemove}
-          className="text-sm text-red-600 hover:text-red-800"
+          className="text-sm font-semibold text-red-600 hover:text-red-800"
         >
           Remove
         </button>
       </div>
 
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Question text</span>
+      <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B1B3D]">
+        <span>Question text</span>
 
         <textarea
           value={question.questionText}
@@ -67,7 +65,7 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
           placeholder="e.g. How many years of experience do you have?"
           rows={2}
           maxLength={1000}
-          className="w-full rounded-md px-3 py-2"
+          className="w-full rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:ring-4 focus:ring-blue-100"
         />
       </label>
 
@@ -75,7 +73,7 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
 
       {usesOptions && (
         <div className="space-y-3">
-          <p className="text-sm font-medium">Answer options</p>
+          <p className="text-sm font-semibold text-[#0B1B3D]">Answer options</p>
 
           {question.options.map((option, index) => (
             <div key={option.id} className="flex gap-2">
@@ -86,7 +84,7 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
                 }
                 placeholder={`Option ${index + 1}`}
                 maxLength={200}
-                className="min-w-0 flex-1 rounded-md px-3 py-2"
+                className="min-w-0 flex-1 rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:ring-4 focus:ring-blue-100"
               />
 
               <button
@@ -100,7 +98,7 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
                     ),
                   })
                 }
-                className="rounded-md px-3 disabled:opacity-40"
+                className="rounded-xl border border-[#E2E8F0] bg-white px-3 font-bold text-slate-500 hover:bg-slate-50 disabled:opacity-40"
                 aria-label={`Remove option ${index + 1}`}
               >
                 ×
@@ -123,14 +121,14 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
                 ],
               })
             }
-            className="text-sm font-medium text-blue-700 disabled:opacity-40"
+            className="text-sm font-bold text-[#1746D1] hover:underline disabled:opacity-40"
           >
             + Add option
           </button>
         </div>
       )}
 
-      <label className="flex items-center gap-2 text-sm">
+      <label className="flex items-center gap-2 text-sm font-medium text-[#0B1B3D]">
         <input
           type="checkbox"
           checked={question.isRequired}
@@ -140,7 +138,7 @@ export function QuestionCard({ question, onChange, onRemove }: Props) {
               isRequired: event.target.checked,
             })
           }
-          className="size-4"
+          className="size-4 rounded accent-[#1746D1]"
         />
         Required question
       </label>

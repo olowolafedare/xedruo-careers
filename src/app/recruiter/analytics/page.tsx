@@ -1,5 +1,5 @@
 import { BarChart3 } from "lucide-react";
-import { and,count, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 import { requireRecruiter } from "../_lib/context";
 import { getDb } from "@/src/lib/db";
@@ -81,39 +81,39 @@ export default async function RecruiterAnalyticsPage() {
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">HIRING INSIGHTS</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Analytics</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">HIRING INSIGHTS</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">Analytics</h1>
+        <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
           A current snapshot of hiring activity across {company.name}
         </p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-2xl bg-rosybrown p-5">
-          <p className="text-sm text-slate-500">Total job openings</p>
-          <p className="mt-3 text-3xl font-bold">{totalRoles}</p>
+        <article className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Total job openings</p>
+          <p className="mt-3 text-3xl font-black text-[#0B1B3D]">{totalRoles}</p>
         </article>
 
-        <article className="rounded-2xl bg-rosybrown p-5">
-          <p className="text-sm text-slate-500">Published roles</p>
-          <p className="mt-3 text-3xl font-bold">{openRoles}</p>
+        <article className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Published roles</p>
+          <p className="mt-3 text-3xl font-black text-[#0B1B3D]">{openRoles}</p>
         </article>
 
-        <article className="rounded-2xl bg-rosybrown p-5">
-          <p className="text-sm text-slate-500">Applications received</p>
-          <p className="mt-3 text-3xl font-bold">{total}</p>
+        <article className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Applications received</p>
+          <p className="mt-3 text-3xl font-black text-[#0B1B3D]">{total}</p>
         </article>
       </section>
 
-      <section className="rounded-2xl bg-rosybrown p-6 sm:p-7">
+      <section className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-7">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-rosybrown text-amber-600">
-            <BarChart3 size={19} />
+          <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
+            <BarChart3 size={20} />
           </span>
 
           <div>
-            <h2 className="font-semibold">Applications by stage</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="font-bold text-[#0B1B3D]">Applications by stage</h2>
+            <p className="mt-0.5 text-sm text-[#64748B]">
               Current distribution across your job pipeline
             </p>
           </div>
@@ -129,17 +129,17 @@ export default async function RecruiterAnalyticsPage() {
             return (
               <div key={stage}>
                 <div className="mb-1.5 flex justify-between text-sm">
-                  <span className="text-slate-600">
+                  <span className="font-medium text-[#475569]">
                     {stageLabels[stage]}
                   </span>
-                  <span className="font-medium text-slate-800">
+                  <span className="font-bold text-[#0B1B3D]">
                     {value}
                   </span>
                 </div>
 
-                <div className="h-2 overflow-hidden rounded-full bg-rosybrown">
+                <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
                   <div
-                    className="h-full rounded-full bg-rosybrown transition-all"
+                    className="h-full rounded-full bg-[#1746D1] transition-all"
                     style={{ width: `${width}%` }}
                   />
                 </div>
@@ -149,7 +149,7 @@ export default async function RecruiterAnalyticsPage() {
         </div>
 
         {!total && (
-          <p className="mt-5 text-xs text-slate-400">
+          <p className="mt-5 text-xs text-[#94A3B8]">
             Stage totals appear as candidates apply to your jobs
           </p>
         )}

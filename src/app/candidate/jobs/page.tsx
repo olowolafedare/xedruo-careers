@@ -17,7 +17,7 @@ import {
 import { formatEmploymentType, formatJobLocation, formatWorkplaceType } from "@/src/lib/hireuo-jobs";
 import SaveButton from "@/src/app/(public)/jobs/[slug]/save-button";
 
-export const metadata = { title: "All Jobs | HIREUO" };
+export const metadata = { title: "All Jobs | Xedruo Career" };
 export const instant = false;
 
 const PAGE_SIZE = 12;
@@ -126,53 +126,94 @@ export default async function CandidateJobsPage({
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">DISCOVER OPPORTUNITIES</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Jobs workspace</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">Discover opportunities and manage your recruitment activity in one place</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">DISCOVER OPPORTUNITIES</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">Jobs workspace</h1>
+        <p className="mt-1.5 text-sm leading-6 text-[#64748B]">Discover opportunities and manage your recruitment activity in one place</p>
       </header>
 
-      <form id="explore-jobs" action="/candidate/jobs" className="scroll-mt-24 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
-        <label className="text-xs font-semibold text-slate-600 sm:col-span-2">Search jobs
-          <input name="q" defaultValue={query} placeholder="Job title, skills, company or description" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" />
+      <form id="explore-jobs" action="/candidate/jobs" className="scroll-mt-24 grid gap-3.5 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs sm:grid-cols-2 xl:grid-cols-4">
+        <label className="text-xs font-semibold text-[#64748B] sm:col-span-2">Search jobs
+          <input name="q" defaultValue={query} placeholder="Job title, skills, company or description" className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100" />
         </label>
-        <label className="text-xs font-semibold text-slate-600">Location<input name="location" defaultValue={location} placeholder="City, state or country" className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" /></label>
-        <label className="text-xs font-semibold text-slate-600">Employment type<select name="type" defaultValue={type} className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="">All types</option>{employmentTypes.map((value) => <option key={value} value={value}>{formatEmploymentType(value)}</option>)}</select></label>
-        <label className="text-xs font-semibold text-slate-600">Work arrangement<select name="workplace" defaultValue={workplace} className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="">Any arrangement</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">Onsite</option></select></label>
-        <label className="text-xs font-semibold text-slate-600">Experience level<select name="experience" defaultValue={experience} className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="">Any level</option>{experienceLevels.map((value) => <option key={value} value={value}>{value[0].toUpperCase() + value.slice(1)}</option>)}</select></label>
-        <label className="text-xs font-semibold text-slate-600">Category<select name="category" defaultValue={categoryId} className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="">All categories</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
-        <label className="text-xs font-semibold text-slate-600">Minimum salary<input name="salaryMin" type="number" min="0" defaultValue={params.salaryMin} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" /></label>
-        <label className="text-xs font-semibold text-slate-600">Maximum salary<input name="salaryMax" type="number" min="0" defaultValue={params.salaryMax} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-normal" /></label>
-        <label className="text-xs font-semibold text-slate-600">Sort by<select name="sort" defaultValue={sort} className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="salary_high">Highest salary</option><option value="salary_low">Lowest salary</option></select></label>
-        <div className="flex items-end gap-3"><button className="rounded-xl bg-amber-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-800">Search jobs</button><Link href="/candidate/jobs" className="px-2 py-2.5 text-sm font-semibold text-slate-600">Clear</Link></div>
+        <label className="text-xs font-semibold text-[#64748B]">Location<input name="location" defaultValue={location} placeholder="City, state or country" className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100" /></label>
+        <label className="text-xs font-semibold text-[#64748B]">Employment type<select name="type" defaultValue={type} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"><option value="">All types</option>{employmentTypes.map((value) => <option key={value} value={value}>{formatEmploymentType(value)}</option>)}</select></label>
+        <label className="text-xs font-semibold text-[#64748B]">Work arrangement<select name="workplace" defaultValue={workplace} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"><option value="">Any arrangement</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">Onsite</option></select></label>
+        <label className="text-xs font-semibold text-[#64748B]">Experience level<select name="experience" defaultValue={experience} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"><option value="">Any level</option>{experienceLevels.map((value) => <option key={value} value={value}>{value[0].toUpperCase() + value.slice(1)}</option>)}</select></label>
+        <label className="text-xs font-semibold text-[#64748B]">Category<select name="category" defaultValue={categoryId} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"><option value="">All categories</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
+        <label className="text-xs font-semibold text-[#64748B]">Minimum salary<input name="salaryMin" type="number" min="0" defaultValue={params.salaryMin} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100" /></label>
+        <label className="text-xs font-semibold text-[#64748B]">Maximum salary<input name="salaryMax" type="number" min="0" defaultValue={params.salaryMax} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100" /></label>
+        <label className="text-xs font-semibold text-[#64748B]">Sort by<select name="sort" defaultValue={sort} className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-3.5 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="salary_high">Highest salary</option><option value="salary_low">Lowest salary</option></select></label>
+        <div className="flex items-end gap-3">
+          <button className="rounded-xl bg-[#1746D1] px-5 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]">Search jobs</button>
+          <Link href="/candidate/jobs" className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-semibold text-[#64748B] hover:text-[#0B1B3D]">Clear</Link>
+        </div>
       </form>
 
-      <div className="flex items-center justify-between text-sm text-slate-500"><p>{total} {total === 1 ? "job" : "jobs"} found</p>{currentPage} / {totalPages}</div>
-      {results.length ? <section className="space-y-3" aria-label="Job results">
-        {results.map((job) => {
-          const detailHref = `/candidate/jobs/${job.slug}?returnTo=${encodeURIComponent(backTo)}`;
-          const applicationStatus = applicationByJob.get(job.id);
-          return <article key={job.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row">
-              <Link href={detailHref} className="min-w-0 flex-1">
-                <div className="flex items-start gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#1746D1]"><BriefcaseBusiness size={20} /></span><div className="min-w-0"><h2 className="text-lg font-semibold hover:text-[#1746D1]">{job.title}</h2><p className="mt-1 text-sm text-slate-600">{job.companyName}</p></div></div>
-                <p className="mt-4 line-clamp-2 text-sm leading-6 text-slate-500">{job.description}</p>
-                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-500"><span className="inline-flex items-center gap-1"><MapPin size={13} />{formatJobLocation({ location: job.location, workplace_type: job.workplaceType })}</span><span>{formatEmploymentType(job.employmentType)}</span><span>{formatWorkplaceType(job.workplaceType)}</span>{job.experienceLevel && <span>{job.experienceLevel} level</span>}<span>{formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency)}</span><span>Posted {job.createdAt.toLocaleDateString("en", { dateStyle: "medium" })}</span></div>
-              </Link>
-              <div className="flex shrink-0 flex-row gap-2 sm:w-40 sm:flex-col">
-                {candidateProfile[0]?.onboardingCompleted && (applicationStatus ? <Link href="/candidate/applications" className="rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-semibold text-emerald-800">{applicationStatus === "submitted" ? "Applied" : applicationStatus.replaceAll("_", " ")}</Link> : <Link href={detailHref} className="rounded-xl bg-[#1746D1] px-4 py-2.5 text-center text-sm font-semibold text-white">View and apply</Link>)}
-                {candidateProfile[0]?.onboardingCompleted && <SaveButton jobId={job.id} initiallySaved={savedIds.has(job.id)} returnTo={detailHref} compact />}
-                {!candidateProfile[0]?.onboardingCompleted && <Link href={`/applicant?next=${encodeURIComponent(detailHref)}`} className="rounded-xl bg-blue-50 px-4 py-2.5 text-center text-xs font-semibold text-[#1746D1]">Complete profile to apply</Link>}
-              </div>
-            </div>
-          </article>;
-        })}
-      </section> : <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center"><h2 className="font-semibold">No matching jobs found</h2><p className="mt-2 text-sm text-slate-500">Try broadening your search or changing the filters</p></section>}
+      <div className="flex items-center justify-between text-sm text-[#64748B]"><p>{total} {total === 1 ? "job" : "jobs"} found</p><span>{currentPage} / {totalPages}</span></div>
+      {results.length ? (
+        <section className="space-y-3.5" aria-label="Job results">
+          {results.map((job) => {
+            const detailHref = `/candidate/jobs/${job.slug}?returnTo=${encodeURIComponent(backTo)}`;
+            const applicationStatus = applicationByJob.get(job.id);
+            return (
+              <article key={job.id} className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md sm:p-6">
+                <div className="flex flex-col justify-between gap-4 sm:flex-row">
+                  <Link href={detailHref} className="min-w-0 flex-1">
+                    <div className="flex items-start gap-3.5">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
+                        <BriefcaseBusiness size={20} />
+                      </span>
+                      <div className="min-w-0">
+                        <h2 className="text-lg font-bold text-[#0B1B3D] hover:text-[#1746D1]">{job.title}</h2>
+                        <p className="mt-1 text-sm font-medium text-[#64748B]">{job.companyName}</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 line-clamp-2 text-sm leading-6 text-[#475569]">{job.description}</p>
+                    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-[#94A3B8]">
+                      <span className="inline-flex items-center gap-1"><MapPin size={13} />{formatJobLocation({ location: job.location, workplace_type: job.workplaceType })}</span>
+                      <span>{formatEmploymentType(job.employmentType)}</span>
+                      <span>{formatWorkplaceType(job.workplaceType)}</span>
+                      {job.experienceLevel && <span>{job.experienceLevel} level</span>}
+                      <span>{formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency)}</span>
+                      <span>Posted {job.createdAt.toLocaleDateString("en", { dateStyle: "medium" })}</span>
+                    </div>
+                  </Link>
+                  <div className="flex shrink-0 flex-row gap-2 sm:w-40 sm:flex-col">
+                    {candidateProfile[0]?.onboardingCompleted && (applicationStatus ? (
+                      <Link href="/candidate/applications" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-center text-sm font-semibold text-emerald-800">
+                        {applicationStatus === "submitted" ? "Applied" : applicationStatus.replaceAll("_", " ")}
+                      </Link>
+                    ) : (
+                      <Link href={detailHref} className="rounded-xl bg-[#1746D1] px-4 py-2.5 text-center text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]">
+                        View and apply
+                      </Link>
+                    ))}
+                    {candidateProfile[0]?.onboardingCompleted && <SaveButton jobId={job.id} initiallySaved={savedIds.has(job.id)} returnTo={detailHref} compact />}
+                    {!candidateProfile[0]?.onboardingCompleted && (
+                      <Link href={`/applicant?next=${encodeURIComponent(detailHref)}`} className="rounded-xl bg-blue-50 px-4 py-2.5 text-center text-xs font-bold text-[#1746D1] hover:bg-blue-100">
+                        Complete profile to apply
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+      ) : (
+        <section className="rounded-2xl border border-dashed border-[#E2E8F0] bg-white p-10 text-center">
+          <h2 className="font-bold text-[#0B1B3D]">No matching jobs found</h2>
+          <p className="mt-2 text-sm text-[#64748B]">Try broadening your search or changing the filters</p>
+        </section>
+      )}
 
-      {totalPages > 1 && <nav aria-label="Job results pages" className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm">
-        {currentPage > 1 ? <Link href={queryString(currentPage - 1)} className="font-semibold text-[#1746D1]">Previous</Link> : <span className="text-slate-400">Previous</span>}
-        <span className="text-slate-500">Page {currentPage} of {totalPages}</span>
-        {currentPage < totalPages ? <Link href={queryString(currentPage + 1)} className="font-semibold text-[#1746D1]">Next</Link> : <span className="text-slate-400">Next</span>}
-      </nav>}
+      {totalPages > 1 && (
+        <nav aria-label="Job results pages" className="flex items-center justify-between rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 text-sm">
+          {currentPage > 1 ? <Link href={queryString(currentPage - 1)} className="font-bold text-[#1746D1] hover:underline">Previous</Link> : <span className="text-[#94A3B8]">Previous</span>}
+          <span className="text-[#64748B]">Page {currentPage} of {totalPages}</span>
+          {currentPage < totalPages ? <Link href={queryString(currentPage + 1)} className="font-bold text-[#1746D1] hover:underline">Next</Link> : <span className="text-[#94A3B8]">Next</span>}
+        </nav>
+      )}
     </div>
   );
 }

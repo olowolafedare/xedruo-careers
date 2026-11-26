@@ -79,32 +79,46 @@ export default async function StartPage() {
   ];
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-5 py-16">
-      <p className="text-sm font-bold text-amber-600">Hireuo</p>
+    <div className="relative min-h-screen bg-gradient-to-b from-[#F2F6FE] via-[#F8FAFF] to-[#EDF3FC] px-5 py-16 text-[#0B1B3D]">
+      <div className="mx-auto max-w-4xl">
+        <Link href="/" className="inline-flex items-center gap-2">
+          <span className="grid size-9 place-items-center rounded-xl bg-[#1746D1] text-base font-black text-white">
+            x
+          </span>
+          <span className="text-lg font-black tracking-tight text-[#0B1B3D]">
+            xedruo <span className="font-semibold text-[#1746D1]">career</span>
+          </span>
+        </Link>
 
-      <h1 className="mt-4 text-3xl font-bold">
-        How will you use Hireuo?
-      </h1>
+        <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-[#0B1B3D] sm:text-4xl">
+          How will you use Xedruo Career?
+        </h1>
+        <p className="mt-2 text-base text-[#64748B]">
+          Select an option below to set up your tailored workspace.
+        </p>
 
-      <div className="mt-9 grid gap-5 sm:grid-cols-2">
-        {options.map((option) => (
-          <Link
-            key={option.href}
-            href={option.href}
-            className="rounded-2xl bg-rosybrown p-7 transition hover:shadow-lg"
-          >
-            <h2 className="text-xl font-semibold">{option.title}</h2>
+        <div className="mt-9 grid gap-6 sm:grid-cols-2">
+          {options.map((option) => (
+            <Link
+              key={option.href}
+              href={option.href}
+              className="group rounded-3xl border border-[#E2E8F0] bg-white p-8 shadow-xs transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+            >
+              <h2 className="text-xl font-bold text-[#0B1B3D] group-hover:text-[#1746D1]">
+                {option.title}
+              </h2>
 
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              {option.description}
-            </p>
+              <p className="mt-3 text-sm leading-6 text-[#64748B]">
+                {option.description}
+              </p>
 
-            <span className="mt-6 inline-block font-semibold text-amber-600">
-              Continue →
-            </span>
-          </Link>
-        ))}
+              <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-[#1746D1]">
+                Continue →
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

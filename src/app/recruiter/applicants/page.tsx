@@ -71,66 +71,68 @@ export default async function RecruiterApplicantsPage({
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">TALENT</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Applicants</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">TALENT</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">Applicants</h1>
+        <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
           Review applications across your organization&apos;s job openings
         </p>
       </header>
 
       {applicantRows.length ? (
-        <section className="overflow-hidden rounded-2xl bg-rosybrown">
-          <div className="hidden grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr_0.8fr] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:grid">
+        <section className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-xs">
+          <div className="hidden grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr_0.8fr] gap-4 border-b border-[#E2E8F0] bg-[#F8FAFF] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B] sm:grid">
             <span>Candidate</span>
             <span>Role</span>
             <span>Applied</span>
             <span>Stage</span>
           </div>
 
-          {applicantRows.map((application) => {
-            const fullName = application.fullName;
+          <div className="divide-y divide-[#E2E8F0]">
+            {applicantRows.map((application) => {
+              const fullName = application.fullName;
 
-            return (
-              <article
-                key={application.id}
-                className="grid gap-3 px-5 py-5 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr_0.8fr] sm:items-center sm:gap-4"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-rosybrown text-sm font-semibold text-amber-700">
-                    {fullName?.charAt(0) || "C"}
-                  </span>
+              return (
+                <article
+                  key={application.id}
+                  className="grid gap-3 px-6 py-5 transition hover:bg-slate-50/60 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr_0.8fr] sm:items-center sm:gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-blue-50 text-sm font-bold text-[#1746D1]">
+                      {fullName?.charAt(0) || "C"}
+                    </span>
 
-                  <div>
-                    <p className="text-sm font-semibold">
-                      {fullName || "Candidate"}
-                    </p>
-                    <p className="text-xs text-slate-500">Candidate</p>
+                    <div>
+                      <p className="text-sm font-bold text-[#0B1B3D]">
+                        {fullName || "Candidate"}
+                      </p>
+                      <p className="text-xs text-[#94A3B8]">Candidate</p>
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-sm text-slate-600">
-                  {application.jobTitle || "Job opening"}
-                </p>
+                  <p className="text-sm text-[#475569]">
+                    {application.jobTitle || "Job opening"}
+                  </p>
 
-                <p className="text-xs text-slate-500">
-                  {application.appliedAt
-                    ? new Date(application.appliedAt).toLocaleDateString(
-                        "en",
-                        { dateStyle: "medium" },
-                      )
-                    : "Not available"}
-                </p>
+                  <p className="text-xs text-[#94A3B8]">
+                    {application.appliedAt
+                      ? new Date(application.appliedAt).toLocaleDateString(
+                          "en",
+                          { dateStyle: "medium" },
+                        )
+                      : "Not available"}
+                  </p>
 
-                <ApplicationStage
-                  id={application.id}
-                  status={application.status}
-                  canEdit={["owner", "admin", "hr_manager", "recruiter"].includes(
-                    membership.role,
-                  )}
-                />
-              </article>
-            );
-          })}
+                  <ApplicationStage
+                    id={application.id}
+                    status={application.status}
+                    canEdit={["owner", "admin", "hr_manager", "recruiter"].includes(
+                      membership.role,
+                    )}
+                  />
+                </article>
+              );
+            })}
+          </div>
 
           <Pagination
             basePath="/recruiter/applicants"
@@ -139,15 +141,15 @@ export default async function RecruiterApplicantsPage({
           />
         </section>
       ) : (
-        <section className="grid min-h-80 place-items-center rounded-2xl bg-rosybrown px-6 py-12 text-center">
+        <section className="grid min-h-80 place-items-center rounded-2xl border border-dashed border-[#E2E8F0] bg-white px-6 py-12 text-center">
           <div className="max-w-md">
-            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
+            <span className="mx-auto grid size-12 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
               <Users size={22} />
             </span>
 
-            <h2 className="mt-5 text-lg font-semibold">No applicants yet</h2>
+            <h2 className="mt-5 text-lg font-bold text-[#0B1B3D]">No applicants yet</h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-[#64748B]">
               Applications for your roles will appear here as candidates apply
             </p>
           </div>

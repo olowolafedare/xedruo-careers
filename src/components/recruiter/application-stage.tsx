@@ -82,7 +82,7 @@ export function ApplicationStage({
         value={status}
         disabled={saving || !canEdit}
         onChange={(event) => void updateStatus(event.target.value)}
-        className="rounded-lg bg-rosybrown px-2.5 py-2 text-xs font-semibold capitalize text-slate-700 outline-none disabled:cursor-not-allowed disabled:opacity-75"
+        className="rounded-lg border border-[#E2E8F0] bg-white px-2.5 py-2 text-xs font-semibold capitalize text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-75"
       >
         {stages.map((stage) => (
           <option key={stage} value={stage}>{stageLabels[stage]}</option>

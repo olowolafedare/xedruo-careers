@@ -8,22 +8,22 @@ export default async function RecruiterCompanyPage() {
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">ORGANIZATION</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">ORGANIZATION</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">
           Company profile
         </h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
           Organization details connected to your recruiter workspace
         </p>
       </header>
-      <section className="rounded-2xl bg-rosybrown p-6 sm:p-8">
+      <section className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
         <div className="flex items-start gap-4">
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-rosybrown text-amber-600">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-[#1746D1]">
             <Building2 size={22} />
           </span>
           <div className="min-w-0">
-            <h2 className="text-lg font-semibold">{company.name}</h2>
-            <p className="mt-2 max-w-2xl whitespace-pre-wrap text-sm leading-6 text-slate-600">
+            <h2 className="text-xl font-bold text-[#0B1B3D]">{company.name}</h2>
+            <p className="mt-2 max-w-2xl whitespace-pre-wrap text-sm leading-6 text-[#475569]">
               {company.description ||
                 "No company description has been added yet"}
             </p>
@@ -32,7 +32,7 @@ export default async function RecruiterCompanyPage() {
                 href={company.website}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-amber-600 hover:text-amber-700"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#1746D1] hover:underline"
               >
                 <Globe2 size={16} />
                 {company.website}
@@ -40,13 +40,13 @@ export default async function RecruiterCompanyPage() {
             )}
           </div>
         </div>
-        <div className="mt-7 flex items-center gap-3 pt-5">
-          <span className="grid size-9 place-items-center rounded-xl bg-rosybrown text-emerald-700">
-            <ShieldCheck size={17} />
+        <div className="mt-7 flex items-center gap-3 border-t border-[#E2E8F0] pt-5">
+          <span className="grid size-9 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+            <ShieldCheck size={18} />
           </span>
           <div>
-            <p className="text-sm font-medium">Workspace access</p>
-            <p className="mt-0.5 text-xs capitalize text-slate-500">
+            <p className="text-sm font-semibold text-[#0B1B3D]">Workspace access</p>
+            <p className="mt-0.5 text-xs capitalize text-[#64748B]">
               Your role: {membership.role}
             </p>
           </div>
@@ -59,22 +59,22 @@ export default async function RecruiterCompanyPage() {
             initialDescription={company.description}
           />
         ) : (
-          <p className="mt-6 rounded-xl bg-rosybrown p-4 text-sm leading-6 text-slate-500">
+          <p className="mt-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] p-4 text-sm leading-6 text-[#64748B]">
             Ask a company administrator or recruiter to update these details
           </p>
         )}
       </section>
-      <section className="rounded-2xl border border-blue-100 bg-[#F3F6FF] p-6 sm:p-8">
-        <p className="text-lg font-semibold text-slate-900">
+      <section className="rounded-2xl border border-blue-100 bg-[#F2F6FE] p-6 sm:p-8">
+        <p className="text-lg font-bold text-[#0B1B3D]">
           Looking for a job?
         </p>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+        <p className="mt-1.5 max-w-2xl text-sm leading-6 text-[#475569]">
           Switch to your job-seeker workspace to explore opportunities and
           manage applications
         </p>
         <Link
           href="/candidate-onboarding"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
         >
           Switch to Job Seeking <ArrowRight size={16} />
         </Link>

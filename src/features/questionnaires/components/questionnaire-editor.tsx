@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { questionnaireSchema } from "../schemas/question-schema";
-import type { QuestionnaireQuestion } from "../types";
-import { saveQuestions } from "../actions/save-questions";
+import type { QuestionnaireQuestion, QuestionType } from "../types";
 import { QuestionCard } from "./question-card";
 import { QuestionPreview } from "./question-preview";
 
@@ -12,81 +10,78 @@ type Props = {
   initialQuestions?: QuestionnaireQuestion[];
 };
 
-function createQuestion(displayOrder: number): QuestionnaireQuestion {
-  return {
-    id: crypto.randomUUID(),
-    questionText: "",
-    type: "short_text",
-    isRequired: false,
-    displayOrder,
-    options: [],
-  };
-}
-
-export function QuestionnaireEditor({ jobId, initialQuestions = [] }: Props) {
+export function QuestionnaireEditor({
+  jobId,
+  initialQuestions = [],
+}: Props) {
   const [questions, setQuestions] =
     useState<QuestionnaireQuestion[]>(initialQuestions);
-  const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  function updateQuestion(updatedQuestion: QuestionnaireQuestion) {
-    setQuestions((current) =>
-      current.map((question) =>
-        question.id === updatedQuestion.id ? updatedQuestion : question,
+  function addQuestion() {
+    const newQuestion: QuestionnaireQuestion = {
+      id: crypto.randomUUID(),
+      questionText: "",
+      type: "short_text" as QuestionType,
+      options: [],
+      isRequired: false,
+      displayOrder: questions.length,
+    };
+
+    setQuestions([...questions, newQuestion]);
+  }
+
+  function updateQuestion(updated: QuestionnaireQuestion) {
+    setQuestions(
+      questions.map((question) =>
+        question.id === updated.id ? updated : question,
       ),
     );
-    setMessage("");
   }
 
-  function addQuestion() {
-    setQuestions((current) => [...current, createQuestion(current.length)]);
-    setMessage("");
-  }
-
-  function removeQuestion(questionId: string) {
-    setQuestions((current) =>
-      current
-        .filter((question) => question.id !== questionId)
+  function removeQuestion(id: string) {
+    setQuestions(
+      questions
+        .filter((question) => question.id !== id)
         .map((question, index) => ({
           ...question,
           displayOrder: index,
         })),
     );
-    setMessage("");
   }
 
   async function saveDraft() {
-    const result = questionnaireSchema.safeParse({
-      jobId,
-      questions,
-    });
-
-    if (!result.success) {
-      setMessage(result.error.issues.map((issue) => issue.message).join(" "));
-      return;
-    }
-
     setSaving(true);
+    setMessage(null);
+
     try {
-      const result = await saveQuestions({ jobId, questions });
-      setMessage(result.error ?? "Application questions saved.");
+      const response = await fetch(
+        `/api/v1/recruiter/jobs/${encodeURIComponent(jobId)}/questions`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ questions }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Unable to save questions");
+      }
+
+      setMessage("Questions saved successfully");
     } catch {
-      setMessage("Unable to save application questions Please try again");
+      setMessage("Error saving questions. Please try again.");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Application questions</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Add questions applicants must answer when applying for this job
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {questions.map((question) => (
         <QuestionCard
           key={question.id}
@@ -101,7 +96,7 @@ export function QuestionnaireEditor({ jobId, initialQuestions = [] }: Props) {
           type="button"
           onClick={addQuestion}
           disabled={questions.length >= 100}
-          className="rounded-lg px-4 py-3 font-medium bg-rosybrown disabled:opacity-40"
+          className="rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-bold text-[#1746D1] shadow-xs transition hover:bg-blue-50 disabled:opacity-40"
         >
           + Add question
         </button>
@@ -109,7 +104,7 @@ export function QuestionnaireEditor({ jobId, initialQuestions = [] }: Props) {
         <button
           type="button"
           onClick={() => setShowPreview((current) => !current)}
-          className="rounded-lg px-5 py-3 font-medium"
+          className="rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-bold text-[#0B1B3D] shadow-xs transition hover:bg-slate-50"
         >
           {showPreview ? "Back to editor" : "Preview application"}
         </button>
@@ -127,13 +122,13 @@ export function QuestionnaireEditor({ jobId, initialQuestions = [] }: Props) {
         type="button"
         onClick={() => void saveDraft()}
         disabled={saving}
-        className="rounded-lg bg-rosybrown px-5 py-3 font-medium text-white bg-rosybrown disabled:opacity-50"
+        className="rounded-xl bg-[#1746D1] px-6 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8] disabled:opacity-50"
       >
         {saving ? "Saving…" : "Save questions"}
       </button>
 
       {message && (
-        <p role="status" className="text-sm text-gray-700">
+        <p role="status" className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm font-medium text-[#1746D1]">
           {message}
         </p>
       )}

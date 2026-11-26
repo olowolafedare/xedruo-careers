@@ -2,7 +2,7 @@ import { QuestionnaireEditor } from "@/src/features/questionnaires/components/qu
 
 export default function QuestionnaireTestPage() {
   return (
-    <main className="min-h-screen bg-rosybrown px-4 py-10">
+    <main className="min-h-screen bg-[#F8FAFF] px-4 py-10">
       <QuestionnaireEditor jobId="00000000-0000-4000-8000-000000000001" />
     </main>
   );

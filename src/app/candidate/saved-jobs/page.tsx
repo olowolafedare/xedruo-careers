@@ -35,31 +35,31 @@ export default async function SavedJobsPage() {
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">YOUR SHORTLIST</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Saved jobs</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">YOUR SHORTLIST</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">Saved jobs</h1>
+        <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
           Keep the opportunities you are considering together in one place
         </p>
       </header>
 
       {savedJobsList.length ? (
-        <section className="space-y-3">
+        <section className="space-y-3.5">
           {savedJobsList.map((saved) => {
             const job = saved.job;
 
             return (
               <article
                 key={saved.id}
-                className="flex flex-col justify-between gap-4 rounded-2xl bg-rosybrown p-5 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md sm:flex-row sm:items-center"
               >
-                <Link href={`/candidate/jobs/${job.id}`} className="min-w-0">
-                  <h2 className="font-semibold hover:text-amber-600">
+                <Link href={`/candidate/jobs/${job.id}`} className="min-w-0 flex-1">
+                  <h2 className="font-bold text-[#0B1B3D] hover:text-[#1746D1]">
                     {job.title}
                   </h2>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-[#64748B]">
                     Employer details unavailable
                   </p>
-                  <p className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
+                  <p className="mt-2 flex flex-wrap gap-3 text-xs text-[#94A3B8]">
                     <span className="inline-flex items-center gap-1">
                       <MapPin size={13} />
                       {formatJobLocation(job)}
@@ -76,7 +76,7 @@ export default async function SavedJobsPage() {
 
                 <Link
                   href={`/candidate/jobs/${job.id}`}
-                  className="inline-flex w-fit items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:text-amber-700"
+                  className="inline-flex w-fit items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-bold text-[#1746D1] shadow-xs transition hover:bg-blue-50"
                 >
                   <Bookmark size={15} />
                   View job
@@ -86,19 +86,19 @@ export default async function SavedJobsPage() {
           })}
         </section>
       ) : (
-        <section className="grid min-h-72 place-items-center rounded-2xl bg-rosybrown px-6 py-12 text-center">
+        <section className="grid min-h-72 place-items-center rounded-2xl border border-dashed border-[#E2E8F0] bg-white px-6 py-12 text-center">
           <div className="max-w-md">
-            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-rosybrown text-amber-600">
+            <span className="mx-auto grid size-12 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
               <Bookmark size={22} />
             </span>
-            <h2 className="mt-5 text-lg font-semibold">No saved jobs yet</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <h2 className="mt-5 text-lg font-bold text-[#0B1B3D]">No saved jobs yet</h2>
+            <p className="mt-2 text-sm leading-6 text-[#64748B]">
               Save interesting roles while browsing and they&apos;ll be
               collected here
             </p>
             <Link
               href="/candidate/jobs"
-              className="mt-5 inline-flex rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
+              className="mt-5 inline-flex rounded-xl bg-[#1746D1] px-5 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
             >
               Find a role
             </Link>

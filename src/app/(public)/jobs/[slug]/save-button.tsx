@@ -58,7 +58,7 @@ export default function SaveButton({
         type="button"
         onClick={() => void toggle()}
         disabled={busy}
-        className={`${compact ? "w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs" : "w-full rounded-xl px-5 py-3 text-sm"} font-semibold text-slate-700 bg-rosybrown disabled:opacity-60`}
+        className={`${compact ? "w-full rounded-xl border border-[#E2E8F0] px-3 py-2.5 text-xs" : "w-full rounded-xl border border-[#E2E8F0] px-5 py-3 text-sm"} font-semibold text-[#0B1B3D] bg-white hover:bg-slate-50 transition shadow-xs disabled:opacity-60`}
       >
         {busy
           ? "Updating…"

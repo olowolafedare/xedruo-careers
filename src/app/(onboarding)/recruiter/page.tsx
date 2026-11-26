@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Building2 } from "lucide-react";
 
 const WORKSPACE_API_PATH = "/api/v1/recruiter/workspace";
 
@@ -24,7 +25,7 @@ async function readWorkspaceResponse(
       status: response.status,
       contentType: contentType.slice(0, 100) || null,
     });
-    throw new Error("The server returned an unexpected response Please try again");
+    throw new Error("The server returned an unexpected response. Please try again");
   }
 
   try {
@@ -36,7 +37,7 @@ async function readWorkspaceResponse(
       status: response.status,
       contentType: contentType.slice(0, 100),
     });
-    throw new Error("The server returned an invalid response Please try again");
+    throw new Error("The server returned an invalid response. Please try again");
   }
 }
 
@@ -50,8 +51,6 @@ export default function RecruiterOnboardingPage() {
   const [error, setError] = useState("");
   const [businessEmail, setBusinessEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
-
-
 
   useEffect(() => {
     let active = true;
@@ -150,40 +149,59 @@ export default function RecruiterOnboardingPage() {
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
-      <main className="grid min-h-screen place-items-center bg-rosybrown">
-        <p className="text-sm text-slate-500">Loading</p>
+      <main className="grid min-h-screen place-items-center bg-[#F8FAFF]">
+        <p className="text-sm font-semibold text-[#64748B]">Loading your workspace…</p>
       </main>
     );
+  }
+
   return (
-    <main className="min-h-screen bg-rosybrown px-5 py-12">
+    <main className="min-h-screen bg-gradient-to-b from-[#F2F6FE] via-[#F8FAFF] to-[#EDF3FC] px-5 py-12 text-[#0B1B3D]">
       <div className="mx-auto max-w-2xl">
-        <Link href="/start" className="text-sm font-semibold text-amber-600">
-          ← Choose another path
-        </Link>
-        <p className="mt-8 text-sm font-semibold text-amber-600">
-          EMPLOYER ONBOARDING
-        </p>
-        <h1 className="mt-2 text-3xl font-bold">
-          Set up your hiring workspace
-        </h1>
-        <p className="mt-3 text-slate-600"> </p>
+        <div className="flex items-center justify-between">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <span className="grid size-9 place-items-center rounded-xl bg-[#1746D1] text-base font-black text-white">x</span>
+            <span className="text-lg font-black tracking-tight text-[#0B1B3D]">
+              xedruo <span className="font-semibold text-[#1746D1]">career</span>
+            </span>
+          </Link>
+          <Link href="/start" className="text-xs font-bold text-[#64748B] hover:text-[#1746D1]">
+            ← Choose another path
+          </Link>
+        </div>
+
+        <div className="mt-8">
+          <div className="grid size-12 place-items-center rounded-2xl bg-blue-50 text-[#1746D1]">
+            <Building2 size={24} />
+          </div>
+          <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[#1746D1]">
+            EMPLOYER ONBOARDING
+          </p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D] sm:text-4xl">
+            Set up your hiring workspace
+          </h1>
+          <p className="mt-1.5 text-sm text-[#64748B]">
+            Provide your company details to begin recruiting and posting roles on Xedruo Career.
+          </p>
+        </div>
+
         <form
           onSubmit={submit}
-          className="mt-8 space-y-5 rounded-3xl bg-rosybrown p-6 shadow-sm sm:p-8"
+          className="mt-8 space-y-5 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8"
         >
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
             Organization or company name *
             <input
               required
               maxLength={160}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-2 w-full rounded-xl px-4 py-3"
+              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
           </label>
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
             Website
             <input
               type="url"
@@ -191,20 +209,20 @@ export default function RecruiterOnboardingPage() {
               placeholder="https://example.com"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
-              className="mt-2 w-full rounded-xl px-4 py-3"
+              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition placeholder:text-[#94A3B8] focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
           </label>
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
             About the organization
             <textarea
               rows={4}
               maxLength={2000}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-2 w-full rounded-xl px-4 py-3"
+              className="mt-1.5 w-full resize-y rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
           </label>
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
             Business email *
             <input
               required
@@ -212,11 +230,11 @@ export default function RecruiterOnboardingPage() {
               maxLength={254}
               value={businessEmail}
               onChange={(e) => setBusinessEmail(e.target.value)}
-              className="mt-2 w-full rounded-xl px-4 py-3"
+              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
           </label>
 
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
             Business contact phone *
             <input
               required
@@ -224,17 +242,19 @@ export default function RecruiterOnboardingPage() {
               maxLength={30}
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="mt-2 w-full rounded-xl px-4 py-3"
+              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-2.5 text-sm font-normal text-[#0B1B3D] outline-none transition focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
           </label>
+
           {error && (
-            <p role="alert" className="text-sm text-red-700">
+            <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {error}
             </p>
           )}
+
           <button
             disabled={saving}
-            className="rounded-xl bg-rosybrown px-6 py-3 font-semibold text-black disabled:opacity-60"
+            className="w-full rounded-2xl bg-[#1746D1] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition duration-200 hover:bg-[#1237a8] active:scale-[0.99] disabled:opacity-60"
           >
             {saving ? "Setting up…" : "Create workspace and continue"}
           </button>

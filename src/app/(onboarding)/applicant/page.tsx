@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowRight, FileText, Sparkles, User, Briefcase } from "lucide-react";
 import { getSafeAuthReturnTo } from "../../../lib/auth/safe-return-to";
 
 const SEARCH_TIMINGS = [
@@ -21,7 +22,7 @@ const WORK_PREFERENCES = [
 ];
 
 const inputClass =
-  "mt-2 w-full rounded-xl bg-rosybrown px-4 py-3 text-sm text-slate-900 outline-none transition focus:ring-4 focus:ring-amber-100";
+  "mt-2 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFF] px-4 py-3 text-sm text-[#0B1B3D] outline-none transition placeholder:text-[#94A3B8] focus:border-[#1746D1] focus:bg-white focus:ring-4 focus:ring-blue-100";
 
 export default function ApplicantOnboardingPage() {
   const router = useRouter();
@@ -49,17 +50,20 @@ export default function ApplicantOnboardingPage() {
     async function loadProfile() {
       const intendedReturnTo = getSafeAuthReturnTo(
         new URLSearchParams(window.location.search).get("next"),
-        "/candidate/dashboard",
       );
-      setReturnTo(intendedReturnTo);
+      if (intendedReturnTo) {
+        setReturnTo(intendedReturnTo);
+      }
 
       try {
         const [profileResponse, resumeResponse] = await Promise.all([
           fetch("/api/v1/candidate/profile", {
+            method: "GET",
             credentials: "same-origin",
             cache: "no-store",
           }),
           fetch("/api/v1/candidate/resume", {
+            method: "GET",
             credentials: "same-origin",
             cache: "no-store",
           }),
@@ -68,57 +72,45 @@ export default function ApplicantOnboardingPage() {
         if (!active) return;
 
         if (profileResponse.status === 401) {
-          const onboardingDestination = `/applicant?next=${encodeURIComponent(intendedReturnTo)}`;
-          router.replace(
-            `/account?next=${encodeURIComponent(onboardingDestination)}`,
-          );
+          setError("Sign in to continue setting up your profile");
           return;
         }
 
-        const profilePayload = await profileResponse.json();
-
-        if (!profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        if (!profileResponse.ok || !profileData.success) {
           throw new Error(
-            profilePayload.error ?? "We couldn't load your profile.",
+            profileData.error || "Unable to retrieve candidate profile.",
           );
         }
 
-        const resumePayload = await resumeResponse.json();
+        const candidate = profileData.profile;
+        setUserId(candidate?.accountId || profileData.accountId || "authorized");
+        setEmail(profileData.email || "");
+        setFullName(candidate?.fullName || "");
+        setPhone(candidate?.phone || "");
+        setCountry(candidate?.country || "Nigeria");
+        setState(candidate?.state || "");
+        setExperience(
+          candidate?.yearsExperience !== undefined &&
+            candidate?.yearsExperience !== null
+            ? String(candidate.yearsExperience)
+            : "0",
+        );
+        setSearchTiming(candidate?.searchTiming || "immediately");
+        setWorkPreference(candidate?.workplacePreference || "any");
 
-        if (!resumeResponse.ok) {
-          throw new Error(
-            resumePayload.error ?? "We couldn't load your saved resume.",
-          );
+        if (resumeResponse.ok) {
+          const resumeData = await resumeResponse.json();
+          if (resumeData.success && resumeData.resume?.url) {
+            setExistingResume(resumeData.resume.originalName || "Uploaded document");
+          }
         }
-
+      } catch (cause) {
         if (!active) return;
-
-        const profile = profilePayload.profile;
-
-        setUserId("authenticated");
-        setEmail(profilePayload.email ?? "");
-
-        if (profile?.onboardingCompleted) {
-          router.replace(intendedReturnTo);
-          return;
-        }
-
-        setFullName(profile?.fullName ?? "");
-        setPhone(profile?.phone ?? "");
-        setCountry(profile?.country ?? "Nigeria");
-        setState(profile?.state ?? "");
-        setExperience(String(profile?.yearsExperience ?? 0));
-        setSearchTiming(profile?.searchTiming ?? "immediately");
-        setWorkPreference(profile?.workplacePreference ?? "any");
-        setExistingResume(resumePayload.resume?.originalName ?? "");
-      } catch (error) {
-        if (!active) return;
-
-        console.error("HIREUO candidate profile could not be loaded", error);
         setError(
-          error instanceof Error
-            ? error.message
-            : "We couldn't load your profile Please refresh and try again",
+          cause instanceof Error
+            ? cause.message
+            : "Unable to load candidate profile.",
         );
       } finally {
         if (active) setLoading(false);
@@ -130,143 +122,92 @@ export default function ApplicantOnboardingPage() {
     return () => {
       active = false;
     };
-  }, [router]);
+  }, []);
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-      event.preventDefault();
-      setError("");
-      setNotice("");
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaving(true);
+    setError("");
+    setNotice("");
 
-      if (!userId) {
-        setError("Please sign in with HIREUO before continuing");
-        return;
-      }
+    try {
+      const response = await fetch("/api/v1/candidate/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          phone: phone.trim(),
+          country: country.trim(),
+          state: state.trim(),
+          yearsExperience: Number(experience),
+          searchTiming,
+          workplacePreference: workPreference,
+          onboardingCompleted: true,
+        }),
+      });
 
-      if (!fullName.trim() || !country.trim() || !state.trim()) {
-        setError("Please complete your name and location");
-        return;
-      }
-
-      const years = Number(experience);
-
-      if (!Number.isInteger(years) || years < 0 || years > 100) {
-        setError("Enter a valid whole number of years of experience");
-        return;
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to save your profile.");
       }
 
       if (resume) {
-        const extension = resume.name.split(".").pop()?.toLowerCase();
-
-        if (!extension || !["pdf", "doc", "docx"].includes(extension)) {
-          setError("Your resume must be a PDF, DOC, or DOCX file");
-          return;
-        }
-
-        if (resume.size > 5 * 1024 * 1024) {
-          setError("Your resume must be no larger than 5 MB");
-          return;
-        }
-      }
-
-      setSaving(true);
-
-      let currentStep = "Preparing onboarding";
-
-      try {
-        if (resume) {
-          currentStep = "Uploading resume";
-
-          const formData = new FormData();
-          formData.append("resume", resume);
-
-          const uploadResponse = await fetch("/api/v1/candidate/resume", {
-            method: "POST",
-            credentials: "same-origin",
-            body: formData,
-          });
-
-          const uploadPayload = await uploadResponse.json();
-
-          if (!uploadResponse.ok) {
-            throw new Error(
-              uploadPayload.error ?? "We couldn't upload your resume.",
-            );
-          }
-        }
-
-        currentStep = "Saving HIREUO candidate profile";
-
-        const profileResponse = await fetch("/api/v1/candidate/profile", {
-          method: "PUT",
+        const body = new FormData();
+        body.append("resume", resume);
+        await fetch("/api/v1/candidate/resume", {
+          method: "POST",
           credentials: "same-origin",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fullName: fullName.trim(),
-            phone: phone.trim(),
-            country: country.trim(),
-            state: state.trim(),
-            yearsExperience: years,
-            workplacePreference: workPreference,
-            searchTiming,
-          }),
+          body,
         });
-
-        const profilePayload = await profileResponse.json();
-
-        if (!profileResponse.ok) {
-          throw new Error(
-            profilePayload.error ?? "We couldn't save your candidate profile.",
-          );
-        }
-
-        setNotice("Your candidate profile has been saved");
-        router.push(returnTo);
-        router.refresh();
-      } catch (err) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : "Something went wrong while saving your profile";
-
-        console.error(`HIREUO onboarding failed at: ${currentStep}`, err);
-        setError(`${currentStep}: ${message}`);
-      } finally {
-        setSaving(false);
       }
+
+      router.push(returnTo);
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Unable to save your candidate profile.",
+      );
+    } finally {
+      setSaving(false);
     }
-  
+  }
+
   if (loading) {
     return (
-      <main className="grid min-h-screen place-items-center bg-rosybrown px-6">
-        <p className="text-sm text-slate-500">Loading your HIREUO profile…</p>
+      <main className="grid min-h-screen place-items-center bg-[#F8FAFF] px-6">
+        <p className="text-sm font-semibold text-[#64748B]">Loading your profile…</p>
       </main>
     );
   }
 
   if (!userId) {
     return (
-      <main className="grid min-h-screen place-items-center bg-rosybrown px-6 py-12">
-        <section className="w-full max-w-md rounded-3xl bg-rosybrown p-8 shadow-sm">
-          <p className="text-sm font-semibold text-amber-600">HIREUO </p>
-          <h1 className="mt-4 text-2xl font-semibold text-slate-950">
+      <main className="grid min-h-screen place-items-center bg-gradient-to-b from-[#F2F6FE] via-[#F8FAFF] to-[#EDF3FC] px-6 py-12">
+        <section className="w-full max-w-md rounded-3xl border border-[#E2E8F0] bg-white p-8 shadow-sm text-center">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <span className="grid size-9 place-items-center rounded-xl bg-[#1746D1] text-base font-black text-white">x</span>
+            <span className="text-lg font-black tracking-tight text-[#0B1B3D]">
+              xedruo <span className="font-semibold text-[#1746D1]">career</span>
+            </span>
+          </Link>
+          <h1 className="mt-5 text-2xl font-bold text-[#0B1B3D]">
             Sign in to continue
           </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Sign in using your existing HIREUO account, then return here to
-            complete your candidate profile
+          <p className="mt-2 text-sm leading-6 text-[#64748B]">
+            Sign in using your existing Xedruo account to complete your candidate profile.
           </p>
           {error && (
-            <p role="alert" className="mt-4 text-sm text-red-600">
+            <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {error}
             </p>
           )}
           <Link
-            href="/"
-            className="mt-6 inline-flex rounded-xl bg-rosybrown px-5 py-3 text-sm font-medium text-black bg-rosybrown"
+            href="/account"
+            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
           >
-            Return to HIREUO
+            Sign in
           </Link>
         </section>
       </main>
@@ -274,35 +215,44 @@ export default function ApplicantOnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-rosybrown px-4 py-10 sm:px-6 lg:py-16">
-      <div className="mx-auto max-w-3xl">
-        <Link
-          href="/"
-          className="text-sm font-semibold tracking-wide text-amber-600"
-        >
-          HIREUO
+    <main className="min-h-screen bg-gradient-to-b from-[#F2F6FE] via-[#F8FAFF] to-[#EDF3FC] px-4 py-10 sm:px-6 lg:py-16">
+      <div className="mx-auto max-w-2xl">
+        <Link href="/" className="inline-flex items-center gap-2">
+          <span className="grid size-9 place-items-center rounded-xl bg-[#1746D1] text-base font-black text-white">x</span>
+          <span className="text-lg font-black tracking-tight text-[#0B1B3D]">
+            xedruo <span className="font-semibold text-[#1746D1]">career</span>
+          </span>
         </Link>
 
-        <div className="mt-8">
-          <p className="text-sm font-medium text-amber-600">
-            CANDIDATE ONBOARDING
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            Let&apos;s build your professional profile
+        <div className="mt-8 text-center sm:text-left">
+          <div className="mx-auto sm:mx-0 grid size-12 place-items-center rounded-2xl bg-blue-50 text-[#1746D1]">
+            <User size={24} />
+          </div>
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[#0B1B3D] sm:text-4xl">
+            Your Profile
           </h1>
+          <p className="mt-1.5 text-sm text-[#64748B]">
+            Complete your profile to get better job matches and opportunities.
+          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="mt-8 space-y-8 rounded-3xl bg-rosybrown p-5 shadow-sm sm:p-8"
+          className="mt-8 space-y-6"
         >
-          <section>
-            <h2 className="text-lg font-semibold text-slate-950">
-              Personal information
-            </h2>
+          {/* Personal Information Card */}
+          <div className="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-7 place-items-center rounded-lg bg-blue-50 text-[#1746D1]">
+                <User size={16} />
+              </span>
+              <h2 className="text-base font-bold text-[#0B1B3D]">
+                Personal Information
+              </h2>
+            </div>
 
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <label className="block text-sm font-medium text-slate-700">
+            <div className="mt-5 space-y-4">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 Full name *
                 <input
                   className={inputClass}
@@ -315,17 +265,17 @@ export default function ApplicantOnboardingPage() {
                 />
               </label>
 
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 Email address
                 <input
-                  className={`${inputClass} bg-rosybrown`}
+                  className={`${inputClass} bg-slate-50 cursor-not-allowed text-slate-500`}
                   value={email}
                   readOnly
                   type="email"
                 />
               </label>
 
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 Phone number
                 <input
                   className={inputClass}
@@ -338,7 +288,7 @@ export default function ApplicantOnboardingPage() {
                 />
               </label>
 
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 Country *
                 <input
                   className={inputClass}
@@ -350,7 +300,7 @@ export default function ApplicantOnboardingPage() {
                 />
               </label>
 
-              <label className="block text-sm font-medium text-slate-700 sm:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 State, province, or region *
                 <input
                   className={inputClass}
@@ -363,17 +313,21 @@ export default function ApplicantOnboardingPage() {
                 />
               </label>
             </div>
-          </section>
+          </div>
 
-          <div className=" " />
+          {/* Preferences Card */}
+          <div className="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-7 place-items-center rounded-lg bg-blue-50 text-[#1746D1]">
+                <Sparkles size={16} />
+              </span>
+              <h2 className="text-base font-bold text-[#0B1B3D]">
+                Preferences
+              </h2>
+            </div>
 
-          <section>
-            <h2 className="text-lg font-semibold text-slate-950">
-              Preferences
-            </h2>
-
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <label className="block text-sm font-medium text-slate-700">
+            <div className="mt-5 space-y-4">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 Years of experience *
                 <input
                   className={inputClass}
@@ -387,7 +341,7 @@ export default function ApplicantOnboardingPage() {
                 />
               </label>
 
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 When are you looking to start? *
                 <select
                   className={inputClass}
@@ -403,7 +357,7 @@ export default function ApplicantOnboardingPage() {
                 </select>
               </label>
 
-              <label className="block text-sm font-medium text-slate-700 sm:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">
                 Preferred work arrangement *
                 <select
                   className={inputClass}
@@ -419,25 +373,28 @@ export default function ApplicantOnboardingPage() {
                 </select>
               </label>
             </div>
-          </section>
+          </div>
 
-          <div className=" " />
+          {/* Resume Card */}
+          <div className="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-xs sm:p-8">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-7 place-items-center rounded-lg bg-blue-50 text-[#1746D1]">
+                <FileText size={16} />
+              </span>
+              <h2 className="text-base font-bold text-[#0B1B3D]">
+                Resume / CV
+              </h2>
+            </div>
 
-          <section>
-            <h2 className="text-lg font-semibold text-slate-950">Resume</h2>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
-              Upload a PDF, DOC, or DOCX file
-            </p>
-
-            <label className="mt-5 block rounded-2xl bg-rosybrown p-5">
-              <span className="block text-sm font-medium text-slate-800">
+            <label className="mt-4 block rounded-2xl border border-dashed border-[#E2E8F0] bg-[#F8FAFF] p-5 text-center transition hover:border-blue-200 cursor-pointer">
+              <span className="block text-sm font-semibold text-[#0B1B3D]">
                 {resume ? resume.name : "Choose your resume"}
               </span>
-              <span className="mt-1 block text-xs text-slate-500">
-                Maximum file size: 5 MB
+              <span className="mt-1 block text-xs text-[#94A3B8]">
+                PDF, DOC, or DOCX (max 5 MB)
               </span>
               <input
-                className="mt-4 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg bg-rosybrown file:px-4 file:py-2 file:font-medium file:text-amber-700 bg-rosybrown"
+                className="hidden"
                 type="file"
                 accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 onChange={(e) => setResume(e.target.files?.[0] ?? null)}
@@ -445,17 +402,16 @@ export default function ApplicantOnboardingPage() {
             </label>
 
             {existingResume && !resume && (
-              <p className="mt-3 text-sm text-emerald-700">
-                You already have a saved resume, choose another file to replace
-                it
+              <p className="mt-3 text-xs font-medium text-emerald-700">
+                Current file: {existingResume} (choose a new file above to replace)
               </p>
             )}
-          </section>
+          </div>
 
           {error && (
             <p
               role="alert"
-              className="rounded-xl bg-rosybrown p-4 text-sm text-red-700"
+              className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700"
             >
               {error}
             </p>
@@ -464,19 +420,19 @@ export default function ApplicantOnboardingPage() {
           {notice && (
             <p
               role="status"
-              className="rounded-xl bg-rosybrown p-4 text-sm text-emerald-700"
+              className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700"
             >
               {notice}
             </p>
           )}
 
-          <div className="flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="pt-2">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center justify-center rounded-xl bg-rosybrown px-6 py-3 text-sm font-semibold text-black transition bg-rosybrown disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#1746D1] px-8 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition duration-200 hover:bg-[#1237a8] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving ? "Saving profile..." : "Save and continue"}
+              {saving ? "Saving profile…" : "Update Profile"} <ArrowRight size={16} />
             </button>
           </div>
         </form>

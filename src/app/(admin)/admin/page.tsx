@@ -1,4 +1,3 @@
-
 import { connection } from "next/server";
 import { count } from "drizzle-orm";
 import { getDb } from "../../../lib/db";
@@ -30,7 +29,7 @@ export default async function AdminPage() {
     {
       label: "Companies",
       value: companyCount.total,
-      detail: "Companies registered on Hireuo",
+      detail: "Companies registered on Xedruo Career",
     },
     {
       label: "Job postings",
@@ -52,14 +51,14 @@ export default async function AdminPage() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">
           Staff portal
         </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">
+        <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0B1B3D]">
           Platform overview
         </h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          A live snapshot of activity across Hireuo
+        <p className="mt-2 text-sm leading-6 text-[#64748B]">
+          A live snapshot of activity across Xedruo Career
         </p>
       </header>
 
@@ -68,22 +67,25 @@ export default async function AdminPage() {
         className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
         {metrics.map(({ label, value, detail }) => (
-          <article key={label} className="rounded-2xl bg-rosybrown p-5">
-            <p className="text-sm font-medium text-slate-500">{label}</p>
-            <p className="mt-3 text-3xl font-bold tracking-tight">
+          <article
+            key={label}
+            className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs"
+          >
+            <p className="text-xs font-bold uppercase tracking-wider text-[#64748B]">{label}</p>
+            <p className="mt-3 text-3xl font-extrabold tracking-tight text-[#0B1B3D]">
               {value.toLocaleString()}
             </p>
-            <p className="mt-2 text-xs leading-5 text-slate-500">
+            <p className="mt-2 text-xs leading-5 text-[#64748B]">
               {detail}
             </p>
           </article>
         ))}
       </section>
 
-      <section className="rounded-2xl bg-rosybrown p-6">
-        <h2 className="font-semibold">Staff access is restricted</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          Only staff
+      <section className="rounded-2xl border border-blue-100 bg-[#F2F6FE] p-6 text-[#0B1B3D]">
+        <h2 className="font-bold text-[#0B1B3D]">Staff access is restricted</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[#64748B]">
+          Only staff members with verified roles can view and manage platform data.
         </p>
       </section>
     </div>

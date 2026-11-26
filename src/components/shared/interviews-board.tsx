@@ -145,7 +145,7 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
       <article key={interview.id} className="rounded-2xl border border-slate-200 p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">{isEmployer ? interview.jobTitle : interview.companyName}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#1746D1]">{isEmployer ? interview.jobTitle : interview.companyName}</p>
             <h3 className="mt-1 text-lg font-semibold">{isEmployer ? (interview.candidateName ?? "Candidate") : interview.jobTitle}</h3>
           </div>
           <span className={"rounded-full px-3 py-1 text-xs font-semibold " + (interview.status === "scheduled" ? "bg-blue-50 text-blue-700" : interview.status === "completed" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500")}>
@@ -191,7 +191,7 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
   return (
     <div className="space-y-7">
       <header>
-        <p className="text-sm font-semibold text-amber-600">{isEmployer ? "MEET YOUR SHORTLIST" : "WHAT'S NEXT"}</p>
+        <p className="text-sm font-semibold text-[#1746D1]">{isEmployer ? "MEET YOUR SHORTLIST" : "WHAT'S NEXT"}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Interviews</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           {isEmployer ? "Schedule interviews with candidates, notify them instantly, and move applications to the interview stage" : "Upcoming interview details from hiring teams, with join links and preparation notes"}
@@ -253,10 +253,10 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
             <h2 className="text-lg font-semibold">Upcoming <span className="text-slate-400">({upcoming.length})</span></h2>
             {upcoming.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
-                <CalendarDays className="mx-auto text-amber-600" size={24} />
+                <CalendarDays className="mx-auto text-[#1746D1]" size={24} />
                 <p className="mt-3 font-semibold">No interviews scheduled</p>
                 <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">{isEmployer ? "Use the form above to invite a candidate to meet your team." : "Interview details will appear here when a hiring team invites you to meet."}</p>
-                {!isEmployer && <Link href="/jobs" className="mt-4 inline-block text-sm font-semibold text-amber-600">Browse jobs</Link>}
+                {!isEmployer && <Link href="/jobs" className="mt-4 inline-block text-sm font-semibold text-[#1746D1] hover:underline">Browse jobs</Link>}
               </div>
             ) : upcoming.map((interview) => renderCard(interview))}
           </section>

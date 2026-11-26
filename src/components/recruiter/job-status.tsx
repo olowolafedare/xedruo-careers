@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -51,10 +50,10 @@ export function JobStatus({
 
   const statusClass =
     status === "published"
-      ? "bg-rosybrown text-emerald-700"
+      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
       : status === "closed"
-        ? "bg-rosybrown text-slate-600"
-        : "bg-rosybrown text-amber-700";
+        ? "bg-slate-100 text-slate-600 border border-slate-200"
+        : "bg-blue-50 text-[#1746D1] border border-blue-200";
 
   return (
     <div>
@@ -64,7 +63,7 @@ export function JobStatus({
           value={status}
           disabled={saving}
           onChange={(event) => void changeStatus(event.target.value)}
-          className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold capitalize outline-none ${statusClass}`}
+          className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold capitalize outline-none transition focus:ring-2 focus:ring-blue-100 ${statusClass}`}
         >
           <option value="draft">Draft</option>
           <option value="published">Published</option>

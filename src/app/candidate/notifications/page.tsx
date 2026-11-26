@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import {
@@ -106,48 +105,48 @@ export default async function CandidateNotificationsPage() {
     <div className="mx-auto max-w-5xl space-y-8">
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold text-amber-600">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#1746D1]">
             CANDIDATE WORKSPACE
           </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1B3D] sm:text-4xl">
             Notifications
           </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-500">
+          <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
             Keep up with application updates, interviews, and assessments
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-slate-500">
+        <div className="flex items-center gap-2 text-sm font-medium text-[#64748B]">
           <Bell size={17} />
           <span>{unreadCount} unread</span>
         </div>
       </header>
 
       {loadError ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-          <h2 className="font-semibold text-amber-900">
+        <section className="rounded-2xl border border-red-200 bg-red-50 p-6">
+          <h2 className="font-bold text-red-900">
             Notifications could not be loaded
           </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-800">
-            Please try again later, and if this continues, check the HIREUO
-            notifications service and try again
+          <p className="mt-2 text-sm leading-6 text-red-800">
+            Please try again later, and if this continues, check your connection
+            and try again.
           </p>
         </section>
       ) : !notificationsList.length ? (
-        <section className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
-          <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-amber-50 text-amber-600">
+        <section className="rounded-2xl border border-dashed border-[#E2E8F0] bg-white p-10 text-center">
+          <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-blue-50 text-[#1746D1]">
             <Bell size={25} />
           </span>
-          <h2 className="mt-5 text-lg font-semibold">
+          <h2 className="mt-5 text-lg font-bold text-[#0B1B3D]">
             You&apos;re all caught up
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#64748B]">
             When there are updates about your applications, interviews, or
             assessments, they&apos;ll appear here
           </p>
           <Link
             href="/candidate/jobs"
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-rosybrown px-4 py-3 text-sm font-semibold text-white"
+            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
           >
             Explore jobs <ArrowUpRight size={16} />
           </Link>
@@ -160,30 +159,30 @@ export default async function CandidateNotificationsPage() {
             return (
               <article
                 key={notification.id}
-                className={`rounded-2xl border p-5 transition ${
+                className={`rounded-2xl border p-5 shadow-xs transition ${
                   notification.isRead
-                    ? "border-slate-200 bg-rosybrown"
-                    : "border-amber-200 bg-amber-50/50"
+                    ? "border-[#E2E8F0] bg-white"
+                    : "border-blue-200 bg-blue-50/50"
                 }`}
               >
                 <div className="flex items-start gap-4">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-rosybrown text-amber-600">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
                     <Icon size={20} />
                   </span>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-semibold">{notification.title}</h2>
+                      <h2 className="font-bold text-[#0B1B3D]">{notification.title}</h2>
                       {!notification.isRead && (
-                        <span className="size-2 rounded-full bg-amber-600" />
+                        <span className="size-2 rounded-full bg-[#1746D1]" />
                       )}
                     </div>
 
-                    <p className="mt-1 text-sm leading-6 text-slate-600">
+                    <p className="mt-1 text-sm leading-6 text-[#475569]">
                       {notification.message}
                     </p>
 
-                    <p className="mt-3 text-xs text-slate-500">
+                    <p className="mt-3 text-xs text-[#94A3B8]">
                       {new Date(notification.createdAt).toLocaleString(
                         "en-NG",
                         {
@@ -198,7 +197,7 @@ export default async function CandidateNotificationsPage() {
                         !notification.actionUrl.startsWith("//") && (
                           <Link
                             href={notification.actionUrl}
-                            className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 hover:text-amber-900"
+                            className="inline-flex items-center gap-1 text-sm font-bold text-[#1746D1] hover:underline"
                           >
                             View details <ArrowUpRight size={15} />
                           </Link>
@@ -213,7 +212,7 @@ export default async function CandidateNotificationsPage() {
                           />
                           <button
                             type="submit"
-                            className="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900"
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#0B1B3D]"
                           >
                             <CheckCheck size={15} />
                             Mark as read
