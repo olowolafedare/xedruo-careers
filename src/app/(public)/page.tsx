@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -206,7 +206,7 @@ export default function HomePage() {
 
             {/* Main Headline */}
             <h1 className="mt-6 text-[40px] font-extrabold leading-[1.08] tracking-[-0.035em] text-[#0B1B3D] sm:text-[54px] lg:text-[62px]">
-              Kindly start your career with{" "}
+              Start your career with{" "}
               <span className="text-[#1746D1]">Xedruo</span>
             </h1>
 
