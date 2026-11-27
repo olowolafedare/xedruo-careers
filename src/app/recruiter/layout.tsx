@@ -58,7 +58,7 @@ export default async function RecruiterLayout({
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#64748B] transition hover:bg-blue-50 hover:text-[#1746D1]"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#64748B] transition hover:bg-blue-50 hover:text-[#1746D1] dark:text-slate-300"
             >
               <Icon size={18} strokeWidth={1.8} />
               {label}
@@ -108,7 +108,7 @@ export default async function RecruiterLayout({
             {!canManage && (
               <Link
                 href="/"
-                className="text-sm font-semibold text-[#64748B] hover:text-[#1746D1]"
+                className="text-sm font-semibold text-[#64748B] hover:text-[#1746D1] dark:text-slate-300"
               >
                 Home
               </Link>
@@ -122,7 +122,7 @@ export default async function RecruiterLayout({
               <Link
                 key={href}
                 href={href}
-                className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-blue-50 hover:text-[#1746D1]"
+                className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-blue-50 hover:text-[#1746D1] dark:text-slate-300"
               >
                 <Icon size={15} />
                 {label}

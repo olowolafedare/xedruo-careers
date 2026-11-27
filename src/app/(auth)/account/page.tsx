@@ -94,7 +94,7 @@ async function AccountContent({ searchParams }: AccountPageProps) {
         </Link>
         <Link
           href="/"
-          className="text-xs font-semibold uppercase tracking-wider text-[#64748B] transition hover:text-[#1746D1]"
+          className="text-xs font-semibold uppercase tracking-wider text-[#475569] transition hover:text-[#1746D1]"
         >
           Back to Home
         </Link>

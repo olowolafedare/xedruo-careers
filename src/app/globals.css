@@ -137,6 +137,18 @@ html.dark .skeleton::after {
   );
 }
 
+/* Compact alpha mask for the hero cutout. The photo and mask share the
+   same 3:2 aspect ratio, so the mask only needs enough resolution to
+   keep the blended edge smooth. */
+.hero-cutout-mask {
+  -webkit-mask-image: url("/hero-professionals-mask.png");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-image: url("/hero-professionals-mask.png");
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+}
+
 /* Landing page motion */
 @keyframes landing-rise {
   from {

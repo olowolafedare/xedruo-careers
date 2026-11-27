@@ -211,7 +211,7 @@ export default function HomePage() {
                 />
                 <Skyline
                   idPrefix="hero"
-                  className="absolute inset-x-[3%] bottom-0 h-[62%] w-[94%] opacity-90"
+                  className="absolute -left-[8%] bottom-0 h-[68%] w-[125%] opacity-100 lg:w-[155%]"
                 />
                 <Image
                   src="/hero-professionals.png"
@@ -220,7 +220,7 @@ export default function HomePage() {
                   height={1024}
                   priority
                   sizes="(max-width: 1023px) 90vw, (max-width: 1279px) 520px, 660px"
-                  className="relative h-auto w-full select-none mix-blend-multiply [-webkit-mask-image:url(/hero-professionals.png)] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:100%_100%] [mask-image:url(/hero-professionals.png)] [mask-repeat:no-repeat] [mask-size:100%_100%]"
+                  className="hero-cutout-mask relative h-auto w-full select-none mix-blend-multiply"
                 />
               </div>
             </div>
@@ -427,7 +427,7 @@ export default function HomePage() {
                   width={1536}
                   height={1024}
                   sizes="(max-width: 1024px) 90vw, 480px"
-                  className="relative h-auto w-full select-none mix-blend-multiply [-webkit-mask-image:url(/hero-professionals.png)] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:100%_100%] [mask-image:url(/hero-professionals.png)] [mask-repeat:no-repeat] [mask-size:100%_100%]"
+                  className="hero-cutout-mask relative h-auto w-full select-none mix-blend-multiply"
                 />
               </div>
             </div>
