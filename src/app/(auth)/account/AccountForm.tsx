@@ -14,6 +14,7 @@ type AccountFormProps = {
   destination: string;
   initialMode: AuthMode;
   embedded?: boolean;
+  variant?: "default" | "landing";
 };
 
 type AuthMode = "sign-in" | "sign-up";
@@ -23,8 +24,10 @@ export default function AccountForm({
   destination,
   initialMode,
   embedded = false,
+  variant = "default",
 }: AccountFormProps) {
   const router = useRouter();
+  const isLanding = variant === "landing";
   const isAdminLogin = destination === "/admin";
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [xedruoId, setXedruoId] = useState("");
@@ -169,12 +172,14 @@ export default function AccountForm({
       }
     >
       {/* Eyebrow */}
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#1746D1]">
+      <p className={`text-xs font-bold uppercase tracking-[0.16em] text-[#1746D1]${isLanding ? " hero-auth-eyebrow" : ""}`}>
         {isAdminLogin ? "Xedruo Career · Staff" : "Welcome to Xedruo"}
       </p>
 
       {/* Main Title */}
-      <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-[#0B1B3D] sm:text-[32px]">
+      <h2
+        className={`mt-2 text-2xl font-extrabold tracking-tight text-[#0B1B3D] sm:text-[32px]${isLanding ? " hero-auth-title" : ""}`}
+      >
         {isAdminLogin
           ? "Staff sign in"
           : mode === "sign-up"
@@ -183,7 +188,7 @@ export default function AccountForm({
       </h2>
 
       {/* Supporting Text */}
-      <p className="mt-2 text-sm leading-relaxed text-[#64748B]">
+      <p className={`mt-2 text-sm leading-relaxed text-[#64748B]${isLanding ? " hero-auth-text" : ""}`}>
         {isAdminLogin
           ? "Sign in with your authorized staff account to open the admin portal"
           : mode === "sign-up"
@@ -235,12 +240,12 @@ export default function AccountForm({
 
       {/* Google Authentication Button */}
       {!isAdminLogin && (
-        <div className="mt-6">
+        <div className={`mt-6${isLanding ? " hero-auth-action-row" : ""}`}>
           <button
             type="button"
             disabled={busy}
             onClick={continueWithGoogle}
-            className="group flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-semibold text-[#0B1B3D] shadow-sm transition hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] disabled:opacity-60"
+            className={`group flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-semibold text-[#0B1B3D] shadow-sm transition hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] disabled:opacity-60${isLanding ? " hero-auth-action" : ""}`}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0">
               <path
@@ -271,7 +276,7 @@ export default function AccountForm({
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200" />
           </div>
-          <span className="relative bg-white px-3 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+          <span className={`relative bg-white px-3 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]${isLanding ? " hero-auth-meta" : ""}`}>
             or
           </span>
         </div>
@@ -394,7 +399,7 @@ export default function AccountForm({
 
       {/* Switch mode footer */}
       {!isAdminLogin && (
-        <p className="mt-6 text-center text-sm font-medium text-[#64748B]">
+        <p className={`mt-6 text-center text-sm font-medium text-[#64748B]${isLanding ? " hero-auth-footer" : ""}`}>
           {mode === "sign-up" ? (
             <>
               Already have an account?{" "}

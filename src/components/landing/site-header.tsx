@@ -91,12 +91,12 @@ export default function SiteHeader() {
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled || menuOpen
           ? "border-b border-[#E7EEFA] bg-[#FBFDFF]/90 shadow-[0_18px_40px_-30px_rgba(11,27,61,0.35)] backdrop-blur-xl"
-          : "border-b border-transparent bg-[#FBFDFF]/70 backdrop-blur-md"
+          : "border-b border-transparent bg-[#FBFDFF]/80 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none"
       }`}
     >
       <nav
         aria-label="Main navigation"
-        className="mx-auto flex h-[84px] max-w-[1280px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-10"
+        className="mx-auto flex h-[72px] max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-8 lg:h-[76px] lg:px-[4.4%]"
       >
         <BrandLogo />
 
@@ -162,15 +162,14 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        <div className="hidden shrink-0 items-center gap-5 whitespace-nowrap lg:flex">
-
+        <div className="hidden shrink-0 items-center gap-7 whitespace-nowrap lg:flex">
           <Link
             href={registrationHref}
-            className="group inline-flex h-11 items-center gap-2 rounded-full bg-[#1746D1] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_-12px_rgba(23,70,209,0.9)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#1237A8] active:translate-y-0"
+            className="group inline-flex h-10 items-center gap-1.5 rounded-full bg-[#0240D2] px-3.5 text-[13px] font-bold text-white shadow-[0_12px_26px_-12px_rgba(2,64,210,0.9)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#0337B4] active:translate-y-0"
           >
             Get Started
             <ArrowRight
-              size={15}
+              size={14}
               aria-hidden="true"
               className="transition-transform group-hover:translate-x-0.5"
             />
