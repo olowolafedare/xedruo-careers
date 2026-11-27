@@ -11,16 +11,18 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+// Manrope is a variable font: one file covers every weight the landing
+// page uses (400 to 800) instead of one file per weight.
 const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-manrope",
   display: "swap",
 });
 
+// Poppins ships as static weights. The wordmark only uses 500 and 700.
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["500", "700"],
   variable: "--font-poppins",
   display: "swap",
 });

@@ -168,6 +168,25 @@ html.dark .skeleton::after {
   container-type: inline-size;
 }
 
+/* The hero skyline fades out under the right half of the photo band so the
+   buildings never sit as a hard, dark block behind the two figures. */
+.hero-skyline {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 58%,
+    rgb(0 0 0 / 55%) 84%,
+    rgb(0 0 0 / 0%) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 58%,
+    rgb(0 0 0 / 55%) 84%,
+    rgb(0 0 0 / 0%) 100%
+  );
+}
+
 .hero-badge {
   height: 28px;
   padding-inline: 13px;
@@ -262,6 +281,12 @@ html.dark .skeleton::after {
     margin-top: 1.7cqw;
     font-size: 5.86cqw;
     line-height: 0.89;
+  }
+  /* Each headline line is authored as its own block. Pin them so a wider
+     fallback font (shown while Manrope is still loading) can never wrap a
+     line into a fourth row and push the copy toward the sign-in card. */
+  .hero-title > span {
+    white-space: nowrap;
   }
   .hero-lede {
     margin-top: 1.4cqw;

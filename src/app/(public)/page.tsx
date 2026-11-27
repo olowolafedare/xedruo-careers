@@ -264,7 +264,14 @@ export default function HomePage() {
                 <Skyline
                   idPrefix="hero"
                   variant="hero"
-                  className="absolute -left-[10%] bottom-0 h-[64%] w-[120%] lg:bottom-auto lg:left-[-19%] lg:top-[8.6%] lg:h-[66%] lg:w-[119%]"
+                  className="hero-skyline absolute -left-[10%] bottom-0 h-[64%] w-[120%] lg:bottom-auto lg:left-[-19%] lg:top-[8.6%] lg:h-[66%] lg:w-[119%]"
+                />
+                {/* Haze between the skyline and the cutout: the reference keeps
+                    the buildings pale directly behind the subjects so the two
+                    figures read as a crisp foreground layer. */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-[-8%] top-[2%] h-[92%] bg-[radial-gradient(52%_58%_at_50%_56%,rgba(236,243,255,0.82)_0%,rgba(236,243,255,0.6)_48%,rgba(236,243,255,0)_76%)]"
                 />
                 <Image
                   src="/hero-professionals.png"
@@ -273,7 +280,7 @@ export default function HomePage() {
                   height={1024}
                   priority
                   sizes="(max-width: 1023px) 92vw, 56vw"
-                  className="hero-cutout-mask relative h-auto w-full select-none mix-blend-multiply"
+                  className="relative h-auto w-full select-none"
                 />
               </div>
             </div>

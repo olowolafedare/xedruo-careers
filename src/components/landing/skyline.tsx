@@ -143,13 +143,13 @@ export default function Skyline({
     >
       <defs>
         <linearGradient id={`${idPrefix}-skyline-mid`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#CBDDFC" />
-          <stop offset="46%" stopColor="#B8D2FA" />
-          <stop offset="100%" stopColor="#9DBEF8" />
+          <stop offset="0%" stopColor="#D6E5FE" />
+          <stop offset="46%" stopColor="#C7DCFC" />
+          <stop offset="100%" stopColor="#B3CDFA" />
         </linearGradient>
         <linearGradient id={`${idPrefix}-skyline-near`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#BBD5FC" />
-          <stop offset="100%" stopColor="#93B6F6" />
+          <stop offset="0%" stopColor="#C9DEFD" />
+          <stop offset="100%" stopColor="#AFCBFA" />
         </linearGradient>
         <linearGradient id={`${idPrefix}-skyline-arrow`} x1="0" y1="1" x2="0.4" y2="0">
           <stop offset="0%" stopColor="#6E9AEE" />
