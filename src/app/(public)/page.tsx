@@ -152,6 +152,7 @@ export default function HomePage() {
                 </div>
 
                 <h1 className="mt-6 text-[40px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#0B1B3D] sm:text-[54px] lg:text-[58px] xl:text-[64px]">
+                   <span className="block">Start</span>
                   <span className="block">your career with</span>
                   <span className="block text-[#1746D1]">Xedruo</span>
                 </h1>
