@@ -209,7 +209,7 @@ export function InterviewsBoard({ audience }: { audience: "candidate" | "employe
                 <select required value={form.applicationId} onChange={(event) => setForm({ ...form, applicationId: event.target.value })} className={inputClass}>
                   <option value="">Select an application…</option>
                   {candidates.map((candidate) => (
-                    <option key={candidate.applicationId} value={candidate.applicationId}>{(candidate.candidateName ?? "Candidate") + " — " + candidate.jobTitle}</option>
+                    <option key={candidate.applicationId} value={candidate.applicationId}>{(candidate.candidateName ?? "Candidate") + " - " + candidate.jobTitle}</option>
                   ))}
                 </select>
               </label>

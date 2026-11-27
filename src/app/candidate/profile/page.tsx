@@ -391,8 +391,8 @@ export default function CandidateProfilePage() {
           {savingVisibility
             ? "Saving privacy setting…"
             : candidate?.discoverable
-              ? "Profile discoverable — turn off"
-              : "Profile private — allow employer discovery"}
+              ? "Profile discoverable. Turn off"
+              : "Profile private. Allow employer discovery"}
         </button>
         {visibilityError && (
           <p role="alert" className="mt-3 text-sm text-red-700">
@@ -419,7 +419,7 @@ export default function CandidateProfilePage() {
           href="/recruiter-onboarding"
           className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8]"
         >
-          Hire Talent — Get Started <ArrowRight size={16} />
+          Hire Talent: Get Started <ArrowRight size={16} />
         </Link>
       </section>
     </div>

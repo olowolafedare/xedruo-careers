@@ -24,10 +24,8 @@ export default function ThemeToggle() {
       title="Switch to dark mode"
       className="theme-toggle-control focus-visible:ring-2 focus-visible:ring-blue-600"
     >
-      <Moon className="theme-toggle-moon" size={20} aria-hidden="true" />
-      <Sun className="theme-toggle-sun" size={20} aria-hidden="true" />
-   
-
+      <Moon className="theme-toggle-moon" size={19} aria-hidden="true" />
+      <Sun className="theme-toggle-sun" size={19} aria-hidden="true" />
     </button>
   );
 }

@@ -243,7 +243,7 @@ async function ApplicationsContent() {
           </div>
         ) : (
           <p className="rounded-2xl border border-dashed border-[#E2E8F0] bg-white p-6 text-sm text-[#64748B]">
-            You have no saved jobs yet —{" "}
+            You have no saved jobs yet.{" "}
             <Link href="/candidate/jobs" className="font-bold text-[#1746D1] underline">
               Browse open roles
             </Link>

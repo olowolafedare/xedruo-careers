@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { and, desc, eq, gte, ilike, lte, or } from "drizzle-orm";
-import { BriefcaseBusiness, MapPin, Search } from "lucide-react";
+import { AlertTriangle, ArrowRight, BriefcaseBusiness, MapPin, Search } from "lucide-react";
 
+import BrandLogo from "@/src/components/shared/brand-logo";
 import { getDb } from "@/src/lib/db";
 import { companies, jobs } from "@/src/lib/db/schema";
 
@@ -55,6 +56,15 @@ export default async function JobsPage({
   const experience = params.experience ?? "";
   const salaryMin = Number(params.salaryMin);
   const salaryMax = Number(params.salaryMax);
+  const hasFilters = Boolean(
+    query ||
+      location ||
+      industry ||
+      type ||
+      experience ||
+      (Number.isFinite(salaryMin) && salaryMin > 0) ||
+      (Number.isFinite(salaryMax) && salaryMax > 0),
+  );
 
   const conditions = [eq(jobs.status, "published")];
 
@@ -150,23 +160,24 @@ export default async function JobsPage({
 
   return (
     <main className="min-h-screen bg-[#F8FAFF] text-[#0B1B3D]">
-      <header className="border-b border-[#E2E8F0] bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-[#1746D1] text-base font-black text-white">
-              x
-            </span>
-            <span className="text-lg font-black tracking-tight text-[#0B1B3D]">
-              xedruo <span className="font-semibold text-[#1746D1]">career</span>
-            </span>
-          </Link>
+      <header className="sticky top-0 z-30 border-b border-[#E2E8F0] bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5 sm:px-8">
+          <BrandLogo compact />
 
-          <Link
-            href="/account?next=%2Fapplicant"
-            className="text-sm font-bold text-[#1746D1] transition hover:text-[#1237a8]"
-          >
-            Sign in to apply
-          </Link>
+          <div className="flex items-center gap-3 sm:gap-5">
+            <Link
+              href="/recruiter-onboarding"
+              className="hidden text-sm font-semibold text-[#475569] transition hover:text-[#1746D1] sm:inline-flex"
+            >
+              Post a job
+            </Link>
+            <Link
+              href="/account?next=%2Fapplicant"
+              className="inline-flex h-10 items-center justify-center rounded-full bg-[#1746D1] px-4 text-[13px] font-bold text-white shadow-[0_12px_24px_-14px_rgba(23,70,209,0.9)] transition hover:bg-[#1237A8] sm:px-5"
+            >
+              Sign in to apply
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -288,20 +299,62 @@ export default async function JobsPage({
             </label>
           </div>
 
-          <button className="rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8] active:scale-[0.99] lg:col-span-3">
+          <button className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#1746D1] px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-[#1237a8] active:scale-[0.99] lg:col-span-3">
             Search jobs
+            <ArrowRight
+              size={16}
+              aria-hidden="true"
+              className="transition-transform group-hover:translate-x-0.5"
+            />
           </button>
         </form>
 
         {error ? (
-          <p
+          <section
             role="alert"
-            className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            className="mt-8 rounded-2xl border border-[#F6D9C7] bg-[#FFF8F3] p-6 sm:p-8"
           >
-            Jobs are temporarily unavailable. Please try again later.
-          </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#FFEDDD] text-[#B45309]">
+                <AlertTriangle size={22} aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-lg font-bold text-[#0B1B3D]">
+                  We couldn&apos;t load jobs right now
+                </h2>
+                <p className="mt-1.5 text-sm leading-6 text-[#7A6248]">
+                  Something went wrong on our side. Your next role is still
+                  there. Try again in a moment.
+                </p>
+                <Link
+                  href="/jobs"
+                  className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#1746D1] px-4 text-sm font-bold text-white transition hover:bg-[#1237A8]"
+                >
+                  Try again
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+          </section>
         ) : results.length ? (
-          <div className="mt-8 space-y-3.5">
+          <>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-[#475569]">
+                {results.length} open role{results.length === 1 ? "" : "s"}
+                {query ? (
+                  <span className="text-[#94A3B8]"> for “{query}”</span>
+                ) : null}
+              </p>
+              {hasFilters ? (
+                <Link
+                  href="/jobs"
+                  className="text-xs font-bold text-[#1746D1] transition hover:underline"
+                >
+                  Clear all filters
+                </Link>
+              ) : null}
+            </div>
+            <div className="mt-4 space-y-3.5">
             {results.map((job) => (
               <Link
                 key={job.id}
@@ -309,8 +362,8 @@ export default async function JobsPage({
                 className="block rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md sm:p-6"
               >
                 <div className="flex items-start gap-4">
-                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
-                    <BriefcaseBusiness size={22} />
+                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#EAF1FF] text-lg font-extrabold text-[#1746D1]">
+                    {job.company_name.charAt(0).toUpperCase()}
                   </span>
 
                   <div className="min-w-0 flex-1">
@@ -347,26 +400,37 @@ export default async function JobsPage({
                 </div>
               </Link>
             ))}
-          </div>
+            </div>
+          </>
         ) : (
-          <section className="mt-8 rounded-2xl border border-dashed border-[#E2E8F0] bg-white px-6 py-16 text-center">
-            <span className="mx-auto grid size-12 place-items-center rounded-xl bg-blue-50 text-[#1746D1]">
-              <BriefcaseBusiness size={22} />
+          <section className="mt-8 rounded-2xl border border-dashed border-[#CFDDF4] bg-white px-6 py-16 text-center">
+            <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#EAF1FF] text-[#1746D1]">
+              <BriefcaseBusiness size={24} aria-hidden="true" />
             </span>
 
-            <h2 className="mt-4 text-lg font-bold text-[#0B1B3D]">
+            <h2 className="mt-4 text-xl font-bold tracking-[-0.02em] text-[#0B1B3D]">
               No matching roles found
             </h2>
 
-            <p className="mt-2 text-sm text-[#64748B]">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#64748B]">
               Try a different title or location, or check back soon for new
               opportunities.
             </p>
+
+            {hasFilters ? (
+              <Link
+                href="/jobs"
+                className="mt-5 inline-flex h-10 items-center justify-center rounded-full border border-[#DCE7FB] bg-white px-5 text-sm font-bold text-[#1746D1] transition hover:border-[#BDD1F5]"
+              >
+                Clear all filters
+              </Link>
+            ) : null}
           </section>
         )}
 
-        <p className="mt-5 text-xs text-[#94A3B8]">
-          Showing up to 100 recent published roles
+        <p className="mt-6 text-xs font-medium text-[#94A3B8]">
+          Showing up to 100 recent published roles · New opportunities are added
+          every week
         </p>
       </div>
     </main>
