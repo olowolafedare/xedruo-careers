@@ -163,12 +163,7 @@ export default function SiteHeader() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-5 whitespace-nowrap lg:flex">
-          <Link
-            href={accountHref}
-            className="text-[14px] font-bold text-[#0B1B3D] transition hover:text-[#1746D1]"
-          >
-            Xedruo Login
-          </Link>
+
           <Link
             href={registrationHref}
             className="group inline-flex h-11 items-center gap-2 rounded-full bg-[#1746D1] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_-12px_rgba(23,70,209,0.9)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#1237A8] active:translate-y-0"
