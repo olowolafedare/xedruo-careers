@@ -149,6 +149,198 @@ html.dark .skeleton::after {
   mask-size: 100% 100%;
 }
 
+/* ---------------------------------------------------------------
+   Landing hero
+   The hero is laid out on a 1024 x 682 stage (the brand reference
+   frame). Positions are percentages of that stage and type scales
+   with container query units, so the composition stays identical
+   from 1024px up to the 1600px cap.
+   --------------------------------------------------------------- */
+.landing-page {
+  font-family: var(--font-manrope), var(--font-sans);
+}
+
+.brand-wordmark {
+  font-family: var(--font-poppins), var(--font-sans);
+}
+
+.hero-stage {
+  container-type: inline-size;
+}
+
+/* The hero skyline fades out under the right half of the photo band so the
+   buildings never sit as a hard, dark block behind the two figures. */
+.hero-skyline {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 58%,
+    rgb(0 0 0 / 55%) 84%,
+    rgb(0 0 0 / 0%) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 58%,
+    rgb(0 0 0 / 55%) 84%,
+    rgb(0 0 0 / 0%) 100%
+  );
+}
+
+.hero-badge {
+  height: 28px;
+  padding-inline: 13px;
+  gap: 9px;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+}
+.hero-badge-icon {
+  width: 13px;
+  height: 13px;
+}
+.hero-title {
+  margin-top: 18px;
+  font-size: 40px;
+  line-height: 1.02;
+  letter-spacing: -0.036em;
+  color: #03063d;
+}
+.hero-lede {
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5175;
+}
+.hero-actions {
+  margin-top: 22px;
+}
+.hero-cta {
+  height: 44px;
+  padding-inline: 18px;
+  font-size: 14px;
+}
+.hero-demo {
+  gap: 10px;
+  font-size: 14px;
+}
+.hero-demo-ring {
+  width: 44px;
+  height: 44px;
+}
+.hero-card {
+  border-radius: 22px;
+  padding: 22px;
+}
+.hero-auth-eyebrow {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: #2c6af6;
+}
+.hero-auth-title {
+  margin-top: 12px;
+  font-size: 32px;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: #03063d;
+}
+.hero-auth-text {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5175;
+}
+.hero-auth-action-row {
+  margin-top: 10px;
+}
+.hero-auth-action {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.hero-auth-meta {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+}
+.hero-auth-footer {
+  font-size: 14px;
+  color: #4b5175;
+}
+
+@media (min-width: 1024px) {
+  .hero-badge {
+    height: 2.73cqw;
+    padding-inline: 1.27cqw;
+    gap: 0.88cqw;
+    font-size: 1.07cqw;
+  }
+  .hero-badge-icon {
+    width: 1.38cqw;
+    height: 1.38cqw;
+  }
+  .hero-title {
+    margin-top: 1.7cqw;
+    font-size: 5.86cqw;
+    line-height: 0.89;
+  }
+  /* Each headline line is authored as its own block. Pin them so a wider
+     fallback font (shown while Manrope is still loading) can never wrap a
+     line into a fourth row and push the copy toward the sign-in card. */
+  .hero-title > span {
+    white-space: nowrap;
+  }
+  .hero-lede {
+    margin-top: 1.4cqw;
+    font-size: 1.56cqw;
+    line-height: 1.42;
+  }
+  .hero-actions {
+    margin-top: 1.6cqw;
+  }
+  .hero-cta {
+    height: 4.4cqw;
+    padding-inline: 1.75cqw;
+    font-size: 1.42cqw;
+  }
+  .hero-demo {
+    gap: 0.95cqw;
+    font-size: 1.42cqw;
+  }
+  .hero-demo-ring {
+    width: 4.7cqw;
+    height: 4.7cqw;
+  }
+  .hero-card {
+    border-radius: 1.95cqw;
+    padding: 2.74cqw 2.74cqw 2.6cqw;
+  }
+  .hero-auth-eyebrow {
+    font-size: 1.07cqw;
+  }
+  .hero-auth-title {
+    margin-top: 2.83cqw;
+    font-size: 3.42cqw;
+  }
+  .hero-auth-text {
+    margin-top: 1.2cqw;
+    font-size: 1.6cqw;
+  }
+  .hero-auth-action-row {
+    margin-top: 0.4cqw;
+  }
+  .hero-auth-action {
+    height: 4.88cqw;
+    font-size: 1.6cqw;
+    border-radius: 1.17cqw;
+  }
+  .hero-auth-meta {
+    font-size: 1.07cqw;
+  }
+  .hero-auth-footer {
+    margin-top: 4.3cqw;
+    font-size: 1.4cqw;
+  }
+}
+
 /* Landing page motion */
 @keyframes landing-rise {
   from {
@@ -189,6 +381,8 @@ html.dark [class~="border-blue-100"] {
    surfaces and form fields on-brand even when the app is in dark mode. */
 .landing-page {
   color-scheme: light;
+  --font-sans: var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
 }
 
 html.dark .landing-page [class~="bg-white"] {

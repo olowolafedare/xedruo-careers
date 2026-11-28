@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Manrope, Plus_Jakarta_Sans, Poppins } from "next/font/google";
 import ThemeToggle from "@/src/components/shared/theme-toggle";
 import "./globals.css";
 
@@ -8,6 +8,22 @@ const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-jakarta",
+  display: "swap",
+});
+
+// Manrope is a variable font: one file covers every weight the landing
+// page uses (400 to 800) instead of one file per weight.
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+// Poppins ships as static weights. The wordmark only uses 500 and 700.
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -19,7 +35,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={jakarta.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${jakarta.variable} ${manrope.variable} ${poppins.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{

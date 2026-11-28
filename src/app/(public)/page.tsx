@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from "react";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -131,46 +131,97 @@ export default function HomePage() {
 
       <main id="main">
         {/* Hero */}
-        <section className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#FBFDFF_0%,#F4F8FF_46%,#E7F0FF_100%)]">
+        <section className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#FAFCFF_0%,#F5F9FF_34%,#EAF2FE_74%,#E8F0FD_100%)] lg:-mt-[76px] lg:aspect-[1024/682]">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 overflow-hidden"
           >
-            <div className="absolute -right-40 -top-56 size-[620px] rounded-full bg-[#E4EDFF]" />
-            <div className="absolute -right-24 top-6 hidden size-64 rounded-full bg-[#1746D1]/90 lg:block" />
-            <div className="absolute right-[-150px] top-[-120px] size-[430px] rounded-full border-[46px] border-[#D8E6FF]/80" />
-            <div className="absolute -bottom-28 -left-28 size-[440px] rounded-full bg-[#D9E7FF]/70 blur-2xl" />
-            <div className="absolute left-[49%] top-[17%] hidden size-20 bg-[radial-gradient(#8AA9E8_1.5px,transparent_1.5px)] [background-size:14px_14px] opacity-50 lg:block" />
+            <svg
+              viewBox="0 0 1024 682"
+              preserveAspectRatio="xMidYMid slice"
+              focusable="false"
+              className="h-full w-full"
+            >
+              <defs>
+                <radialGradient id="hero-corner" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#1E63FA" />
+                  <stop offset="34%" stopColor="#3B7BFD" />
+                  <stop offset="58%" stopColor="#82ACFE" />
+                  <stop offset="78%" stopColor="#C9DCFE" stopOpacity="0.85" />
+                  <stop offset="100%" stopColor="#C9DCFE" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="hero-hill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#D5E3FD" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#BDD4FB" stopOpacity="1" />
+                </linearGradient>
+                <pattern
+                  id="hero-dots"
+                  width="11"
+                  height="11"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <circle cx="2" cy="2" r="1.5" fill="#8FAEE8" />
+                </pattern>
+              </defs>
+              <circle cx="948" cy="-86" r="330" fill="#E8F0FE" />
+              <circle
+                cx="1018"
+                cy="96"
+                r="238"
+                fill="none"
+                stroke="#DCE9FE"
+                strokeWidth="38"
+                opacity="0.7"
+              />
+              <circle cx="1064" cy="170" r="212" fill="url(#hero-corner)" />
+              <g className="hidden lg:block">
+                <rect
+                  x="512"
+                  y="141"
+                  width="52"
+                  height="52"
+                  fill="url(#hero-dots)"
+                  opacity="0.65"
+                />
+              </g>
+              <ellipse cx="10" cy="748" rx="408" ry="248" fill="url(#hero-hill)" />
+              <ellipse cx="360" cy="820" rx="520" ry="260" fill="#DCE9FD" opacity="0.85" />
+              <ellipse cx="1012" cy="900" rx="330" ry="420" fill="#FFFFFF" />
+            </svg>
           </div>
 
-          <div className="relative mx-auto max-w-[1280px] px-5 pb-10 pt-10 sm:px-8 lg:px-10 lg:pb-0 lg:pt-6">
-            <div className="grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-x-10 lg:gap-y-8 xl:gap-x-14">
-              <div className="animate-[landing-rise_0.7s_ease-out_both] lg:col-start-1 lg:row-start-1">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#D3E2FF] bg-[#E9F1FF] px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#1746D1]">
-                  <Rocket size={14} strokeWidth={2.5} aria-hidden="true" />
+          <div className="hero-stage relative z-10 mx-auto w-full max-w-[1600px] px-5 pb-10 pt-6 sm:px-8 lg:h-full lg:px-0 lg:pb-0 lg:pt-0">
+            <div className="grid items-start gap-8 lg:block">
+              <div className="animate-[landing-rise_0.7s_ease-out_both] lg:absolute lg:left-[5.08%] lg:top-[15.4%] lg:z-30 lg:w-[44%]">
+                <div className="hero-badge inline-flex w-fit items-center rounded-full border border-[#C9DEFE] bg-[#DAE8FE] font-extrabold uppercase text-[#2457D6]">
+                  <Rocket
+                    className="hero-badge-icon"
+                    strokeWidth={2.4}
+                    aria-hidden="true"
+                  />
                   Your next chapter starts here
                 </div>
 
-                <h1 className="mt-6 text-[40px] font-extrabold leading-[1.04] tracking-[-0.045em] text-[#0B1B3D] sm:text-[54px] lg:text-[58px] xl:text-[64px]">
-                   <span className="block">Start</span>
+                <h1 className="hero-title font-extrabold">
+                  <span className="block">Start</span>
                   <span className="block">your career with</span>
-                  <span className="block text-[#1746D1]">Xedruo</span>
+                  <span className="block text-[#2C6AF6]">Xedruo</span>
                 </h1>
 
-                <p className="mt-6 max-w-[440px] text-[15px] leading-7 text-[#475569] sm:text-base sm:leading-8">
+                <p className="hero-lede max-w-[26rem] lg:max-w-[24.2em]">
                   Discover opportunities that match your ambition. Connect with
                   employers, showcase your strengths and move your career
                   forward.
                 </p>
 
-                <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                <div className="hero-actions flex flex-wrap items-center gap-x-5 gap-y-4">
                   <Link
                     href={registrationHref}
-                    className="group inline-flex h-[54px] items-center justify-center gap-2.5 rounded-full bg-[#1746D1] px-7 text-[15px] font-bold text-white shadow-[0_20px_40px_-18px_rgba(23,70,209,0.9)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#1237A8] active:translate-y-0"
+                    className="hero-cta group inline-flex items-center justify-center gap-2 rounded-full bg-[#0240D2] font-bold text-white shadow-[0_20px_40px_-18px_rgba(2,64,210,0.95)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#0337B4] active:translate-y-0"
                   >
                     Get Started
                     <ArrowRight
-                      size={17}
+                      size={16}
                       aria-hidden="true"
                       className="transition-transform group-hover:translate-x-0.5"
                     />
@@ -178,11 +229,11 @@ export default function HomePage() {
 
                   <a
                     href="#how-it-works"
-                    className="group inline-flex items-center gap-3 text-sm font-bold text-[#0B1B3D]"
+                    className="hero-demo group inline-flex items-center font-bold text-[#03063D]"
                   >
-                    <span className="grid size-12 place-items-center rounded-full border border-[#D8E4F8] bg-white text-[#1746D1] shadow-[0_12px_26px_-16px_rgba(23,70,209,0.6)] transition duration-200 group-hover:scale-105 group-hover:border-[#BDD1F5]">
+                    <span className="hero-demo-ring grid place-items-center rounded-full border border-[#D8E4F8] bg-white text-[#2C6AF6] shadow-[0_12px_26px_-16px_rgba(44,106,246,0.7)] transition duration-200 group-hover:scale-105 group-hover:border-[#BDD1F5]">
                       <Play
-                        size={15}
+                        size={13}
                         fill="currentColor"
                         className="ml-0.5"
                         aria-hidden="true"
@@ -193,25 +244,34 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="relative mx-auto w-full max-w-[480px] animate-[landing-rise_0.7s_ease-out_0.12s_both] lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mx-0 lg:mt-10 lg:max-w-none lg:self-start">
-                <div className="relative rounded-[26px] border border-[#EDF2FB] bg-white p-6 shadow-[0_40px_90px_-42px_rgba(23,70,209,0.5)] sm:p-9">
+              <div className="relative mx-auto w-full max-w-[430px] animate-[landing-rise_0.7s_ease-out_0.12s_both] lg:absolute lg:right-[4.3%] lg:top-[20.8%] lg:z-20 lg:mx-0 lg:w-[36.82%] lg:max-w-none">
+                <div className="hero-card relative border border-[#EFF3FC] bg-white shadow-[0_44px_90px_-46px_rgba(15,44,140,0.5)]">
                   <AccountForm
                     destination="/candidate/dashboard"
                     authError=""
                     initialMode="sign-in"
                     embedded
+                    variant="landing"
                   />
                 </div>
               </div>
 
-              <div className="pointer-events-none relative mx-auto w-full max-w-[560px] lg:col-start-1 lg:row-start-2 lg:mx-0 lg:max-w-none">
+              <div className="pointer-events-none relative z-0 mx-auto mt-2 w-full max-w-[560px] lg:absolute lg:left-[16.7%] lg:top-[58.2%] lg:z-10 lg:mx-0 lg:mt-0 lg:w-[55.95%] lg:max-w-none">
                 <div
                   aria-hidden="true"
-                  className="absolute inset-x-[10%] bottom-0 h-[68%] rounded-full bg-[#C9DBFA]/70 blur-3xl"
+                  className="absolute inset-x-[8%] bottom-0 h-[62%] rounded-full bg-[#C9DBFA]/60 blur-3xl lg:hidden"
                 />
                 <Skyline
                   idPrefix="hero"
-                  className="absolute -left-[8%] bottom-0 h-[68%] w-[125%] opacity-100 lg:w-[155%]"
+                  variant="hero"
+                  className="hero-skyline absolute -left-[10%] bottom-0 h-[64%] w-[120%] lg:bottom-auto lg:left-[-19%] lg:top-[8.6%] lg:h-[66%] lg:w-[119%]"
+                />
+                {/* Haze between the skyline and the cutout: the reference keeps
+                    the buildings pale directly behind the subjects so the two
+                    figures read as a crisp foreground layer. */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-[-8%] top-[2%] h-[92%] bg-[radial-gradient(52%_58%_at_50%_56%,rgba(236,243,255,0.82)_0%,rgba(236,243,255,0.6)_48%,rgba(236,243,255,0)_76%)]"
                 />
                 <Image
                   src="/hero-professionals.png"
@@ -219,8 +279,8 @@ export default function HomePage() {
                   width={1536}
                   height={1024}
                   priority
-                  sizes="(max-width: 1023px) 90vw, (max-width: 1279px) 520px, 660px"
-                  className="hero-cutout-mask relative h-auto w-full select-none mix-blend-multiply"
+                  sizes="(max-width: 1023px) 92vw, 56vw"
+                  className="relative h-auto w-full select-none"
                 />
               </div>
             </div>
@@ -419,7 +479,8 @@ export default function HomePage() {
               <div className="relative overflow-hidden rounded-[32px] border border-white/80 bg-[linear-gradient(155deg,#EDF4FF_0%,#DCE9FF_58%,#E8F1FF_100%)] shadow-[0_44px_90px_-54px_rgba(23,70,209,0.55)]">
                 <Skyline
                   idPrefix="growth"
-                  className="absolute inset-x-0 bottom-0 h-[54%] w-full opacity-80"
+                  variant="panel"
+                  className="absolute inset-x-0 bottom-0 h-[56%] w-full opacity-90"
                 />
                 <Image
                   src="/hero-professionals.png"
