@@ -238,14 +238,9 @@ export default function AccountForm({
         </div>
       )}
 
-      {/* Google Authentication Button */}
-<<<<<<< HEAD
+      {/* Google Authentication Button — sign-in only */}
       {!isAdminLogin && mode === "sign-in" && (
-        <div className="mt-6">
-=======
-      {!isAdminLogin && (
         <div className={`mt-6${isLanding ? " hero-auth-action-row" : ""}`}>
->>>>>>> c50ef9dbed04acafc6f6a876fda7afec1fe1c48f
           <button
             type="button"
             disabled={busy}
