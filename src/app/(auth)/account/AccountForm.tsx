@@ -234,7 +234,7 @@ export default function AccountForm({
       )}
 
       {/* Google Authentication Button */}
-      {!isAdminLogin && (
+      {!isAdminLogin && mode === "sign-in" && (
         <div className="mt-6">
           <button
             type="button"
@@ -266,7 +266,7 @@ export default function AccountForm({
       )}
 
       {/* OR Divider */}
-      {!isAdminLogin && (
+      {!isAdminLogin && mode === "sign-in" && (
         <div className="relative my-6 text-center">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200" />
